@@ -11,6 +11,12 @@ DOTFILES_DIR=$PWD
 
 mkdir -p "$DOTFILES_DIR"/bin
 
+# Original source: https://stackoverflow.com/a/31236568/1530494
+function relpath() {
+    python -c "import os, sys; print(os.path.relpath(*sys.argv[1:]))" "$@"
+}
+
+# Link the given src file into the dotfiles' bin directory using relative paths
 function dotbinlink() {
     src="$1"
     if [[ -z "$src" ]]; then
@@ -21,7 +27,10 @@ function dotbinlink() {
         echo "dotbinlink: Source does not exist: '$src'"
         return 2
     fi
-    ln -sf "$PWD/$src" "$DOTFILES_DIR"/bin/"$src"
+    dest="$DOTFILES_DIR/bin/$src"
+    dest_dir=$(dirname "$dest")
+    src="$PWD/$src"
+    ln -sf "$(relpath "$src" "$dest_dir")" "$dest"
 }
 
 # Only perform the specified command if DEFINITELY_ME is 'yes'.
@@ -55,7 +64,7 @@ function dotlink() {
     ln -sf "$PWD/$src" "$dest"
 }
 
-# Clear the line and print the format string with args.
+# Clear the line and print the string
 function printr() {
     echo -en "\r\033[K$*"
 }
