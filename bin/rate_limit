@@ -3,11 +3,15 @@
 rate=${rate:-4}
 cmd=$@
 if [[ "$1" =~ ^[0-9]+$ ]]; then
-	rate=$1
-	cmd=${@:2}
+    rate=$1
+    cmd=${@:2}
 fi
 
-while (( $(jobs -p | wc -l) >= $rate )); do
-	sleep 0.5
-done
-eval "(${cmd[*]}) &"
+if [[ -z "${cmd[*]}" ]]; then
+    echo 'Usage: rate_limit [num_jobs] command [arg [arg ...]]' >&2
+else
+    while (( $(jobs -p | wc -l) >= $rate )); do
+        sleep 0.5
+    done
+    eval "(${cmd[*]}) &"
+fi
