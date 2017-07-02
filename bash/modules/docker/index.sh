@@ -30,7 +30,5 @@ if which docker-machine 2>&1 > /dev/null; then
 			echo -n '] '
 		fi
 	}
-	BASH_PROMPT_PREFIX="\$([[ -n \"\$(type -t _docker_machine_ps1)\" ]] && _docker_machine_ps1)"
-	# used to be PS1="...${PS1}"
+	BASH_PROMPT_PREFIX+="\$([[ -n \"\$(type -t _docker_machine_ps1)\" ]] && _docker_machine_ps1)"
 fi
-

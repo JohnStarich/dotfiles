@@ -7,4 +7,3 @@ for lib in /usr/local/lib/python{3.7,3.6,3.5,2.7}/site-packages; do
 		break
 	fi
 done
-
