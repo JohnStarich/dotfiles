@@ -1,14 +1,12 @@
 #!/bin/zsh
 
-local since=--since="$1"
-local args=${@:2}
-if [ -z "$1" ]; then
-	unset since
-	args=$@
+if [[ ! -z "$1" ]]; then
+    local since=--since="$1"
+    shift
 fi
 git log \
-	--oneline \
-	--graph \
-	--decorate=full \
-	$since \
-	$args
+    --oneline \
+    --graph \
+    --decorate=full \
+    $since \
+    "$@"
