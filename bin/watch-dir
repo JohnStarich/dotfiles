@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+"""
+Watch a directory for file changes and run a command if they change.
+Provide the directory and file extensions to watch.
+"""
+
+from typing import Collection
+import os
+import re
+import shlex
+import shutil
+import subprocess
+import sys
+import time
+
+
+def _usage():
+    return "Usage: {} [DIR] EXT[,EXT[,...]] COMMAND".format(
+        os.path.basename(sys.argv[0]))
+
+
+def _suffix_to_pattern(suffix: str) -> str:
+    pattern = re.escape(suffix)
+    if '.' in suffix:
+        return "**/" + pattern
+    else:
+        return "**/*" + pattern
+
+
+def _make_safe_args(args: Collection[str]) -> Collection[str]:
+    return [args[0]] + list(map(shlex.quote, args[1:]))
+
+
+def main(name: str, *args: Collection[str]) -> int:
+    if len(args) < 3:
+        print(_usage(), file=sys.stderr)
+        return 2
+    if os.path.isdir(args[0]):
+        directory, *args = args
+    else:
+        directory = os.getcwd()
+
+    watch(directory, args[0].split(','), *args[1:])
+
+
+def watch(directory, suffixes: Collection[str], *command: Collection[str]) -> int:
+    if shutil.which('watchman') is None:
+        print("Watchman is required. Install with `brew install watchman`",
+              file=sys.stderr)
+        return 1
+    command = _make_safe_args(command)
+    make_command, *command_args = command
+
+    try:
+        subprocess.call(command)
+    except KeyboardInterrupt:
+        return 1
+    except:
+        print("Error while executing command: %s" % command)
+        raise
+
+    patterns = list(map(_suffix_to_pattern, suffixes))
+
+    watchman_command = ['watchman-make'] \
+        + ['--root', directory] \
+        + ['--pattern'] + patterns \
+        + ['--make', make_command]
+    if len(command_args) > 0:
+        watchman_command += ['--target', ' '.join(command_args)]
+
+    rc = 1
+    while rc != 0:
+        try:
+            print('Running command: ' + ' '.join(watchman_command))
+            rc = subprocess.call(watchman_command)
+            if rc != 0:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            return 1
+
+    return 0
+
+
+if __name__ == '__main__':
+    rc = main(*sys.argv)
+    if rc is None:
+        rc = 0
+    sys.exit(rc)
