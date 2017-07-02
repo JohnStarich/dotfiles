@@ -36,11 +36,12 @@ realpath() {
 }
 
 lazyfunc_apply() {
-    func_name=$1
-    func_src=`realpath "$2"`
+    func_name=$1; shift
+    func_src=`realpath "$1"`; shift
     eval "$func_name() {
         `cat "$func_src"`
     }"
+    "$func_name" "$@"
 }
 
 lazyfunc() {
@@ -56,7 +57,20 @@ lazyfunc() {
     fi
     eval \
     "$func_name"'() {
-        '"lazyfunc_apply '$func_name' '$func_src'"'
-        '"$func_name"' "$@"
+        '"lazyfunc_apply '$func_name' '$func_src'"' "$@"
     }'
+}
+
+lazyfunc_dir() {
+    dir=$1
+    if [[ -z "$dir" || ! -d "$dir" ]]; then
+        echo 'Usage: lazyfunc_dir FUNCTION_DIRECTORY' >&2
+        return 2
+    fi
+    for func_file in "$dir"/*; do
+        func_name=`basename "$func_file"`
+        if [[ ! -d "$func_file" ]]; then
+            lazyfunc "$func_name" "$func_file"
+        fi
+    done
 }
