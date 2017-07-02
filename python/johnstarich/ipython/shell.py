@@ -16,7 +16,7 @@ def find_var(shell: InteractiveShell, varname: str) -> dict:
         lambda: shell.ns_table['builtin'],
         # lambda: shell.alias_manager.linemagics,
         lambda: shell.magics_manager.magics['line'],
-        lambda: shell.magics_manager.magics['cell'],
+        # lambda: shell.magics_manager.magics['cell'],
         # ip.alias_manager.aliases
     ]
     for location_func in var_locations:
