@@ -55,19 +55,30 @@ function dotlink() {
     ln -sf "$PWD/$src" "$dest"
 }
 
+# Clear the line and print the format string with args.
+function printr() {
+    format_str=$1
+    shift
+    args=$@
+    printf "\r%s${format_str}" "$(tput el)" "${args[@]}"
+}
+
 shopt -s nullglob
 
 for installer in */install.sh; do
     module_dir=$(dirname "$installer")
     if [[ -f "$installer" ]]; then
         (
+            printr "Installing $module_dir... "
             set -e
             cd "$module_dir"
             source "install.sh"
         )
         if [[ $? != 0 ]]; then
-            echo "Installation failed for $module_dir"
+            printr "Installation failed for ${module_dir}"
+            echo
         fi
     fi
 done
-echo 'Done!'
+printr 'Done!'
+echo
