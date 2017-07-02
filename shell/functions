@@ -25,3 +25,38 @@ dotsecrets() {
         dotenv shell/secrets
     fi
 }
+
+# Adapted from https://stackoverflow.com/a/3915420/1530494
+# Since this should be /bin/sh compatible, only backticks are used.
+realpath() {
+    src=$1
+    dir=`dirname "$src"`
+    base=`basename "$src"`
+    echo -n "`cd "$dir" && pwd`/$base"
+}
+
+lazyfunc_apply() {
+    func_name=$1
+    func_src=`realpath "$2"`
+    eval "$func_name() {
+        `cat "$func_src"`
+    }"
+}
+
+lazyfunc() {
+    func_name=$1
+    func_src=$2
+    if [[ -z "$func_name" || -z "$func_src" ]]; then
+        echo 'Usage: lazyfunc func_name func_src' >&2
+        return 2
+    fi
+    if [[ ! -e "$func_src" ]]; then
+        echo "lazyfunc: Function source does not exist: '$func_src'" >&2
+        return 1
+    fi
+    eval \
+    "$func_name"'() {
+        '"lazyfunc_apply '$func_name' '$func_src'"'
+        '"$func_name"' "$@"
+    }'
+}
