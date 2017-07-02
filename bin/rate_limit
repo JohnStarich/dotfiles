@@ -1,0 +1,13 @@
+#!/bin/bash
+
+rate=${rate:-4}
+cmd=$@
+if [[ "$1" =~ ^[0-9]+$ ]]; then
+	rate=$1
+	cmd=${@:2}
+fi
+
+while (( $(jobs -p | wc -l) >= $rate )); do
+	sleep 0.5
+done
+eval "(${cmd[*]}) &"
