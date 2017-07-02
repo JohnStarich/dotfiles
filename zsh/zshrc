@@ -6,7 +6,7 @@
 # Antigen ZSH package manager
 ANTIGEN_REPO_PATH="$HOME"/.antigen/bundles/zsh-users/antigen
 if [[ ! -d "$ANTIGEN_REPO_PATH" ]]; then
-	mkdir -p "$HOME"/.antigen/bundles/zsh-users
+	mkdir -p "$HOME"/.antigen/bundles/zsh-users/antigen
 	git clone https://github.com/zsh-users/antigen.git "$ANTIGEN_REPO_PATH"
 fi
 
@@ -26,3 +26,12 @@ dotenv shell/aliases
 ZSH_MODULES_DIR="$DOTFILES_DIR"/zsh/modules
 fpath=("$ZSH_MODULES_DIR" "${fpath[@]}")
 autoload -Uz $(ls "$ZSH_MODULES_DIR" | grep -v '\.zwc$')
+
+# Machine-specific custom autoload functions
+if [[ -d ~/bin/zsh ]]; then
+    fpath=(~/bin/zsh "${fpath[@]}")
+    autoload -Uz $(ls ~/bin/zsh | grep -v '\.zwc')
+fi
+
+# Set PYTHON_LIB to appropriate location
+python_lib
