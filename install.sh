@@ -57,10 +57,7 @@ function dotlink() {
 
 # Clear the line and print the format string with args.
 function printr() {
-    format_str=$1
-    shift
-    args=$@
-    printf "\r%s${format_str}" "$(tput el)" "${args[@]}"
+    echo -en "\r\033[K$*"
 }
 
 shopt -s nullglob
@@ -75,10 +72,8 @@ for installer in */install.sh; do
             source "install.sh"
         )
         if [[ $? != 0 ]]; then
-            printr "Installation failed for ${module_dir}"
-            echo
+            printr "Installation failed for ${module_dir}\n"
         fi
     fi
 done
-printr 'Done!'
-echo
+printr 'Done!\n'
