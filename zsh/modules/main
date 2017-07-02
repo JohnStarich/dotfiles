@@ -1,0 +1,18 @@
+#!/bin/zsh
+if ! which reattach-to-user-namespace > /dev/null; then
+	if [[ -t 0 ]]; then
+		echo -n 'Press enter to install tmux.conf dependency `reattach-to-user-namespace`' >&2
+		read
+		brew install reattach-to-user-namespace
+	else
+		echo 'Dependency reattach-to-user-namespace is not installed' >&2
+		return 1
+	fi
+fi
+
+if ! tmux has-session -t main 2>&-; then
+	tmux new-session -s main
+else
+	tmux attach -t main
+fi
+

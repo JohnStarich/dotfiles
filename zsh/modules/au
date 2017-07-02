@@ -1,0 +1,21 @@
+#!/bin/zsh
+
+local file=$1
+local ag_opts=(
+	--color
+#	--context=2
+	--heading
+)
+
+if [[ ! -e "$file" ]]; then
+	ag_opts+=("$*")
+else
+	shift
+	ag_opts+=("$*" "$file")
+fi
+
+if [[ -t 1 ]]; then
+	ag "${ag_opts[@]}" | less
+else
+	ag "${ag_opts[@]}"
+fi

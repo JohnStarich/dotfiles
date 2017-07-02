@@ -1,0 +1,19 @@
+#!/bin/zsh
+
+if [[ -z "$_gtime_setuptime" ]]; then
+	local begin=$(gdate +%s%3N)
+	local end=$(gdate +%s%3N)
+	_gtime_setuptime=$(lower_bound $(( end - begin )))
+fi
+
+local begin=$(gdate +%s%3N)
+$@
+local rc=$?
+local end=$(gdate +%s%3N)
+local delta=$(lower_bound $(( end - begin - _gtime_setuptime )))
+
+printf '%dm%d.%03ds\n' >&2 \
+	"$((delta / 60000))" \
+	"$((delta / 1000 % 60))" \
+	"$((delta % 1000))"
+return $rc

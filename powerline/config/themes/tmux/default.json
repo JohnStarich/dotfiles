@@ -1,0 +1,36 @@
+{
+	"segments": {
+		"right": [
+			{
+				"priority": 40,
+				"function": "johnstarich.weather.weather",
+				"args": {
+					"unit": "F",
+					"temp_low": 32,
+					"temp_high": 90
+				}
+			},
+			{
+				"priority": 30,
+				"function": "johnstarich.power.power",
+				"args": {
+				}
+			},
+			{
+				"priority": 30,
+				"function": "powerline.segments.common.time.date",
+				"args": {
+					"format": "%a %b %e"
+				}
+			},
+			{
+				"function": "powerline.segments.common.time.date",
+				"_name": "time",
+				"args": {
+					"format": "%I:%M %p",
+					"istime": true
+				}
+			}
+		]
+	}
+}

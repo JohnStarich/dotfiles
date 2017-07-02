@@ -1,0 +1,75 @@
+#!/bin/zsh
+
+#source ~/.profile
+
+# Z Shell specific settings
+#zstyle ':completion:*' accept-exact '*(N)'
+#zstyle ':completion:*' use-cache on
+#zstyle ':completion:*' cache-path ~/.zsh/cache
+#zstyle -e ':completion:*' special-dirs true #'[[ $PREFIX = (../)#(|.|..) ]] && reply=(..)'
+
+# Z Shell profiler
+#zmodload zsh/zprof
+
+# Antigen ZSH package manager
+ANTIGEN_REPO_PATH="$HOME"/.antigen/bundles/zsh-users/antigen
+if [[ ! -d "$ANTIGEN_REPO_PATH" ]]; then
+	(mkdir -p "$HOME"/.antigen/bundles \
+		&& cd "$HOME"/.antigen/bundles \
+		&& git clone https://github.com/zsh-users/antigen.git "$ANTIGEN_REPO_PATH")
+fi
+
+
+function _load_compiled_antigen() {
+	if [[ ! -f "$ANTIGEN_REPO_PATH"/bin/antigen.zwc ]]; then
+		(
+			set -e
+			set -x
+			cd "$ANTIGEN_REPO_PATH"
+			zcompile -Uz bin/antigen bin/antigen.zsh
+			# antigen.zsh bin/antigen.zsh
+		)
+	fi
+	source "$ANTIGEN_REPO_PATH"/antigen.zsh
+	#fpath=("$ANTIGEN_REPO_PATH/antigen.zwc" "${fpath[@]}")
+	#autoload -Uz antigen
+
+	# Force antigen zcompile'd file to load and redefine the antigen function
+	# In other words: run this, expect nothing to happen, but
+	# then antigen works like usual.
+	#antigen version >/dev/null
+}
+
+# Complete brew stuff
+#fpath=(/usr/local/share/zsh/site-functions /usr/local/share/zsh-completions "${fpath[@]}")
+#autoload -Uz compinit
+#compinit
+#source /usr/local/share/zsh/site-functions/kubectl
+
+source "$ANTIGEN_REPO_PATH"/antigen.zsh
+#_load_compiled_antigen
+antigen init "$HOME"/.antigenrc
+
+DOTFILES_DIR=$(dirname "$(dirname "$(readlink ~/.zshrc)")")
+source "$DOTFILES_DIR/shell/functions"
+dotsecrets
+dotenv shell/env
+dotenv shell/aliases
+
+# Custom autoload functions
+source "$DOTFILES_DIR"/zsh/modules/index.zsh
+
+# Environment variables
+
+# Aliases
+alias dc=docker-compose
+alias dm=docker-machine
+alias gs='git status'
+alias gdiff='git diff --word-diff --color-words'
+alias gd=gdiff
+alias gds='git diff --word-diff --color-words --staged'
+alias gitff='git pull --ff-only'
+alias gf=gitff
+alias grep='grep --color=auto'
+alias venv3='source ~/bin/mypip3/bin/activate'
+alias venv='source ~/bin/mypip/bin/activate'

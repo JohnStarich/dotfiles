@@ -1,0 +1,5 @@
+#!/bin/zsh
+
+local root_dir=$(git rev-parse --show-toplevel)
+
+cd "${root_dir}/$@"

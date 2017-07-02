@@ -1,0 +1,4 @@
+set mark-symlinked-directories on
+set completion-ignore-case on
+# Shows all completion options immediately, rather than on the second TAB
+#set show-all-if-ambiguous on

@@ -1,0 +1,13 @@
+[user]
+	name = John Starich
+	email = johnstarich@johnstarich.com
+[push]
+	default = simple
+[color]
+	ui = true
+[core]
+	autocrlf = input
+	excludesfile = ~/.gitignore
+# Always try ssh instead
+[url "git@github.com:"]
+	insteadOf = https://github.com/

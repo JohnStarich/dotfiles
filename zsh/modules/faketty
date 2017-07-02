@@ -1,0 +1,5 @@
+#!/bin/zsh
+
+# Non-Mac solution:
+#script -qfc --return "$(printf "%q " "$@")"
+script -q /dev/null "$(printf "%q " "$@")";

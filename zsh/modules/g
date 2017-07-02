@@ -1,0 +1,43 @@
+#!/bin/zsh
+
+local arg1="$1"
+local all_args=("$@")
+shift
+case "$arg1" in
+a|ad)
+	git add "$@"
+	;;
+cam|cma|am|ma)
+	if [[ -z "$@" ]]; then
+		git commit -a
+	else
+		git commit -am "$*"
+	fi
+	;;
+cm|m)
+	if [[ -z "$*" ]]; then
+		git commit
+	else
+		git commit -m "$*"
+	fi
+	;;
+co)
+	git checkout "$@"
+	;;
+d)
+	git diff "$@"
+	;;
+s|ss)
+	git status "$@"
+	;;
+sa|sh)
+	if [[ -z "$*" ]]; then
+		git stash
+	else
+		git stash save "$*"
+	fi
+	;;
+*)
+	git "${all_args[@]}"
+	;;
+esac

@@ -1,0 +1,3 @@
+PATH=$DOTFILES_DIR/bin:$HOME/bin:$PATH
+EDITOR=vim
+BREW_PREFIX=/usr/local

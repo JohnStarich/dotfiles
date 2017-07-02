@@ -1,0 +1,27 @@
+#!/bin/sh
+
+if [[ -z "$DOTFILES_DIR" ]]; then
+    echo 'Error: $DOTFILES_DIR is not set' >&2
+    exit 2
+fi
+
+dotenv() {
+    src="$DOTFILES_DIR/$1"
+    if [[ -z "$src" ]]; then
+        echo 'Usage: dotenv env_src'
+        return 2
+    fi
+    if [[ ! -e "$src" ]]; then
+        echo "Env file not found: $src"
+        return 1
+    fi
+    set -a
+    source "$src"
+    set +a
+}
+
+dotsecrets() {
+    if [[ -f "$DOTFILES_DIR"/shell/secrets ]]; then
+        dotenv shell/secrets
+    fi
+}

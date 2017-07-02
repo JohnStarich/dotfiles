@@ -1,0 +1,168 @@
+" try/catch is only in Vim7
+if v:version >= 700
+	" If pathogen is installed, start it up
+	try
+		source ~/.vim/plugin-config.vim
+		runtime bundle/pathogen/autoload/pathogen.vim
+		execute pathogen#infect()
+		execute pathogen#helptags()
+	catch
+	endtry
+endif
+
+filetype plugin on
+syntax on
+
+" Prevent issues with non UNIX-conforming shells
+"set shell=/bin/bash
+
+" Background light/dark settings
+set background=dark
+nnoremap <C-l> :call BackgroundToggle()<cr>
+inoremap <C-l> <C-O>:call BackgroundToggle()<cr>
+function! BackgroundToggle()
+	if(&background == 'dark')
+		set background=light
+		highlight SpecialKey ctermfg=White ctermbg=NONE
+		highlight CursorLine term=none cterm=none ctermbg=White
+	else
+		set background=dark
+		highlight SpecialKey ctermfg=Black ctermbg=NONE
+		highlight CursorLine term=none cterm=none ctermbg=Black
+	endif
+endfunc
+
+" Set up tabs for autoindentation and tab expansion
+set tabstop=4 shiftwidth=4 copyindent smarttab smartindent
+set expandtab " automatically change tabs to spaces (overrides copyindent)
+set linebreak " break lines on tokens rather than chars
+
+" Switch tabs with Ctrl-Tab
+"nnoremap <C-Left> :tabprevious<CR>
+"nnoremap <C-Right> :tabnext<CR>
+"inoremap <C-Left> <C-O>:tabprevious<CR>
+"inoremap <C-Right> <C-O>:tabnext<CR>
+
+if has("patch-7.4.354")
+    set breakindent
+    set breakindentopt=shift:4
+    "autocmd FileType markdown setlocal breakindentopt=shift:-4
+else
+    set showbreak=>\ "
+endif
+
+" Show whitespace characters
+set list
+set listchars=tab:⫦┈,trail:◦,precedes:⇦,extends:⇨
+highlight SpecialKey ctermfg=Black ctermbg=NONE
+
+" Set ruler, to show line and column
+set ruler
+
+" Set line numbers on
+set number
+
+" Move cursor one line at a time, always
+inoremap <Down> <C-o>gj
+inoremap <Up> <C-o>gk
+nnoremap j gj
+nnoremap <Down> gj
+nnoremap k gk
+nnoremap <Up> gk
+
+" Faster scrolling with shift
+map <S-j> 5gj
+map <S-k> 5gk
+map <S-l> 5l
+map <S-h> 5h
+
+" Searches
+"set hlsearch " Highlight all search matches
+set incsearch " Auto go to search results while typing
+set ignorecase smartcase " Case insensitive search unless caps are used
+
+" Tab completion will show menu instead of completing
+set wildmenu
+"set wildmode=list:longest,full " Print out a large list of all tab-completable files
+
+" Remap :wq keys for accidentally holding shift
+command! W w
+command! Q q
+command! -bang Q q<bang>
+command! WQ wq
+command! Wq wq
+command! Qa qa
+
+
+" Use ctrl left and right to switch tabs
+"nnoremap H :tabprevious<CR>
+"nnoremap L :tabnext<CR>
+
+" Enable mouse interaction
+if has("mouse")
+	set mouse=a
+endif
+
+" Allow for some padding before/after cursor when scrolling
+set scrolloff=3
+set scrolljump=5
+" Always center cursor
+"nnoremap <Up> <Up>zz
+"nnoremap <Down> <Down>zz
+
+" Allows toggling between line numbers and relative line numbers.
+function! NumberToggle()
+	if(&relativenumber == 1)
+		set number
+		set norelativenumber
+	else
+		set relativenumber
+	endif
+endfunc
+
+nnoremap <C-n> :call NumberToggle()<cr>
+autocmd InsertEnter * :set number norelativenumber
+"autocmd InsertLeave * :set relativenumber
+
+" Don't let q do anything.
+nnoremap q <NOP>
+
+" Allow saving of files as sudo when I forgot to start vim using sudo.
+if executable('sudo') && executable('tee')
+	command! SUwrite
+		\ execute 'w !sudo tee % > /dev/null' |
+		\ :edit!
+endif
+cmap w!! SUwrite
+
+" Remove trailing whitespace
+cmap trim %s/\s\+$//
+
+" Copy to clipboard
+cmap clip %w !pbcopy
+
+" Highlight current line
+"set cul
+highlight CursorLine term=none cterm=none ctermbg=0
+
+" Set tmux name
+set titlestring=%t
+"if exists("$TMUX")
+"	autocmd BufEnter * call system("tmux rename-window " . expand("%:t"))
+"	autocmd VimLeave * call system("tmux setw automatic-rename")
+"endif
+
+" Add Markdown command
+command! Markdown :w | :exe '!PATH="/usr/local/bin:$PATH" reattach-to-user-namespace -l markdown ' . shellescape(expand("%"))
+nnoremap <C-p> :Markdown<cr>
+
+" Enable persistent undo files to be stored
+if has("persistent_undo")
+	if ! filereadable('~/.undodir')
+		silent !mkdir -p ~/.undodir
+	endif
+	set undodir=~/.undodir/
+	set undofile
+endif
+
+set backspace=indent,eol,start

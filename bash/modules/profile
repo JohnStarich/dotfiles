@@ -1,0 +1,92 @@
+#!/bin/bash
+
+# Use dotfiles to set up
+DOTFILES_DIR=$(dirname "$(dirname "$(readlink "$0")")")
+source "$DOTFILES_DIR/shell/functions"
+dotsecrets
+dotenv shell/env
+dotenv shell/aliases
+dotenv bash/env
+
+export BASH_PROMPT="${USER/johnstarich/js}@${HOSTNAME:0:9}:\W\$ "
+# used to be export PS1=...
+
+export MODULES=()
+export TIMES=()
+
+
+
+function _source_and_time() {
+	fifo=$(mktemp)
+	/bin/rm "$fifo"
+	mkfifo "$fifo"
+	exec 3<> "$fifo"
+	{ time source "$@"; } 2>&3
+	rc=$?
+	read -u3 time_output # skip blank line
+	read -u3 time_output # read in 'real' time row
+	exec 3>&-
+	/bin/rm "$fifo"
+	return $rc
+}
+
+shopt -s nullglob
+
+if [ -d ~/.bash_modules ]; then
+	for module in ~/.bash_modules/*/index.sh; do
+		#exec 3<> /tmp/bash_modules.log
+		#source "$module" 2>&1 1>&3
+		echo -ne "\033[31m"
+		if [[ "$SHELL" == *bash* ]]; then
+			_source_and_time "$module"
+		else
+			time_output='duration not available'
+			source "$module"
+		fi
+		rc=$?
+		echo -ne "\033[0;00m"
+		#read output <&3
+		#exec 3>&-
+		module="${module/$HOME\/.bash_modules\//}"
+		module="${module/\/index.sh/}"
+		if [[ $rc != 0 ]]; then
+			echo "Error loading module: $module"
+			#echo -e "Output:\n\033[31m$output\033[0;00m"
+		else
+			#if [ ! -z "$output" ]; then
+			#	echo "$output"
+			#	rm /tmp/bash_modules.log
+			#fi
+			MODULES+=("$module")
+			TIMES+=("$time_output")
+		fi
+	done
+
+	if [[ "$SHELL" == *bash* ]]; then
+		OLD_PS1=${PS1}
+		if [[ ! -z "$BASH_PROMPT" ]]; then
+			PS1=$BASH_PROMPT
+		fi
+		if [[ ! -z "$BASH_PROMPT_PREFIX" ]]; then
+			PS1=${BASH_PROMPT_PREFIX}${BASH_PROMPT}
+		fi
+		if [[ ! -z "$BASH_PROMPT_POSTFIX" ]]; then
+			PS1+=$BASH_PROMPT_POSTFIX
+		fi
+	fi
+fi
+
+function modules {
+	echo "Loaded modules:"
+	local longest_name=0
+	for module in "${MODULES[@]}"; do
+		if ((${#module} > longest_name)); then
+			longest_name="${#module}"
+		fi
+	done
+	for ((i = 0; i < ${#MODULES[@]}; i++)) do
+		local time_output=$(grep real <<<"${TIMES[i]}" | awk '{print $2}')
+		printf " - %-${longest_name}s %s\n" "${MODULES[i]}" "$time_output"
+	done
+}
+

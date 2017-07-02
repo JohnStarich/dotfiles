@@ -1,0 +1,56 @@
+#!/usr/bin/env xonsh
+
+from os.path import dirname, realpath
+import glob
+import os
+import shutil
+import site
+import sys
+
+
+### Add brew's Python site dir to the required variables ###
+python_libs = sorted(glob.glob("/usr/local/lib/python*"))
+if len(python_libs) < 1:
+    raise Error("Could not find a brew Python package location")
+# Latest Python3 package path
+latest_python_site = os.path.join(python_libs[-1], "site-packages")
+$PYTHONPATH = latest_python_site
+$PYTHON_LIB = latest_python_site
+site.addsitedir(latest_python_site)
+
+### Add custom Python site dir ###
+dotfiles_dir = dirname(dirname(realpath(__file__)))
+site.addsitedir(os.path.join(dotfiles_dir, 'xonsh/xonsh'))
+try:
+    import secrets
+except:
+    pass
+
+from glog import glog as _glog
+aliases['glog'] = _glog
+from git_status import git_status as _git_status
+$PROMPT_FIELDS['js_git_status'] = _git_status
+from main import main as _main
+aliases['main'] = _main
+from gcd import gcd as _gcd
+aliases['gcd'] = _gcd
+from timesh import timesh as _timesh
+aliases['timesh'] = _timesh
+
+
+### Configure avox to use projects dir ###
+#$PROJECT_DIRS = [os.path.join($HOME, "projects")]
+
+### Aliases ###
+aliases.update({
+    'dc': 'docker-compose',
+    'dm': 'docker-machine',
+    'gs': 'git status',
+    'gd': 'git diff --word-diff --color-words',
+    'gdiff': 'gd',
+    'gds': 'gd --staged',
+    'gf': 'git pull --ff-only',
+    'gitff': 'gf',
+    'rrm': shutil.which('rm'),
+    'rm': 'trash',
+})

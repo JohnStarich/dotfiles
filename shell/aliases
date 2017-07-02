@@ -1,0 +1,13 @@
+alias dc=docker-compose
+alias dm=docker-machine
+alias gd='git diff --word-diff --color-words'
+alias gdiff=gd
+alias gds='gd --staged'
+alias gf='git pull --ff-only'
+alias gitff=gf
+alias grep='grep --color=auto'
+alias gs='git status'
+alias less='less -r'
+alias ls='ls -G'
+alias venv3='source ~/bin/mypip3/bin/activate'
+alias venv='source ~/bin/mypip/bin/activate'

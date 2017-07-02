@@ -1,0 +1,28 @@
+#!/bin/zsh
+
+function load_bundles_with_fpath() {
+	local bundle_name="$1"
+	shift
+	local fpath=("${@[@]}")
+	antigen bundle "$bundle_name"
+	antigen apply
+}
+
+# Add brew completion dirs
+fpath=(/usr/local/share/zsh/site-functions /usr/local/share/zsh-completions "${fpath[@]}")
+
+#local current_fpath=("${fpath[@]}")
+antigen use oh-my-zsh
+
+#load_bundles_with_fpath zsh-users/zsh-history-substring-search "${current_fpath[@]}"
+#load_bundles_with_fpath zsh-users/zsh-autosuggestions "${current_fpath[@]}"
+
+antigen bundles <<EOT
+zsh-users/zsh-syntax-highlighting
+zsh-users/zsh-history-substring-search
+zsh-users/zsh-autosuggestions
+EOT
+
+antigen theme robbyrussell/oh-my-zsh themes/robbyrussell
+
+antigen apply

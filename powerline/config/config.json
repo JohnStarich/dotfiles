@@ -1,0 +1,13 @@
+{
+    "common": {
+        "paths": ["~/.config/powerline/segments"],
+        "_default_top_theme": "ascii",
+        "term_truecolor": true
+    },
+    "ext": {
+        "tmux": {
+            "colorscheme": "default",
+            "theme": "default"
+        }
+    }
+}

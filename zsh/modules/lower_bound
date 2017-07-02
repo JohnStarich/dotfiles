@@ -1,0 +1,14 @@
+#!/bin/zsh
+
+local num=$1
+local bound=${2:-0}
+
+if [[ -z "$num" ]] || ! is_integer $num || ! is_integer $bound; then
+	echo 'Usage: lower_bound <integer to bound> [integer lower bound]' >&2
+	return 1
+fi
+
+if ((num < bound)); then
+	num=$bound
+fi
+echo $num
