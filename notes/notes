@@ -123,9 +123,9 @@ if [[ ! -z "$NOTES_SUBDIR" ]]; then
 fi
 
 if [[ -t 1 ]]; then
-	# Replace this process with the editor for the intended note
+	# Edit the intended note
 	cd "$NOTES_SUBJECT"
-	exec "$NOTES_EDITOR" "$NOTES_SUBJECT/$NOTES_NAME"
+	"$NOTES_EDITOR" "$NOTES_SUBJECT/$NOTES_NAME"
 else
 	# If not a tty, output file path to desired note
 	echo -n "$NOTES_SUBJECT/$NOTES_NAME"
