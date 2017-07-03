@@ -67,6 +67,18 @@ function dotlink() {
     ln -sf "$src" "$dest"
 }
 
+function macos() {
+    if [[ "`uname`" == 'Darwin' ]]; then
+        if [[ ! -z "$@" ]]; then
+            eval "$@"
+            return $?
+        else
+            return 0
+        fi
+    fi
+    return 1
+}
+
 # Clear the line and print the string
 function printr() {
     echo -en "\r\033[K$*"
