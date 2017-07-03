@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Use dotfiles to set up
-DOTFILES_DIR=$(cd "$(dirname "$(readlink ~/.bash_profile)")"/../.. && pwd)
+DOTFILES_DIR=~/.dotfiles
 source "$DOTFILES_DIR/shell/functions"
 dotsecrets
 dotenv shell/env

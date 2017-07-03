@@ -10,6 +10,7 @@ cd "$(dirname "$0")"
 DOTFILES_DIR=$PWD
 
 mkdir -p "$DOTFILES_DIR"/bin
+ln -sf "$DOTFILES_DIR" ~/.dotfiles
 
 # Original source: https://stackoverflow.com/a/31236568/1530494
 function relpath() {

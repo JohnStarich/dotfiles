@@ -16,7 +16,7 @@ antigen init "$HOME"/.antigenrc
 # Complete brew stuff
 fpath=(/usr/local/share/zsh-completions "${fpath[@]}")
 
-DOTFILES_DIR=$(dirname "$(dirname "$(readlink ~/.zshrc)")")
+DOTFILES_DIR=~/.dotfiles
 source "$DOTFILES_DIR/shell/functions"
 dotsecrets
 dotenv shell/env
