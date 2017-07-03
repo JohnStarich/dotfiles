@@ -1,4 +1,16 @@
+# Immediately add a trailing slash when autocompleting symlinks to directories
 set mark-symlinked-directories on
+
+# Make Tab autocomplete regardless of filename case
 set completion-ignore-case on
+
 # Shows all completion options immediately, rather than on the second TAB
-#set show-all-if-ambiguous on
+# set show-all-if-ambiguous on
+
+# Tab-complete the current token from the end rather than the cursor position
+set skip-completed-text on
+
+# Allow UTF-8 input and output, instead of showing stuff like $'\0123\0456'
+set input-meta on
+set output-meta on
+set convert-meta off
