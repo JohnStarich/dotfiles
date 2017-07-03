@@ -10,7 +10,6 @@ cd "$(dirname "$0")"
 DOTFILES_DIR=$PWD
 
 mkdir -p "$DOTFILES_DIR"/bin
-ln -sf "$DOTFILES_DIR" ~/.dotfiles
 
 # Original source: https://stackoverflow.com/a/31236568/1530494
 function relpath() {
@@ -62,13 +61,18 @@ function dotlink() {
             return 0
         fi
     fi
-    ln -sf "$PWD/$src" "$dest"
+    if [[ ! "$src" =~ ^/ ]]; then
+        src="$PWD/$src"
+    fi
+    ln -sf "$src" "$dest"
 }
 
 # Clear the line and print the string
 function printr() {
     echo -en "\r\033[K$*"
 }
+
+dotlink "$DOTFILES_DIR" ~/.dotfiles
 
 shopt -s nullglob
 
