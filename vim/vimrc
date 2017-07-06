@@ -166,3 +166,7 @@ if has("persistent_undo")
 endif
 
 set backspace=indent,eol,start
+
+" Auto-reload files if file changes
+" CursorHold waits for the cursor to stop moving for `updatetime` milliseconds
+autocmd CursorHold * checktime
