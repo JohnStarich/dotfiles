@@ -7,6 +7,7 @@ alias gf='git pull --ff-only'
 alias gitff=gf
 alias grep='grep --color=auto'
 alias gs='git status'
+alias kc=kubectl
 alias less='less -r'
 alias ls='ls -G'
 alias venv3='source ~/bin/mypip3/bin/activate'
