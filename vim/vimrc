@@ -46,7 +46,10 @@ set linebreak " break lines on tokens rather than chars
 if has("patch-7.4.354")
     set breakindent
     set breakindentopt=shift:4
-    "autocmd FileType markdown setlocal breakindentopt=shift:-4
+    "autocmd FileType markdown,md setlocal breakindentopt=shift:-4
+    autocmd FileType markdown,md
+        \ set columns=100 |
+        \ autocmd VimResized * if (&columns > 100) | set columns=100 | endif
 else
     set showbreak=>\ "
 endif
