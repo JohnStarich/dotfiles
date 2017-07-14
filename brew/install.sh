@@ -13,10 +13,12 @@ brew_taps=(
 )
 brew_formulae=(
     bash-completion2
+    cmake
     coreutils
     ctags
     dos2unix
     git
+    glide
     go
     htop
     javarepl
