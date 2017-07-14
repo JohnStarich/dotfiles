@@ -11,3 +11,5 @@
 # Always try ssh instead
 [url "git@github.com:"]
 	insteadOf = https://github.com/
+[url "git@github.ibm.com:"]
+	insteadOf = https://github.ibm.com/
