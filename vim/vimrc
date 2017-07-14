@@ -46,13 +46,26 @@ set linebreak " break lines on tokens rather than chars
 if has("patch-7.4.354")
     set breakindent
     set breakindentopt=shift:4
-    "autocmd FileType markdown,md setlocal breakindentopt=shift:-4
-    autocmd FileType markdown,md
-        \ set columns=100 |
-        \ autocmd VimResized * if (&columns > 100) | set columns=100 | endif
 else
     set showbreak=>\ "
 endif
+
+" Set Markdown options
+function SetMarkdownOptions()
+    "setlocal breakindentopt=shift:-4
+    setlocal columns=100
+    autocmd VimResized * if (&columns > 100) | setlocal columns=100 | endif
+    inoremap . .<C-g>u
+    inoremap ! !<C-g>u
+    inoremap ? ?<C-g>u
+    inoremap : :<C-g>u
+    " Use z= to suggest spelling corrections,
+    " use zg to add the word under the cursor,
+    " use zw to mark the word as bad
+    setlocal spell
+    hi SpellBad ctermfg=015 ctermbg=000 cterm=none
+endfunction
+autocmd FileType markdown,md call SetMarkdownOptions()
 
 " Show whitespace characters
 set list
