@@ -2,4 +2,4 @@
 
 mkdir -p ~/.config
 dotlink config ~/.config/powerline
-pip3 install powerline-status requests
+dotpip3 powerline-status requests

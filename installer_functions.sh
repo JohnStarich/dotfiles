@@ -56,6 +56,32 @@ function dotlink() {
     ln -sf "$src" "$dest"
 }
 
+function dotpip() {
+    local packages=$(pip freeze | sed -e 's/==//')
+    local toinstall=()
+    for arg in "$@"; do
+        if ! grep -q "$arg" <<<"$packages"; then
+            toinstall+=("$arg")
+        fi
+    done
+    if (( ${#toinstall} > 0 )); then
+        pip install "${toinstall[@]}"
+    fi
+}
+
+function dotpip3() {
+    local packages=$(pip3 freeze | sed -e 's/==//')
+    local toinstall=()
+    for arg in "$@"; do
+        if ! grep -q "$arg" <<<"$packages"; then
+            toinstall+=("$arg")
+        fi
+    done
+    if (( ${#toinstall} > 0 )); then
+        pip3 install "${toinstall[@]}"
+    fi
+}
+
 function macos() {
     if [[ "`uname`" == 'Darwin' ]]; then
         if [[ ! -z "$@" ]]; then
