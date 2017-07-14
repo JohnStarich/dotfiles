@@ -2,6 +2,7 @@
 
 local file=$1
 local ag_opts=(
+	--hidden
 	--color
 #	--context=2
 	--heading
