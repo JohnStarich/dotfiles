@@ -5,6 +5,7 @@ alias gdiff=gd
 alias gds='gd --staged'
 alias gf='git pull --ff-only'
 alias gitff=gf
+alias glt='go test $(glide novendor)'
 alias grep='grep --color=auto'
 alias gs='git status'
 alias kc=kubectl
