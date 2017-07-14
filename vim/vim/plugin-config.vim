@@ -58,5 +58,25 @@ let g:syntastic_python_checkers = ['flake8']
 
 "let g:syntastic_java_maven_executable = '/usr/local/Cellar/maven/3.3.9/bin/mvn'
 
+let g:syntastic_go_checkers = ['golint', 'govet', 'gometalinter']
+let g:syntastic_go_gometalinter_args = ['--disable-all', '--enable=errcheck']
+let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
+
+
 " UndoTree
 map <leader>u <C-O>:UndotreeToggle<cr>
+
+
+" Vim Go
+let g:go_metalinter_autosave = 1
+" g:go_auto_sameids Has trouble handling key input while running
+let g:go_auto_sameids = 0
+let g:go_jump_to_error = 0
+
+let g:go_highlight_extra_types = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_format_strings = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_types = 1
