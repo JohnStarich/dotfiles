@@ -3,7 +3,7 @@
 function load_bundles_with_fpath() {
 	local bundle_name="$1"
 	shift
-	local fpath=("${@[@]}")
+	local fpath=($@)
 	antigen bundle "$bundle_name"
 	antigen apply
 }
