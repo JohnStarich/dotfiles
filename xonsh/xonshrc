@@ -1,6 +1,5 @@
 #!/usr/bin/env xonsh
 
-from os.path import dirname, realpath
 import glob
 import os
 import shutil
@@ -19,12 +18,11 @@ $PYTHON_LIB = latest_python_site
 site.addsitedir(latest_python_site)
 
 ### Add custom Python site dir ###
-dotfiles_dir = dirname(dirname(realpath(__file__)))
-site.addsitedir(os.path.join(dotfiles_dir, 'xonsh/xonsh'))
+site.addsitedir(os.path.expanduser('~/.dotfiles/xonsh/xonsh'))
 try:
     import secrets
 except:
-    pass
+    print('Could not add custom xonsh site directory')
 
 from glog import glog as _glog
 aliases['glog'] = _glog
