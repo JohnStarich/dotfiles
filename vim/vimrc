@@ -51,10 +51,15 @@ else
 endif
 
 " Set Markdown options
+function SetMaxColumns(maxcolumns)
+    if &columns > a:maxcolumns
+        setlocal columns=a:maxcolumns
+    endif
+endfunction
 function SetMarkdownOptions()
     "setlocal breakindentopt=shift:-4
-    setlocal columns=100
-    autocmd VimResized * if (&columns > 100) | setlocal columns=100 | endif
+    call SetMaxColumns(100)
+    autocmd VimResized * call SetMaxColumns(100)
     inoremap . .<C-g>u
     inoremap ! !<C-g>u
     inoremap ? ?<C-g>u
