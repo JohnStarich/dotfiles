@@ -53,7 +53,7 @@ endif
 " Set Markdown options
 function SetMaxColumns(maxcolumns)
     if &columns > a:maxcolumns
-        setlocal columns=a:maxcolumns
+        let &l:columns = a:maxcolumns
     endif
 endfunction
 function SetMarkdownOptions()
