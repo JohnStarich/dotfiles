@@ -11,5 +11,6 @@
 # Always try ssh instead
 [url "git@github.com:"]
 	insteadOf = https://github.com/
-[url "git@github.ibm.com:"]
-	insteadOf = https://github.ibm.com/
+# Org-specific configs (not checked in to dotfiles)
+[includeIf "gitdir:~/Documents/IBM/Projects/**"]
+    path = ~/.gitconfig_ibm
