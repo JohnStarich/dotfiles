@@ -7,7 +7,7 @@
 # responsible for any damages this script may cause.
 
 cd "$(dirname "$0")"
-DOTFILES_DIR=$PWD
+DOTFILES_DIR=$(pwd -P)
 
 mkdir -p "$DOTFILES_DIR"/bin
 
