@@ -137,6 +137,12 @@ command! Qa qa
 if has("mouse")
 	set mouse=a
 endif
+" Enable vim split dragging
+if has("mouse_sgr")
+    set ttymouse=sgr
+else
+    set ttymouse=xterm2
+end
 
 " Allow for some padding before/after cursor when scrolling
 set scrolloff=3
