@@ -16,7 +16,7 @@ function dotbinlink() {
         echo "dotbinlink: Source does not exist: '$src'"
         return 2
     fi
-    dest="$DOTFILES_DIR/bin/$src"
+    dest="$HOME/.dotfiles/bin/$src"
     dest_dir=$(dirname "$dest")
     src="$PWD/$src"
     ln -sf "$(relpath "$src" "$dest_dir")" "$dest"
