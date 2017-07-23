@@ -1,12 +1,19 @@
 #!/bin/zsh
 
-if [[ ! -z "$1" ]]; then
-    local since=--since="$1"
+local since
+local remaining_args=()
+for arg in "$@"; do
     shift
-fi
+    if [[ "$arg" =~ ^[^-] ]]; then
+        since=--since="$arg"
+        break
+    fi
+    remaining_args+=("$arg")
+done
 git log \
     --oneline \
     --graph \
     --decorate=full \
     $since \
+    "${remaining_args[@]}" \
     "$@"
