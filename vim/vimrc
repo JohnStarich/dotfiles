@@ -39,6 +39,9 @@ function! BackgroundToggle()
         call SetBackground('dark')
     endif
 endfunc
+nnoremap <leader>l :call BackgroundToggle()<cr>
+nnoremap <C-l> :call BackgroundToggle()<cr>
+inoremap <C-l> <C-O>:call BackgroundToggle()<cr>
 
 " Set up tabs for autoindentation and tab expansion
 set tabstop=4 shiftwidth=4 copyindent smarttab smartindent
