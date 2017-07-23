@@ -80,3 +80,17 @@ let g:go_highlight_functions = 1
 let g:go_highlight_methods = 1
 let g:go_highlight_operators = 1
 let g:go_highlight_types = 1
+
+
+" Goyo
+autocmd! User GoyoEnter nested let g:goyo_previous_background = &background
+autocmd! User GoyoLeave nested call SetBackground(g:goyo_previous_background)
+" Pad resize fix from https://github.com/junegunn/goyo.vim/pull/104
+"   technically, feedkeys is bad and should be "wincmd =", but that doesn't work
+autocmd VimResized * call feedkeys("\<C-w>=")
+
+
+" NERDTree
+" Auto-open when vim opens
+" autocmd vimenter * NERDTree
+map <leader>t :NERDTreeToggle<CR>

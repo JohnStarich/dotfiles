@@ -17,19 +17,27 @@ syntax on
 "set shell=/bin/bash
 
 " Background light/dark settings
-set background=dark
-nnoremap <C-l> :call BackgroundToggle()<cr>
-inoremap <C-l> <C-O>:call BackgroundToggle()<cr>
+function! SetBackground(mode)
+    if(a:mode == 'light')
+        set background=light
+        highlight SpecialKey ctermfg=White ctermbg=NONE
+        highlight CursorLine term=none cterm=none ctermbg=White
+        highlight SpellBad ctermfg=240 ctermbg=255 cterm=none
+    else
+        set background=dark
+        highlight SpecialKey ctermfg=Black ctermbg=NONE
+        highlight CursorLine term=none cterm=none ctermbg=Black
+        highlight SpellBad ctermfg=015 ctermbg=000 cterm=none
+    endif
+endfunc
+call SetBackground('dark')
+
 function! BackgroundToggle()
-	if(&background == 'dark')
-		set background=light
-		highlight SpecialKey ctermfg=White ctermbg=NONE
-		highlight CursorLine term=none cterm=none ctermbg=White
-	else
-		set background=dark
-		highlight SpecialKey ctermfg=Black ctermbg=NONE
-		highlight CursorLine term=none cterm=none ctermbg=Black
-	endif
+    if(&background == 'dark')
+        call SetBackground('light')
+    else
+        call SetBackground('dark')
+    endif
 endfunc
 
 " Set up tabs for autoindentation and tab expansion
@@ -67,10 +75,8 @@ function SetMarkdownOptions()
     " Use z= to suggest spelling corrections,
     " use zg to add the word under the cursor,
     " use zw to mark the word as bad
-    setlocal spell
-    hi SpellBad ctermfg=015 ctermbg=000 cterm=none
 endfunction
-autocmd FileType markdown,md call SetMarkdownOptions()
+set spell
 
 " Show whitespace characters
 set list
