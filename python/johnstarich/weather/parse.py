@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import subprocess
 import requests
 
@@ -80,3 +82,7 @@ def raw_weather_info():
         return info
     except Exception as e:
         return {'error': 'Error parsing weather information: ' + str(e)}
+
+
+if __name__ == '__main__':
+    print(raw_weather_info())
