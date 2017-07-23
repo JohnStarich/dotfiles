@@ -211,3 +211,7 @@ set backspace=indent,eol,start
 " Auto-reload files if file changes
 " CursorHold waits for the cursor to stop moving for `updatetime` milliseconds
 autocmd CursorHold * checktime
+
+" Set file type for conf files
+"autocmd FileType conf set filetype=conf
+au BufRead,BufNewFile *.conf setfiletype config
