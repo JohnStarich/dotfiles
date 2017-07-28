@@ -77,7 +77,10 @@ lazyfunc_dir() {
 
 # Update dotfiles repo and re-run the installer
 dotupdate() {
-    set -e
-    (cd ~/.dotfiles && git pull --ff-only origin master:master)
+    (cd ~/.dotfiles && git pull --ff-only origin master)
+    rc=$?
+    if [[ $rc -ne 0 ]]; then
+        return $rc
+    fi
     ~/.dotfiles/install.sh
 }
