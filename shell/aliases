@@ -11,5 +11,6 @@ alias gs='git status'
 alias kc=kubectl
 alias less='less -r'
 alias ls='ls -G'
+alias jless='jq -C . | less'
 alias venv3='source ~/bin/mypip3/bin/activate'
 alias venv='source ~/bin/mypip/bin/activate'
