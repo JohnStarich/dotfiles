@@ -1,0 +1,34 @@
+#!/bin/bash
+# Highlights pattern matches in the provided files or stdin.
+
+patterns=()
+files=()
+
+program_name=$(basename "$0")
+
+function usage() {
+    echo >&2 <<EOT
+Usage: $program_name PATTERN [FILE [FILE ...]]
+    Highlights pattern matches in the provided files or stdin.
+    PATTERN supports extended (Perl) regular expressions.
+    If FILE is not specified, then reads standard in.
+EOT
+}
+
+while [[ $# -gt 0 && ! -f "$1" ]]; do
+    patterns+=("$1")
+    shift
+done
+files=("$@")
+shift $#
+
+if [[ ${#patterns} -eq 0 ]]; then
+    usage
+    exit 2
+fi
+
+if [[ ${#files} -eq 0 ]]; then
+    files=(/dev/stdin)
+fi
+sed -E 's`('"${patterns[*]}"$')`\033[31m\\1\033[m`g' "${files[@]}"
+
