@@ -1,0 +1,6 @@
+#!/bin/zsh
+
+DOTFILES_DIR=~/.dotfiles
+source "$DOTFILES_DIR/shell/functions"
+dotsecrets
+dotenv shell/env
