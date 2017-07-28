@@ -14,6 +14,7 @@ mkdir -p "$DOTFILES_DIR"/bin
 source ./installer_functions.sh
 
 dotlink "$DOTFILES_DIR" ~/.dotfiles
+cd ~/.dotfiles
 
 shopt -s nullglob
 
