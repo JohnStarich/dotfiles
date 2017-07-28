@@ -48,6 +48,10 @@ set tabstop=4 shiftwidth=4 copyindent smarttab smartindent
 set expandtab " automatically change tabs to spaces (overrides copyindent)
 set linebreak " break lines on tokens rather than chars
 
+" Set statusline
+" %f shows current file
+set statusline=%f
+
 " Switch tabs with Ctrl-Tab
 "nnoremap <C-Left> :tabprevious<CR>
 "nnoremap <C-Right> :tabnext<CR>
