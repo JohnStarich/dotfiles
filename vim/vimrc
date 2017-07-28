@@ -72,7 +72,7 @@ noremap <leader>0 :tablast<cr>
 
 if has("patch-7.4.354")
     set breakindent
-    set breakindentopt=shift:4
+    set breakindentopt=shift:8
 else
     set showbreak=>\ "
 endif
@@ -184,7 +184,8 @@ cmap w!! SUwrite
 cmap trim %s/\s\+$//
 
 " Copy to clipboard
-cmap clip %w !pbcopy
+command! ClipFile :%w !pbcopy
+set clipboard=unnamed
 
 " Highlight current line
 "set cul
