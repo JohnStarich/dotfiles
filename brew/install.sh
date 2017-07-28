@@ -25,6 +25,7 @@ brew_formulae=(
     jq
     maven-deluxe
     mongodb
+    mobile-shell
     ncdu
     node
     pandoc
