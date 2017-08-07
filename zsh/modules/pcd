@@ -1,0 +1,3 @@
+#!/bin/zsh
+# Change directory to the current directory by using the absolute path
+cd "$(pwd -P)"
