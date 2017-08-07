@@ -12,6 +12,12 @@ fi
 
 source "$ANTIGEN_REPO_PATH"/antigen.zsh
 antigen init "$HOME"/.antigenrc
+# Disable line rewriting via syntax highlighting when on a remote connection
+if [[ -z "$SSH_TTY" && -z "$SSH_CLIENT" ]]; then
+    ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern cursor)
+else
+    ZSH_HIGHLIGHT_HIGHLIGHTERS=()
+fi
 
 # Complete brew stuff
 fpath=(/usr/local/share/zsh-completions "${fpath[@]}")
