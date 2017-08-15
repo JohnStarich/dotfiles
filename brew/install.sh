@@ -36,6 +36,7 @@ brew_formulae=(
     sbt
     scala
     the_silver_searcher
+    thefuck
     tmate
     tmux
     trash
@@ -89,4 +90,3 @@ if ! brew cask ls --versions "${brew_cask_formulae[@]}" >/dev/null; then
 fi
 
 exit $err
-
