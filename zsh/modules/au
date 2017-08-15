@@ -3,12 +3,13 @@
 local file=$1
 local ag_opts=(
 	--hidden
+	--ignore-dir=.git
 	--color
 #	--context=2
 	--heading
 )
 
-if [[ ! -e "$file" ]]; then
+if [[ $# -eq 1 || ! -e "$file" ]]; then
 	ag_opts+=("$*")
 else
 	shift
