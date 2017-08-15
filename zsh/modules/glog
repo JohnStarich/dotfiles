@@ -8,6 +8,9 @@ for arg in "$@"; do
         since=--since="$arg"
         break
     fi
+    if [[ "$arg" == '--' ]]; then
+        break
+    fi
     remaining_args+=("$arg")
 done
 git log \
