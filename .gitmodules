@@ -1,0 +1,90 @@
+[submodule "vim/vim/bundle/bullets.vim"]
+	path = vim/vim/bundle/bullets.vim
+	url = git@github.com:dkarter/bullets.vim.git
+[submodule "tmux/plugins/tmux-battery"]
+	path = tmux/plugins/tmux-battery
+	url = https://git::@github.com/tmux-plugins/tmux-battery
+[submodule "tmux/plugins/tmux-better-mouse-mode"]
+	path = tmux/plugins/tmux-better-mouse-mode
+	url = https://git::@github.com/nhdaly/tmux-better-mouse-mode
+[submodule "tmux/plugins/tmux-continuum"]
+	path = tmux/plugins/tmux-continuum
+	url = https://git::@github.com/tmux-plugins/tmux-continuum
+[submodule "tmux/plugins/tmux-resurrect"]
+	path = tmux/plugins/tmux-resurrect
+	url = git@github.com:tmux-plugins/tmux-resurrect
+[submodule "tmux/plugins/tmux-sensible"]
+	path = tmux/plugins/tmux-sensible
+	url = https://git::@github.com/tmux-plugins/tmux-sensible
+[submodule "tmux/plugins/tpm"]
+	path = tmux/plugins/tpm
+	url = git@github.com:tmux-plugins/tpm
+[submodule "vim/vim/bundle/delimitmate"]
+	path = vim/vim/bundle/delimitmate
+	url = git@github.com:raimondi/delimitmate
+[submodule "vim/vim/bundle/Dockerfile.vim"]
+	path = vim/vim/bundle/Dockerfile.vim
+	url = git@github.com:ekalinin/Dockerfile.vim.git
+[submodule "vim/vim/bundle/goyo.vim"]
+	path = vim/vim/bundle/goyo.vim
+	url = git@github.com:junegunn/goyo.vim.git
+[submodule "vim/vim/bundle/jedi-vim"]
+	path = vim/vim/bundle/jedi-vim
+	url = git@github.com:davidhalter/jedi-vim.git
+[submodule "vim/vim/bundle/nerdcommenter"]
+	path = vim/vim/bundle/nerdcommenter
+	url = git@github.com:scrooloose/nerdcommenter.git
+[submodule "vim/vim/bundle/nerdtree"]
+	path = vim/vim/bundle/nerdtree
+	url = git@github.com:scrooloose/nerdtree.git
+[submodule "vim/vim/bundle/pathogen"]
+	path = vim/vim/bundle/pathogen
+	url = git@github.com:tpope/vim-pathogen.git
+[submodule "vim/vim/bundle/supertab"]
+	path = vim/vim/bundle/supertab
+	url = git@github.com:ervandew/supertab.git
+[submodule "vim/vim/bundle/syntastic"]
+	path = vim/vim/bundle/syntastic
+	url = git@github.com:vim-syntastic/syntastic.git
+[submodule "vim/vim/bundle/tabular"]
+	path = vim/vim/bundle/tabular
+	url = git://github.com/godlygeek/tabular.git
+[submodule "vim/vim/bundle/undotree"]
+	path = vim/vim/bundle/undotree
+	url = git@github.com:mbbill/undotree.git
+[submodule "vim/vim/bundle/vim-bracketed-paste"]
+	path = vim/vim/bundle/vim-bracketed-paste
+	url = git@github.com:ConradIrwin/vim-bracketed-paste
+[submodule "vim/vim/bundle/vim-fugitive"]
+	path = vim/vim/bundle/vim-fugitive
+	url = git://github.com/tpope/vim-fugitive.git
+[submodule "vim/vim/bundle/vim-go"]
+	path = vim/vim/bundle/vim-go
+	url = git@github.com:fatih/vim-go
+[submodule "vim/vim/bundle/vim-javacomplete2"]
+	path = vim/vim/bundle/vim-javacomplete2
+	url = git@github.com:vim-scripts/vim-javacomplete2.git
+[submodule "vim/vim/bundle/vim-markdown"]
+	path = vim/vim/bundle/vim-markdown
+	url = git@github.com:plasticboy/vim-markdown.git
+[submodule "vim/vim/bundle/xonsh-vim"]
+	path = vim/vim/bundle/xonsh-vim
+	url = git@github.com:linkinpark342/xonsh-vim
+[submodule "vim/vim/bundle/YouCompleteMe"]
+	path = vim/vim/bundle/YouCompleteMe
+	url = git@github.com:Valloric/YouCompleteMe.git
+[submodule "zsh/bundles/robbyrussell/oh-my-zsh"]
+	path = zsh/bundles/robbyrussell/oh-my-zsh
+	url = git@github.com:robbyrussell/oh-my-zsh.git
+[submodule "zsh/bundles/zsh-users/antigen"]
+	path = zsh/bundles/zsh-users/antigen
+	url = git@github.com:zsh-users/antigen.git
+[submodule "zsh/bundles/zsh-users/zsh-autosuggestions"]
+	path = zsh/bundles/zsh-users/zsh-autosuggestions
+	url = git@github.com:zsh-users/zsh-autosuggestions.git
+[submodule "zsh/bundles/zsh-users/zsh-history-substring-search"]
+	path = zsh/bundles/zsh-users/zsh-history-substring-search
+	url = git@github.com:zsh-users/zsh-history-substring-search.git
+[submodule "zsh/bundles/zsh-users/zsh-syntax-highlighting"]
+	path = zsh/bundles/zsh-users/zsh-syntax-highlighting
+	url = git@github.com:zsh-users/zsh-syntax-highlighting.git
