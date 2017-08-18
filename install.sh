@@ -43,4 +43,9 @@ for installer in "${installers[@]}"; do
         fi
     fi
 done
+
 printr 'Done!\n'
+
+echo 'Updating Git submodules...'
+git submodule update --init --recursive
+echo 'Done!'
