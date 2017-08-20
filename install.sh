@@ -46,6 +46,11 @@ done
 
 printr 'Done!\n'
 
-echo 'Updating Git submodules...'
-git submodule update --init --recursive
-echo 'Done!'
+printr 'Updating Git submodules...'
+git submodule update --init --recursive >/dev/null
+rc=$?
+git submodule foreach '~/.dotfiles/fix_empty_submodule.sh $path' >/dev/null
+if [[ $rc -ne 0 ]]; then
+    echo Error updating submodules. >&2
+fi
+printr 'Done!\n'
