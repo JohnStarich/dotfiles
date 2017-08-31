@@ -18,6 +18,7 @@ antigen use oh-my-zsh
 #load_bundles_with_fpath zsh-users/zsh-autosuggestions "${current_fpath[@]}"
 
 antigen bundles <<EOT
+johnstarich/zsh-docker-prompt
 johnstarich/zsh-git-prompt
 johnstarich/zsh-kubectl-prompt
 

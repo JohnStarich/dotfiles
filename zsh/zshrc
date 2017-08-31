@@ -24,7 +24,7 @@ fpath=(/usr/local/share/zsh-completions "${fpath[@]}")
 
 # Prompt customization
 autoload -Uz colors && colors
-PROMPT='${js_ret_prompt} %{$fg[cyan]%}%c%{$reset_color%} $(js_kubectl_prompt)$(js_git_prompt)'
+PROMPT='${js_ret_prompt} %{$fg[cyan]%}%c%{$reset_color%} $(js_kubectl_prompt)$(js_docker_prompt)$(js_git_prompt)'
 
 dotenv shell/aliases
 
