@@ -18,11 +18,12 @@ antigen use oh-my-zsh
 #load_bundles_with_fpath zsh-users/zsh-autosuggestions "${current_fpath[@]}"
 
 antigen bundles <<EOT
+johnstarich/zsh-git-prompt
+johnstarich/zsh-kubectl-prompt
+
 zsh-users/zsh-syntax-highlighting
 zsh-users/zsh-history-substring-search
 zsh-users/zsh-autosuggestions
 EOT
-
-antigen theme robbyrussell/oh-my-zsh themes/robbyrussell
 
 antigen apply
