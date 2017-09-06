@@ -20,6 +20,7 @@ antigen use oh-my-zsh
 antigen bundles <<EOT
 johnstarich/zsh-docker-prompt
 johnstarich/zsh-git-prompt
+johnstarich/zsh-host-prompt
 johnstarich/zsh-kubectl-prompt
 
 zsh-users/zsh-syntax-highlighting
