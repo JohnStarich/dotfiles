@@ -1,0 +1,3 @@
+#!/bin/bash
+# Sourced from https://serverfault.com/a/505758/256031
+rsync -avhW --no-compress --progress $@
