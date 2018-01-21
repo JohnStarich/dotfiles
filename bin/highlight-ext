@@ -1,0 +1,6 @@
+#!/bin/bash
+
+ext=${1:-go}
+shift
+
+highlight '[a-zA-Z0-9_]+\.'"$ext"':[0-9]+' "$@"
