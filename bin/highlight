@@ -30,5 +30,10 @@ fi
 if [[ ${#files} -eq 0 ]]; then
     files=(/dev/stdin)
 fi
-sed -E 's`('"${patterns[*]}"$')`\033[31m\\1\033[m`g' "${files[@]}"
+
+pattern_args=()
+for pattern in "${patterns[@]}"; do
+    pattern_args+=(-e 's`('"$pattern"$')`\033[31;1m\\1\033[m`g')
+done
+sed -E "${pattern_args[@]}" "${files[@]}"
 
