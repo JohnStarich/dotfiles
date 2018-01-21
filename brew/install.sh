@@ -10,12 +10,12 @@ fi
 
 brew_taps=(
     jcgay/jcgay # for maven-deluxe
+    universal-ctags/universal-ctags
 )
 brew_formulae=(
     bash-completion2
     cmake
     coreutils
-    ctags
     dos2unix
     git
     glide
@@ -52,6 +52,9 @@ brew_cask_formulae=(
     qlstephen
     virtualbox
 )
+brew_head_only_formulae=(
+    universal-ctags
+)
 
 shopt -s nullglob
 
@@ -65,6 +68,7 @@ for tap in "${brew_taps[@]}"; do
     fi
 done
 
+# Brew formulae
 if ! brew ls --versions "${brew_formulae[@]}" >/dev/null; then
     for formula in "${brew_formulae[@]}"; do
         if brew ls --versions "$formula" >/dev/null; then
@@ -77,6 +81,20 @@ if ! brew ls --versions "${brew_formulae[@]}" >/dev/null; then
     done
 fi
 
+# Brew head-only formulae
+if ! brew ls --versions "${brew_head_onlyformulae[@]}" >/dev/null; then
+    for formula in "${brew_formulae[@]}"; do
+        if brew ls --versions "$formula" >/dev/null; then
+            continue
+        fi
+        if ! brew install --HEAD "$formula"; then
+            echo "Error installing brew (head-only) formula: '$formula'"
+            err=1
+        fi
+    done
+fi
+
+# Brew cask formulae
 if ! brew cask ls --versions "${brew_cask_formulae[@]}" >/dev/null; then
     for formula in "${brew_cask_formulae[@]}"; do
         if brew cask ls --versions "$formula" >/dev/null; then
