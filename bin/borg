@@ -1,0 +1,10 @@
+#!/bin/bash
+
+message="${@:-we are the borg. you will be assimilated. resistance is fewtile}"
+for drone_variance in {0..9}; do
+	(
+		sleep $(printf 0.%04d $drone_variance)
+		say "$message"
+	) &
+done
+wait
