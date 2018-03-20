@@ -82,7 +82,7 @@ if ! brew ls --versions "${brew_formulae[@]}" >/dev/null; then
 fi
 
 # Brew head-only formulae
-if ! brew ls --versions "${brew_head_onlyformulae[@]}" >/dev/null; then
+if ! brew ls --versions "${brew_head_only_formulae[@]}" >/dev/null; then
     for formula in "${brew_formulae[@]}"; do
         if brew ls --versions "$formula" >/dev/null; then
             continue
