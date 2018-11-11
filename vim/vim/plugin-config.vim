@@ -62,6 +62,7 @@ let g:syntastic_go_checkers = ['golint', 'govet', 'gometalinter']
 let g:syntastic_go_gometalinter_args = ['--disable-all', '--enable=errcheck']
 let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
 
+let g:syntastic_sh_shellcheck_args = "-x"
 
 " UndoTree
 map <leader>u <C-O>:UndotreeToggle<cr>
