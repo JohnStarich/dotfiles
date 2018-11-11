@@ -88,3 +88,30 @@
 [submodule "zsh/bundles/zsh-users/zsh-syntax-highlighting"]
 	path = zsh/bundles/zsh-users/zsh-syntax-highlighting
 	url = git@github.com:zsh-users/zsh-syntax-highlighting.git
+[submodule "vim/vim/bundle/vim-css-color"]
+	path = vim/vim/bundle/vim-css-color
+	url = git@github.com:ap/vim-css-color
+[submodule "vim/vim/bundle/vim-easytags"]
+	path = vim/vim/bundle/vim-easytags
+	url = git@github.com:Wraul/vim-easytags.git
+[submodule "vim/vim/bundle/vim-ember-hbs"]
+	path = vim/vim/bundle/vim-ember-hbs
+	url = git@github.com:joukevandermaas/vim-ember-hbs.git
+[submodule "vim/vim/bundle/vim-eunuch"]
+	path = vim/vim/bundle/vim-eunuch
+	url = git@github.com:tpope/vim-eunuch
+[submodule "vim/vim/bundle/vim-misc"]
+	path = vim/vim/bundle/vim-misc
+	url = git@github.com:xolox/vim-misc.git
+[submodule "vim/vim/bundle/vim-nerdtree-tabs"]
+	path = vim/vim/bundle/vim-nerdtree-tabs
+	url = git@github.com:jistr/vim-nerdtree-tabs.git
+[submodule "vim/vim/bundle/vim-sleuth"]
+	path = vim/vim/bundle/vim-sleuth
+	url = git@github.com:tpope/vim-sleuth
+[submodule "vim/vim/bundle/vim-surround"]
+	path = vim/vim/bundle/vim-surround
+	url = git://github.com/tpope/vim-surround.git
+[submodule "vim/vim/bundle/vim-wordy"]
+	path = vim/vim/bundle/vim-wordy
+	url = git@github.com:reedes/vim-wordy
