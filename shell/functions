@@ -6,7 +6,10 @@ if [[ -z "$DOTFILES_DIR" ]]; then
 fi
 
 dotenv() {
-    src="$DOTFILES_DIR/$1"
+    src=$1
+    if [[ ! -e "$src" ]]; then
+        src="$DOTFILES_DIR/$src"
+    fi
     if [[ -z "$src" ]]; then
         echo 'Usage: dotenv env_src'
         return 2
