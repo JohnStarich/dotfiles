@@ -9,6 +9,16 @@ local ag_opts=(
 	--heading
 )
 
+for arg in "$@"; do
+	if [[ "$arg" == -- ]]; then
+		shift
+		break
+	elif [[ "$arg" == -* ]]; then
+		ag_opts+=("$arg")
+		shift
+	fi
+done
+
 if [[ $# -eq 1 || ! -e "$file" ]]; then
 	ag_opts+=("$*")
 else
