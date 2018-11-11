@@ -142,6 +142,9 @@ set ignorecase smartcase " Case insensitive search unless caps are used
 set wildmenu
 "set wildmode=list:longest,full " Print out a large list of all tab-completable files
 
+" auto-complete plus spelling
+set complete=.,w,b,u,t,i,kspell
+
 " Remap :wq keys for accidentally holding shift
 command! W w
 command! Q q
