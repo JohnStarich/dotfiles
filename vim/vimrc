@@ -173,9 +173,6 @@ end
 " Allow for some padding before/after cursor when scrolling
 "set scrolloff=3
 set scrolljump=5
-" Always center cursor
-"nnoremap <Up> <Up>zz
-"nnoremap <Down> <Down>zz
 
 " Allows toggling between line numbers and relative line numbers.
 function! NumberToggle()
