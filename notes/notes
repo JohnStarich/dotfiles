@@ -44,8 +44,10 @@ Arguments:
 # by adding the variables to your `~/.notesrc`
 [[ -f "$HOME/.notesrc" ]] && source "$HOME/.notesrc"
 
+shopt -s nocaseglob
+
 NOTES_SUBJECT=$1
-NOTES_NAME=${@:2}
+NOTES_NAME="${*:2}"
 
 # Notes file structure:
 #   $NOTES_BASE/$NOTES_SUBDIR/$(date $NOTES_FORMAT)
@@ -53,7 +55,8 @@ NOTES_BASE=${NOTES_BASE:-$HOME/notes}
 NOTES_EDITOR=${NOTES_EDITOR:-$EDITOR}
 NOTES_EDITOR=${NOTES_EDITOR:-vim}
 NOTES_SUBDIR=${NOTES_SUBDIR:-}
-NOTES_FORMAT=${NOTES_FORMAT:-+%m-%d.txt}
+NOTES_FORMAT=${NOTES_FORMAT:-+%Y-%m-%d}
+NOTES_EXTENSION=${NOTES_EXTENSION:-.txt}
 
 function usage() {
     echo "$NOTES_USAGE" >&2
@@ -68,14 +71,16 @@ Either create the directory or add 'NOTES_BASE=/your/directory/path' to your ~/.
     fi
     # Check we have needed programs installed
     local DEPENDENCIES=(gdate "$NOTES_EDITOR")
-    if ! which "${DEPENDENCIES[@]}" > /dev/null; then
-        echo >&2 "\
-Error: Some dependencies are missing
+    for dep in "${DEPENDENCIES[@]}"; do
+        if ! command -v "$dep" > /dev/null; then
+            echo >&2 "\
+Error: Dependency $dep is missing
 Install any of the following dependencies that are missing:
     ${DEPENDENCIES[*]}
 Note: the gnu utilities like gdate are installed with 'coreutils'"
-        return 1
-    fi
+            return 1
+        fi
+    done
 }
 
 function parse_args() {
@@ -86,28 +91,38 @@ function parse_args() {
         return 2
     fi
     # Try to tab-complete the directory name
-    local notes_subject_dir=$(echo echo $NOTES_BASE/$NOTES_SUBJECT$'\t' | bash -i 2>&-)
+    local notes_subject_dir=("$NOTES_BASE/$NOTES_SUBJECT"*/)
     # If we couldn't get the directory, tell them to try again
-    if [[ ! -d "$notes_subject_dir" ]]; then
+    if [[ ! -d "${notes_subject_dir[0]}" ]]; then
         echo "Could not find subject by name $NOTES_SUBJECT." >&2
-        echo "Attempted to tab-expand path: $notes_subject_dir" >&2
+        echo "Attempted to expand path. Result: \"${notes_subject_dir[0]}\"" >&2
         return 2
     fi
     # Trim off trailing slash
-    NOTES_SUBJECT=$(sed 's/\/$//' <<<$notes_subject_dir)
+    NOTES_SUBJECT=$(sed 's/\/$//' <<<"${notes_subject_dir[0]}")
 
-    # NOTES_NAME = name of the notes file for the current date, or specified date
-    # If extra args provided, parse as relative date string and open that
-    # date's note, else open today's note.
-    if [[ ! -z "$NOTES_NAME" ]]; then
-        NOTES_NAME=$(gdate --date "$NOTES_NAME" "${NOTES_FORMAT}")
-        if [[ -z "$NOTES_NAME" ]]; then
-            usage
-            return 2
-        fi
-    else
+    # NOTES_NAME = name of the notes file for the current date,
+    #   specified date, or the exact name of the notes file (minus the extension)
+    # If no args are provided, then open today's note.
+    if [[ -z "$NOTES_NAME" ]]; then
         NOTES_NAME=$(gdate "${NOTES_FORMAT}")
+    else
+        if [[ -e "$NOTES_SUBJECT/${NOTES_NAME}${NOTES_EXTENSION}" ]]; then
+            # If note exists with that exact name, then use that file
+            NOTES_NAME=$NOTES_NAME # no-op
+        else
+            # Try to parse name as date
+            local notes_date
+            notes_date=$(gdate --date "$NOTES_NAME" "${NOTES_FORMAT}")
+            if [[ -n "$notes_date" ]]; then
+                NOTES_NAME=$notes_date
+            else
+                usage
+                return 2
+            fi
+        fi
     fi
+    NOTES_NAME+="${NOTES_EXTENSION}"
 }
 
 # Exit on bad return code
@@ -125,7 +140,7 @@ fi
 if [[ -t 1 ]]; then
 	# Edit the intended note
 	cd "$NOTES_SUBJECT"
-	"$NOTES_EDITOR" "$NOTES_SUBJECT/$NOTES_NAME"
+	exec "$NOTES_EDITOR" "$NOTES_SUBJECT/$NOTES_NAME"
 else
 	# If not a tty, output file path to desired note
 	echo -n "$NOTES_SUBJECT/$NOTES_NAME"

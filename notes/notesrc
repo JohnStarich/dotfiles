@@ -1,1 +1,2 @@
-NOTES_FORMAT=+%m-%d.md
+NOTES_FORMAT=+%Y-%m-%d
+NOTES_EXTENSION=.md
