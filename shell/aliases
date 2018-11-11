@@ -1,6 +1,10 @@
 alias dc=docker-compose
 alias dm=docker-machine
-alias gd='git diff --word-diff --color-words'
+alias gc='git checkout'
+alias gcb='git checkout -b'
+alias gcd='git checkout develop'
+alias gcm='git checkout master'
+alias gd='git diff --word-diff --color-words="[^[:space:],()<>]+|[[:space:],()<>]+/s"'
 alias gdiff=gd
 alias gds='gd --staged'
 alias gf='git pull --ff-only'
@@ -8,9 +12,13 @@ alias gitff=gf
 alias glt='go test $(glide novendor)'
 alias grep='grep --color=auto'
 alias gs='git status'
+alias jless='jq -C . | less'
 alias kc=kubectl
+alias le='logentry'
 alias less='less -r'
 alias ls='ls -G'
-alias jless='jq -C . | less'
+alias sftp='sftp -C -R 1024 -B 1048576'
 alias venv3='source ~/bin/mypip3/bin/activate'
 alias venv='source ~/bin/mypip/bin/activate'
+alias watch='watch -c -d -n10'
+alias :q="echo \"This isn't Vim!\""
