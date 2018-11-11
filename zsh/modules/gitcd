@@ -2,4 +2,8 @@
 
 local root_dir=$(git rev-parse --show-toplevel)
 
-cd "${root_dir}/$@"
+if [[ -t 1 ]]; then
+	cd "${root_dir}/$@"
+else
+	echo "${root_dir}/$@"
+fi
