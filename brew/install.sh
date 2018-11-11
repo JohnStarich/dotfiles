@@ -16,12 +16,12 @@ brew_formulae=(
     bash-completion2
     cmake
     coreutils
+    docker
     dos2unix
     git
     glide
     go
     htop
-    javarepl
     jq
     maven-deluxe
     mongodb
@@ -44,10 +44,12 @@ brew_formulae=(
     watch
     watchman
     wget
+    zsh
     zsh-completions
 )
 brew_cask_formulae=(
     corelocationcli
+    docker
     java
     qlstephen
     virtualbox
