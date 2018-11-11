@@ -99,3 +99,7 @@ autocmd VimResized * call feedkeys("\<C-w>=")
 " Auto-open when vim opens
 " autocmd vimenter * NERDTree
 map <leader>t :NERDTreeToggle<CR>
+
+" NERDTreeTabs
+" Synchronize NERDTree with every tab
+map <Leader>n <plug>NERDTreeTabsToggle<CR>
