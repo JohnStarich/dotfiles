@@ -1,0 +1,19 @@
+#!/bin/zsh
+
+local since
+local remaining_args=()
+for arg in "$@"; do
+    shift
+    if [[ "$arg" =~ ^[^-] ]]; then
+        since=--since="$arg"
+        break
+    fi
+    if [[ "$arg" == '--' ]]; then
+        break
+    fi
+    remaining_args+=("$arg")
+done
+glog \
+    $since \
+    "${remaining_args[@]}" \
+    "$@"
