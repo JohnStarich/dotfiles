@@ -112,6 +112,7 @@ autocmd FileType sh call SetShellOptions()
 set history=5000
 
 set spell
+set spellcapcheck=""
 
 " Show whitespace characters
 set list
