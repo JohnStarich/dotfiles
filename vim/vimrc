@@ -180,7 +180,7 @@ set foldmethod=syntax
 
 " Allows toggling between line numbers and relative line numbers.
 function! NumberToggle()
-	if(&relativenumber == 1)
+	if(&number == 0 || &relativenumber == 1)
 		set number
 		set norelativenumber
 	else
@@ -188,9 +188,15 @@ function! NumberToggle()
 	endif
 endfunc
 
+function! NumberInsert()
+    if (&number == 1)
+       set norelativenumber
+    endif
+endfunc
+
 nnoremap <C-n> :call NumberToggle()<cr>
-autocmd InsertEnter * :set number norelativenumber
-"autocmd InsertLeave * :set relativenumber
+autocmd BufLeave,FocusLost,InsertEnter * call NumberInsert()
+autocmd BufEnter,FocusGained,InsertLeave * :set relativenumber
 
 " Don't let q do anything.
 nnoremap q <NOP>
