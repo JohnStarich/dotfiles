@@ -1,7 +1,8 @@
 tags
 ignore/
 *.DS_Store
-*.swp
+[._]*.sw[a-p]
+[._]sw[a-p]
 *.nosync*
 *.ignore*
 target
