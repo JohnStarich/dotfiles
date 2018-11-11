@@ -171,7 +171,7 @@ else
 end
 
 " Allow for some padding before/after cursor when scrolling
-set scrolloff=3
+"set scrolloff=3
 set scrolljump=5
 " Always center cursor
 "nnoremap <Up> <Up>zz
