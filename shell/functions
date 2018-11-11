@@ -27,6 +27,9 @@ dotsecrets() {
     if [[ -f "$DOTFILES_DIR"/shell/secrets ]]; then
         dotenv shell/secrets
     fi
+    if [[ -f "$HOME"/.dotfiles.secrets ]]; then
+        dotenv ~/.dotfiles.secrets
+    fi
 }
 
 # Adapted from https://stackoverflow.com/a/3915420/1530494
