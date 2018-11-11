@@ -231,6 +231,9 @@ set titlestring=%t
 command! Markdown :w | :exe '!PATH="/usr/local/bin:$PATH" reattach-to-user-namespace -l markdown ' . shellescape(expand("%"))
 nnoremap <C-p> :Markdown<cr>
 
+" Add quick buffer selection
+nnoremap gb :ls<CR>:b<Space>
+
 " Enable persistent undo files to be stored
 if has("persistent_undo")
 	if ! filereadable('~/.undodir')
