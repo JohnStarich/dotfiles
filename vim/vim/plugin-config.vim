@@ -103,3 +103,6 @@ map <leader>t :NERDTreeToggle<CR>
 " NERDTreeTabs
 " Synchronize NERDTree with every tab
 map <Leader>n <plug>NERDTreeTabsToggle<CR>
+
+" EasyTags
+"let g:easytags_cmd = '/usr/local/bin/ctags'
