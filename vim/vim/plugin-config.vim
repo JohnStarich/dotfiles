@@ -69,11 +69,15 @@ map <leader>u <C-O>:UndotreeToggle<cr>
 
 
 " Vim Go
+let g:go_fold_enable = ['import']
+
 let g:go_metalinter_autosave = 1
 " g:go_auto_sameids Has trouble handling key input while running
 let g:go_auto_sameids = 0
 let g:go_jump_to_error = 0
 
+"let g:go_def_mode = 'godef'
+let g:go_auto_type_info = 1
 let g:go_highlight_extra_types = 1
 let g:go_highlight_fields = 1
 let g:go_highlight_format_strings = 1
