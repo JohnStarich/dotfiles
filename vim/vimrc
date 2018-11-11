@@ -26,12 +26,14 @@ function! SetBackground(mode)
     if(a:mode == 'light')
         set background=light
         highlight SpecialKey ctermfg=White ctermbg=NONE
-        highlight CursorLine term=none cterm=none ctermbg=White
+        highlight clear CursorLine
+        highlight CursorLineNR term=none cterm=none ctermbg=White ctermfg=Black
         highlight SpellBad ctermfg=240 ctermbg=255 cterm=none
     else
         set background=dark
         highlight SpecialKey ctermfg=Black ctermbg=NONE
-        highlight CursorLine term=none cterm=none ctermbg=Black
+        highlight clear CursorLine
+        highlight CursorLineNR term=none cterm=none ctermbg=Black ctermfg=White
         highlight SpellBad ctermfg=015 ctermbg=000 cterm=none
     endif
 endfunc
@@ -56,6 +58,11 @@ set linebreak " break lines on tokens rather than chars
 " Set statusline
 " %f shows current file
 set statusline=%f
+
+" Highlight current line's line number
+" Original idea: https://stackoverflow.com/a/13275419/1530494
+set cursorline
+autocmd BufEnter * highlight clear CursorLine
 
 " Switch tabs with Ctrl-Tab
 "nnoremap <C-Left> :tabprevious<CR>
