@@ -174,6 +174,10 @@ end
 "set scrolloff=3
 set scrolljump=5
 
+" Enable code folding
+set nofoldenable
+set foldmethod=syntax
+
 " Allows toggling between line numbers and relative line numbers.
 function! NumberToggle()
 	if(&relativenumber == 1)
