@@ -152,6 +152,7 @@ command! -bang Q q<bang>
 command! WQ wq
 command! Wq wq
 command! Qa qa
+command! E e
 
 
 " Use ctrl left and right to switch tabs
