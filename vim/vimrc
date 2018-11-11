@@ -109,6 +109,8 @@ function SetShellOptions()
 endfunction
 autocmd FileType sh call SetShellOptions()
 
+set history=5000
+
 set spell
 
 " Show whitespace characters
