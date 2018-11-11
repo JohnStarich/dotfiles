@@ -133,12 +133,6 @@ nnoremap <Down> gj
 nnoremap k gk
 nnoremap <Up> gk
 
-" Faster scrolling with shift
-map <S-j> 5gj
-map <S-k> 5gk
-map <S-l> 5l
-map <S-h> 5h
-
 " Searches
 "set hlsearch " Highlight all search matches
 set incsearch " Auto go to search results while typing
