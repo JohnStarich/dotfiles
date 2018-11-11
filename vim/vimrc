@@ -16,6 +16,11 @@ syntax on
 " Prevent issues with non UNIX-conforming shells
 "set shell=/bin/bash
 
+
+command! NonASCII syntax match nonascii "[^\x00-\x7F]"
+highlight nonascii ctermfg=015 ctermbg=001 cterm=none
+
+
 " Background light/dark settings
 function! SetBackground(mode)
     if(a:mode == 'light')
