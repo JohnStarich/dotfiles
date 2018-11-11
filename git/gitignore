@@ -7,3 +7,4 @@ ignore/
 *.ignore*
 target
 .idea/
+.vscode/
