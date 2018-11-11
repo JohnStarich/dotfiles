@@ -91,7 +91,8 @@ endif
 
 " Set Markdown options
 function SetMarkdownOptions()
-    "setlocal breakindentopt=shift:-4
+    "setlocal breakindentopt=shift:-4 " TODO: attempt to set hanging indent
+    set breakindentopt=shift:4
     inoremap . .<C-g>u
     inoremap ! !<C-g>u
     inoremap ? ?<C-g>u
@@ -100,6 +101,8 @@ function SetMarkdownOptions()
     " use zg to add the word under the cursor,
     " use zw to mark the word as bad
 endfunction
+autocmd FileType markdown call SetMarkdownOptions()
+
 set spell
 
 " Show whitespace characters
