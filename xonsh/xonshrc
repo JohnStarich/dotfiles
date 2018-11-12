@@ -51,6 +51,7 @@ aliases['gcd'] = _gcd
 from timesh import timesh as _timesh
 aliases['timesh'] = _timesh
 
+from pyperclip import copy, paste
 
 ### Configure avox to use projects dir ###
 #$PROJECT_DIRS = [os.path.join($HOME, "projects")]
