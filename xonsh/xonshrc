@@ -7,6 +7,22 @@ import site
 import sys
 
 
+$AUTO_CD = True
+$AUTO_PUSHD = True
+$AUTO_SUGGEST = True
+$DYNAMIC_CWD_WIDTH = [20.0, "%"]
+$HISTCONTROL = "ignoredups"
+$PROMPT = "{ret_code_color}➜{NO_COLOR} {env_name:{} }{BOLD_CYAN}{cwd_base} {js_git_status:{} }{NO_COLOR}"
+$SHELL_TYPE = "prompt_toolkit"
+$XONSH_AUTOPAIR = True
+$_DYNAMIC_CWD_ELISION_CHAR = "\u2026"
+$_MOUSE_SUPPORT = True
+
+xontrib load coreutils
+xontrib load jedi
+xontrib load mpl
+xontrib load prompt_ret_code
+
 ### Add brew's Python site dir to the required variables ###
 python_libs = sorted(glob.glob("/usr/local/lib/python*"))
 if len(python_libs) < 1:
