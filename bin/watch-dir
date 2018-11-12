@@ -67,6 +67,8 @@ def watch(directory, suffixes: Collection[str], *command: Collection[str]) -> in
         + ['--make', make_command]
     if len(command_args) > 0:
         watchman_command += ['--target', ' '.join(command_args)]
+    else:
+        watchman_command += ['--target', '']
 
     rc = 1
     while rc != 0:
