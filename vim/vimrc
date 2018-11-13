@@ -90,7 +90,7 @@ else
 endif
 
 " Set Markdown options
-function SetMarkdownOptions()
+function! SetMarkdownOptions()
     "setlocal breakindentopt=shift:-4 " TODO: attempt to set hanging indent
     set breakindentopt=shift:4
     inoremap . .<C-g>u
@@ -103,7 +103,7 @@ function SetMarkdownOptions()
 endfunction
 autocmd FileType markdown call SetMarkdownOptions()
 
-function SetShellOptions()
+function! SetShellOptions()
     let b:sleuth_automatic = 0
     setlocal expandtab
 endfunction
