@@ -194,9 +194,15 @@ function! NumberInsert()
     endif
 endfunc
 
+function! NumberLeave()
+    if (&number == 1)
+       set relativenumber
+    endif
+endfunc
+
 nnoremap <C-n> :call NumberToggle()<cr>
 autocmd BufLeave,FocusLost,InsertEnter * call NumberInsert()
-autocmd BufEnter,FocusGained,InsertLeave * :set relativenumber
+autocmd BufEnter,FocusGained,InsertLeave * call NumberLeave()
 
 " Don't let q do anything.
 nnoremap q <NOP>
