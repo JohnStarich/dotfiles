@@ -86,6 +86,7 @@ let g:go_highlight_methods = 1
 let g:go_highlight_operators = 1
 let g:go_highlight_types = 1
 
+noremap <leader>i :GoImports<cr>
 
 " Goyo
 autocmd! User GoyoEnter nested let g:goyo_previous_background = &background
