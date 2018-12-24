@@ -55,7 +55,7 @@ NOTES_BASE=${NOTES_BASE:-$HOME/notes}
 NOTES_EDITOR=${NOTES_EDITOR:-$EDITOR}
 NOTES_EDITOR=${NOTES_EDITOR:-vim}
 NOTES_SUBDIR=${NOTES_SUBDIR:-}
-NOTES_FORMAT=${NOTES_FORMAT:-+%Y-%m-%d}
+NOTES_FORMAT=${NOTES_FORMAT:-%Y-%m-%d}
 NOTES_EXTENSION=${NOTES_EXTENSION:-.txt}
 
 function usage() {
@@ -105,7 +105,7 @@ function parse_args() {
     #   specified date, or the exact name of the notes file (minus the extension)
     # If no args are provided, then open today's note.
     if [[ -z "$NOTES_NAME" ]]; then
-        NOTES_NAME=$(gdate "${NOTES_FORMAT}")
+        NOTES_NAME=$(gdate "+${NOTES_FORMAT}")
     else
         if [[ -e "$NOTES_SUBJECT/${NOTES_NAME}${NOTES_EXTENSION}" ]]; then
             # If note exists with that exact name, then use that file
@@ -113,7 +113,7 @@ function parse_args() {
         else
             # Try to parse name as date
             local notes_date
-            notes_date=$(gdate --date "$NOTES_NAME" "${NOTES_FORMAT}")
+            notes_date=$(gdate --date "$NOTES_NAME" "+${NOTES_FORMAT}")
             if [[ -n "$notes_date" ]]; then
                 NOTES_NAME=$notes_date
             else
