@@ -1,147 +1,178 @@
-#!/bin/bash
-# Notes
-# 
-# A handy script to quickly begin writing notes in your favorite editor
-# for any given subject.
-#
-NOTES_USAGE="\
-Usage: notes SUBJECT [DATE ...]
+#!/usr/bin/env python3
 
-Arguments:
-    SUBJECT the directory to store notes in, relative to notes base directory
-    DATE    relative or absolute date, defaults to current date
-                e.g. two days ago, last wednesday, november 3
-"
-#
-# Tip:
-#   This script uses tab expansion to quickly identify your subject directory names, so
-#   it may be more convenient to add case-insensitive tab expansion to your ~/.inputrc
-#
-#   echo 'set completion-ignore-case on' >> ~/.inputrc
-#
-# Example directory structure:
-#   ~/.notesrc contents:
-#       NOTES_BASE=~/school
-#       NOTES_SUBDIR=notes
-#   ~/school/
-#       ConcurrentProgramming/
-#           notes/
-#               01-30.txt
-#               01-31.txt
-#       SoftwareTesting/
-#           notes/
-#               01-31.txt
-# Usage for this example:
-#   Write today's notes for Software Testing:
-#       notes SoftwareTesting
-#       notes Sof
-#   Open yesterday's notes for Concurrent Programming:
-#       notes ConcurrentProgramming yesterday
-#       notes Co yesterday
-#       notes Co January 30
+from configparser import ConfigParser
+from datetime import datetime
+from os import path
 
-# You can override the directory and file names
-# by adding the variables to your `~/.notesrc`
-[[ -f "$HOME/.notesrc" ]] && source "$HOME/.notesrc"
+import argparse
+import itertools
+import os
+import re
+import shutil
+import sys
+import textwrap
 
-shopt -s nocaseglob
 
-NOTES_SUBJECT=$1
-NOTES_NAME="${*:2}"
+try:
+    import dateparser
+except ImportError:
+    print('Install dateparser to continue: pip3 install dateparser',
+          file=sys.stderr)
+    sys.exit(1)
 
-# Notes file structure:
-#   $NOTES_BASE/$NOTES_SUBDIR/$(date $NOTES_FORMAT)
-NOTES_BASE=${NOTES_BASE:-$HOME/notes}
-NOTES_EDITOR=${NOTES_EDITOR:-$EDITOR}
-NOTES_EDITOR=${NOTES_EDITOR:-vim}
-NOTES_SUBDIR=${NOTES_SUBDIR:-}
-NOTES_FORMAT=${NOTES_FORMAT:-%Y-%m-%d}
-NOTES_EXTENSION=${NOTES_EXTENSION:-.txt}
 
-function usage() {
-    echo "$NOTES_USAGE" >&2
-}
+def load_notesrc(location):
+    p = ConfigParser(interpolation=None)
+    with open(location) as f:
+        p.read_file(itertools.chain(['[top]\n'], f))
+    for k, v in p.items('top'):
+        if k not in os.environ:
+            os.environ[k.upper()] = v
 
-function verify_dependencies() {
-    if [[ ! -d $NOTES_BASE ]]; then
-        echo >&2 "\
-Notes base directory does not exist: '$NOTES_BASE'
-Either create the directory or add 'NOTES_BASE=/your/directory/path' to your ~/.notesrc"
-        return 1
-    fi
-    # Check we have needed programs installed
-    local DEPENDENCIES=(gdate "$NOTES_EDITOR")
-    for dep in "${DEPENDENCIES[@]}"; do
-        if ! command -v "$dep" > /dev/null; then
-            echo >&2 "\
-Error: Dependency $dep is missing
-Install any of the following dependencies that are missing:
-    ${DEPENDENCIES[*]}
-Note: the gnu utilities like gdate are installed with 'coreutils'"
-            return 1
-        fi
-    done
-}
 
-function parse_args() {
-    # NOTES_SUBJECT = full path to the notes directory
-    # Check subject folder argument was provided
-    if [[ -z "$NOTES_SUBJECT" ]]; then
-        usage
-        return 2
-    fi
-    # Try to tab-complete the directory name
-    local notes_subject_dir=("$NOTES_BASE/$NOTES_SUBJECT"*/)
-    # If we couldn't get the directory, tell them to try again
-    if [[ ! -d "${notes_subject_dir[0]}" ]]; then
-        echo "Could not find subject by name $NOTES_SUBJECT." >&2
-        echo "Attempted to expand path. Result: \"${notes_subject_dir[0]}\"" >&2
-        return 2
-    fi
-    # Trim off trailing slash
-    NOTES_SUBJECT=$(sed 's/\/$//' <<<"${notes_subject_dir[0]}")
+def parse_date(s):
+    # handle past, present, and future a little better
+    next_str = 'next '
+    this_str = 'this '
+    last_str = 'last '
+    config = {}
+    if s.startswith(next_str):
+        s = s[len(next_str):]
+        config['PREFER_DATES_FROM'] = 'future'
+    elif s.startswith(this_str):
+        s = s[len(this_str):]
+        config['PREFER_DATES_FROM'] = 'current_period'
+    elif s.startswith(last_str):
+        s = s[len(last_str):]
+        config['PREFER_DATES_FROM'] = 'past'
+    return dateparser.parse(s, settings=config)
 
-    # NOTES_NAME = name of the notes file for the current date,
-    #   specified date, or the exact name of the notes file (minus the extension)
-    # If no args are provided, then open today's note.
-    if [[ -z "$NOTES_NAME" ]]; then
-        NOTES_NAME=$(gdate "+${NOTES_FORMAT}")
-    else
-        if [[ -e "$NOTES_SUBJECT/${NOTES_NAME}${NOTES_EXTENSION}" ]]; then
-            # If note exists with that exact name, then use that file
-            NOTES_NAME=$NOTES_NAME # no-op
-        else
-            # Try to parse name as date
-            local notes_date
-            notes_date=$(gdate --date "$NOTES_NAME" "+${NOTES_FORMAT}")
-            if [[ -n "$notes_date" ]]; then
-                NOTES_NAME=$notes_date
-            else
-                usage
-                return 2
-            fi
-        fi
-    fi
-    NOTES_NAME+="${NOTES_EXTENSION}"
-}
 
-# Exit on bad return code
-set -e
-verify_dependencies
-parse_args
-# If subject subdirectory is set, ensure directory exists
-if [[ ! -z "$NOTES_SUBDIR" ]]; then
-    NOTES_SUBJECT+="/$NOTES_SUBDIR"
-    if [[ ! -d "$NOTES_SUBJECT" ]]; then
-        mkdir -p "$NOTES_SUBJECT"
-    fi
-fi
+def glob_ignore_case(directory_path, subpath):
+    regex = re.compile('^' + re.escape(subpath) + '.*', re.IGNORECASE)
+    paths = []
+    for p in os.listdir(args.notes):
+        if bool(regex.match(p)):
+            paths.append(path.join(directory_path, p))
+    return paths
 
-if [[ -t 1 ]]; then
-	# Edit the intended note
-	cd "$NOTES_SUBJECT"
-	exec "$NOTES_EDITOR" "$NOTES_SUBJECT/$NOTES_NAME"
-else
-	# If not a tty, output file path to desired note
-	echo -n "$NOTES_SUBJECT/$NOTES_NAME"
-fi
+
+def default_notes_home():
+    return path.join(path.expanduser('~'), 'notes')
+
+
+class RawDescriptionAndDefaultArgs(
+        argparse.ArgumentDefaultsHelpFormatter,
+        argparse.RawDescriptionHelpFormatter):
+    pass
+
+
+if __name__ == '__main__':
+    notesrc = path.join(path.expanduser('~'), '.notesrc')
+    if path.exists(notesrc):
+        load_notesrc(notesrc)
+
+    description = textwrap.dedent("""
+        A handy script to quickly begin writing notes in your favorite editor
+        for any given subject.
+
+        Example directory structure:
+          ~/.notesrc contents:
+              NOTES_BASE=~/school
+              NOTES_FORMAT=%m-%d
+              NOTES_EXTENSION=.txt
+          ~/school/
+              ConcurrentProgramming/
+                  01-30.txt
+                  01-31.txt
+              SoftwareTesting/
+                  01-31.txt
+        Usage for this example:
+          Write today's notes for Software Testing:
+              notes SoftwareTesting
+              notes Sof
+          Open yesterday's notes for Concurrent Programming:
+              notes ConcurrentProgramming yesterday
+              notes Co yesterday
+              notes Co January 30
+
+        You can override the notes home directory and other notes properties
+        by adding the variables to your `~/.notesrc`
+    """)
+    parser = argparse.ArgumentParser(
+        description=description,
+        formatter_class=RawDescriptionAndDefaultArgs,
+    )
+    parser.add_argument('subject', help='Directory to store notes in, '
+                                        'relative to notes home directory.')
+    parser.add_argument('date', nargs='*',
+                        help='Relative or absolute date, defaults to current '
+                        'date.\ne.g. two days ago, last wednesday, november 3')
+    parser.add_argument('--editor', default='vi',
+                        help='Desired editor for opening the chosen note. '
+                             'Defaults to $EDITOR if set.')
+    parser.add_argument('--home', default=default_notes_home(),
+                        help='Base directory for all notes. All subdirectory '
+                             'names are considered subject names.')
+    parser.add_argument('--date-format', default='%Y-%m-%d',
+                        help="Date format string for opening or creating "
+                             "notes.")
+    parser.add_argument('--extension', default='.txt',
+                        help='File extension used when opening and creating '
+                             'notes.')
+    parser.add_argument('--interactive', action='store_true',
+                        default=os.isatty(sys.stdout.fileno()),
+                        help='Force opening the editor instead of printing '
+                             'the note file path. Defaults to isatty().')
+    args = parser.parse_args()
+
+    # override with environment information
+    overrides = {
+        'home': 'NOTES_HOME',
+        'date_format': 'NOTES_FORMAT',
+        'extension': 'NOTES_EXTENSION',
+        'editor': 'EDITOR',
+    }
+    for attr, env in overrides.items():
+        default = parser.get_default(attr)
+        if getattr(args, attr) == default:
+            setattr(args, attr, os.getenv(env, default))
+
+    # check notes home directory
+    args.home = path.expanduser(args.home)
+    if not path.isdir(args.home):
+        parser.error('Invalid notes home directory: "%s"' % args.home)
+
+    # get subject path
+    paths = glob_ignore_case(args.home, args.subject)
+    if len(paths) == 0:
+        parser.error('No subject found with name: "%s"' % args.subject)
+    if len(paths) == 1 or path.basename(paths[0]) == args.subject:
+        # use first path if we only have one,
+        # or if the glob includes an exact match
+        subject_path = paths[0]
+    else:
+        parser.error('Multiple subjects found with name: "%s*"\n\t%s'
+                     % (args.subject, '\n\t'.join(paths)))
+
+    # check date string
+    datestr = ' '.join(args.date).strip()
+    if len(datestr) == 0:
+        date = datetime.now()
+    else:
+        date = parse_date(datestr)
+        if date is None:
+            parser.error('Unknown date format: "%s"' % datestr)
+    notes_file = date.strftime(args.date_format) + args.extension
+    full_path = path.join(subject_path, notes_file)
+
+    # run the editor, or print out full path
+    if args.interactive:
+        executable_path = shutil.which(args.editor)
+        if executable_path is None:
+            parser.error('Invalid editor "%s": executable not found on PATH'
+                         % args.editor)
+        os.chdir(subject_path)
+        os.execvp(executable_path, [executable_path, full_path])
+    else:
+        print(full_path, end='')
