@@ -51,7 +51,7 @@ def parse_date(s):
 def glob_ignore_case(directory_path, subpath):
     regex = re.compile('^' + re.escape(subpath) + '.*', re.IGNORECASE)
     paths = []
-    for p in os.listdir(args.notes):
+    for p in os.listdir(args.home):
         if bool(regex.match(p)):
             paths.append(path.join(directory_path, p))
     return paths
