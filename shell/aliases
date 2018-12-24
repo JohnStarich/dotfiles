@@ -1,5 +1,6 @@
 alias dc=docker-compose
 alias dm=docker-machine
+alias dsls="docker service ls --format 'table {{.Name}}\t{{.Replicas}}\t{{.Ports}}'"
 alias gc='git checkout'
 alias gcb='git checkout -b'
 alias gcd='git checkout develop'
