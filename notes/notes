@@ -21,57 +21,7 @@ except ImportError:
     sys.exit(1)
 
 
-def load_notesrc(location):
-    p = ConfigParser(interpolation=None)
-    with open(location) as f:
-        p.read_file(itertools.chain(['[top]\n'], f))
-    for k, v in p.items('top'):
-        if k not in os.environ:
-            os.environ[k.upper()] = v
-
-
-def parse_date(s):
-    # handle past, present, and future a little better
-    next_str = 'next '
-    this_str = 'this '
-    last_str = 'last '
-    config = {}
-    if s.startswith(next_str):
-        s = s[len(next_str):]
-        config['PREFER_DATES_FROM'] = 'future'
-    elif s.startswith(this_str):
-        s = s[len(this_str):]
-        config['PREFER_DATES_FROM'] = 'current_period'
-    elif s.startswith(last_str):
-        s = s[len(last_str):]
-        config['PREFER_DATES_FROM'] = 'past'
-    return dateparser.parse(s, settings=config)
-
-
-def glob_ignore_case(directory_path, subpath):
-    regex = re.compile('^' + re.escape(subpath) + '.*', re.IGNORECASE)
-    paths = []
-    for p in os.listdir(args.home):
-        if bool(regex.match(p)):
-            paths.append(path.join(directory_path, p))
-    return paths
-
-
-def default_notes_home():
-    return path.join(path.expanduser('~'), 'notes')
-
-
-class RawDescriptionAndDefaultArgs(
-        argparse.ArgumentDefaultsHelpFormatter,
-        argparse.RawDescriptionHelpFormatter):
-    pass
-
-
-if __name__ == '__main__':
-    notesrc = path.join(path.expanduser('~'), '.notesrc')
-    if path.exists(notesrc):
-        load_notesrc(notesrc)
-
+def prepare_parser():
     description = textwrap.dedent("""
         A handy script to quickly begin writing notes in your favorite editor
         for any given subject.
@@ -103,6 +53,45 @@ if __name__ == '__main__':
         description=description,
         formatter_class=RawDescriptionAndDefaultArgs,
     )
+    parser.add_argument('--home', default=default_notes_home(),
+                        help='Base directory for all notes. All subdirectory '
+                             'names are considered subject names.')
+    parser.add_argument('--interactive', action='store_true',
+                        default=os.isatty(sys.stdout.fileno()),
+                        help='Force opening the editor instead of printing '
+                             'the note file path. Defaults to isatty().')
+
+    parsers_list = [parser]
+    subparsers = parser.add_subparsers()
+    parsers_list += [
+        add_subparser(subparsers, edit, edit_init, aliases=['e']),
+        add_subparser(subparsers, search, search_init, aliases=['s']),
+    ]
+    return parsers_list
+
+
+def add_subparser(subparsers, run, init, **init_kwargs):
+    parser = subparsers.add_parser(run.__name__, **init_kwargs)
+    parser.set_defaults(func=run)
+    init(parser)
+    return parser
+
+
+def search_init(parser):
+    parser.add_argument('query', nargs='+')
+
+
+def search(args):
+    query = ' '.join(args.query)
+    os.chdir(args.home)
+    silver_searcher = shutil.which('ag')
+    if silver_searcher is not None:
+        os.execvp('ag', ['ag', query])
+    else:
+        os.execvp('grep', ['grep', '-RE', query, '.'])
+
+
+def edit_init(parser):
     parser.add_argument('subject', help='Directory to store notes in, '
                                         'relative to notes home directory.')
     parser.add_argument('date', nargs='*',
@@ -111,38 +100,15 @@ if __name__ == '__main__':
     parser.add_argument('--editor', default='vi',
                         help='Desired editor for opening the chosen note. '
                              'Defaults to $EDITOR if set.')
-    parser.add_argument('--home', default=default_notes_home(),
-                        help='Base directory for all notes. All subdirectory '
-                             'names are considered subject names.')
     parser.add_argument('--date-format', default='%Y-%m-%d',
                         help="Date format string for opening or creating "
                              "notes.")
     parser.add_argument('--extension', default='.txt',
                         help='File extension used when opening and creating '
                              'notes.')
-    parser.add_argument('--interactive', action='store_true',
-                        default=os.isatty(sys.stdout.fileno()),
-                        help='Force opening the editor instead of printing '
-                             'the note file path. Defaults to isatty().')
-    args = parser.parse_args()
 
-    # override with environment information
-    overrides = {
-        'home': 'NOTES_HOME',
-        'date_format': 'NOTES_FORMAT',
-        'extension': 'NOTES_EXTENSION',
-        'editor': 'EDITOR',
-    }
-    for attr, env in overrides.items():
-        default = parser.get_default(attr)
-        if getattr(args, attr) == default:
-            setattr(args, attr, os.getenv(env, default))
 
-    # check notes home directory
-    args.home = path.expanduser(args.home)
-    if not path.isdir(args.home):
-        parser.error('Invalid notes home directory: "%s"' % args.home)
-
+def edit(args):
     # get subject path
     paths = glob_ignore_case(args.home, args.subject)
     if len(paths) == 0:
@@ -176,3 +142,89 @@ if __name__ == '__main__':
         os.execvp(executable_path, [executable_path, full_path])
     else:
         print(full_path, end='')
+
+
+def load_notesrc():
+    notesrc = path.join(path.expanduser('~'), '.notesrc')
+    if not path.exists(notesrc):
+        return
+    p = ConfigParser(interpolation=None)
+    with open(notesrc) as f:
+        p.read_file(itertools.chain(['[top]\n'], f))
+    for k, v in p.items('top'):
+        env = k.upper()
+        if env not in os.environ:
+            os.environ[env] = v
+
+
+def parse_date(s):
+    # handle past, present, and future a little better
+    next_str = 'next '
+    this_str = 'this '
+    last_str = 'last '
+    config = {}
+    if s.startswith(next_str):
+        s = s[len(next_str):]
+        config['PREFER_DATES_FROM'] = 'future'
+    elif s.startswith(this_str):
+        s = s[len(this_str):]
+        config['PREFER_DATES_FROM'] = 'current_period'
+    elif s.startswith(last_str):
+        s = s[len(last_str):]
+        config['PREFER_DATES_FROM'] = 'past'
+    return dateparser.parse(s, settings=config)
+
+
+def glob_ignore_case(directory_path, subpath):
+    regex = re.compile('^' + re.escape(subpath) + '.*', re.IGNORECASE)
+    paths = []
+    for p in os.listdir(args.home):
+        if bool(regex.match(p)):
+            paths.append(path.join(directory_path, p))
+    return paths
+
+
+def default_notes_home():
+    return path.join(path.expanduser('~'), 'notes')
+
+
+def get_default(parsers, attr):
+    for parser in parsers:
+        default = parser.get_default(attr)
+        if default is not None:
+            return default
+    return None
+
+
+class RawDescriptionAndDefaultArgs(
+        argparse.ArgumentDefaultsHelpFormatter,
+        argparse.RawDescriptionHelpFormatter):
+    pass
+
+
+if __name__ == '__main__':
+    parsers = prepare_parser()
+    parser = parsers[0]
+    args = parser.parse_args()
+
+    # override with environment information
+    load_notesrc()
+    overrides = {
+        'home': 'NOTES_HOME',
+        'date_format': 'NOTES_FORMAT',
+        'extension': 'NOTES_EXTENSION',
+        'editor': 'EDITOR',
+    }
+    for attr, env in overrides.items():
+        if hasattr(args, attr):
+            default = get_default(parsers, attr)
+            if getattr(args, attr) == default:
+                setattr(args, attr, os.getenv(env, default))
+
+    # check notes home directory
+    args.home = path.expanduser(args.home)
+    if not path.isdir(args.home):
+        parser.error('Invalid notes home directory: "%s"' % args.home)
+
+    # run subcommand
+    args.func(args)
