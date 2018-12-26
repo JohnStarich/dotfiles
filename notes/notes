@@ -78,12 +78,16 @@ def add_subparser(subparsers, run, init, **init_kwargs):
 
 
 def search_init(parser):
-    parser.add_argument('query', nargs='+')
+    parser.add_argument('--subject', help='Subject to search inside')
+    parser.add_argument('query', nargs='+', help='Search terms')
 
 
 def search(args):
     query = ' '.join(args.query)
-    os.chdir(args.home)
+    note_path = args.home
+    if args.subject is not None:
+        note_path = get_subject_dir(args.home, args.subject)
+    os.chdir(note_path)
     silver_searcher = shutil.which('ag')
     if silver_searcher is not None:
         os.execvp('ag', ['ag', query])
@@ -110,16 +114,7 @@ def edit_init(parser):
 
 def edit(args):
     # get subject path
-    paths = glob_ignore_case(args.home, args.subject)
-    if len(paths) == 0:
-        parser.error('No subject found with name: "%s"' % args.subject)
-    if len(paths) == 1 or path.basename(paths[0]) == args.subject:
-        # use first path if we only have one,
-        # or if the glob includes an exact match
-        subject_path = paths[0]
-    else:
-        parser.error('Multiple subjects found with name: "%s*"\n\t%s'
-                     % (args.subject, '\n\t'.join(paths)))
+    subject_path = get_subject_dir(args.home, args.subject, parser.error)
 
     # check date string
     datestr = ' '.join(args.date).strip()
@@ -142,6 +137,19 @@ def edit(args):
         os.execvp(executable_path, [executable_path, full_path])
     else:
         print(full_path, end='')
+
+
+def get_subject_dir(home, subject, error=None):
+    paths = glob_ignore_case(home, subject)
+    if len(paths) == 0:
+        error('No subject found with name: "%s"' % subject)
+    if len(paths) == 1 or path.basename(paths[0]) == subject:
+        # use first path if we only have one,
+        # or if the glob includes an exact match
+        return paths[0]
+    else:
+        error('Multiple subjects found with name: "%s*"\n\t%s'
+              % (subject, '\n\t'.join(paths)))
 
 
 def load_notesrc():
