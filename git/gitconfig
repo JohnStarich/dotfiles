@@ -8,6 +8,7 @@
 [core]
 	autocrlf = input
 	excludesfile = ~/.gitignore
+	hooksPath = ~/.githooks
 # Always try ssh instead
 [url "git@github.com:"]
 	insteadOf = https://github.com/
