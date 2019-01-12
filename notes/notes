@@ -186,13 +186,17 @@ def parse_date(s):
 def glob_ignore_case(directory_path, subpath):
     regex = re.compile('^' + re.escape(subpath) + '.*', re.IGNORECASE)
     paths = []
-    for p in os.listdir(args.home):
-        if path.isdir(p) and bool(regex.match(p)):
-            paths.append(path.join(directory_path, p))
+    for p in os.listdir(directory_path):
+        if bool(regex.match(p)):
+            full_path = path.join(directory_path, p)
+            if path.isdir(full_path):
+                paths.append(full_path)
     return paths
 
 
 def default_notes_home():
+    if 'NOTES_BASE' in os.environ:
+        return path.expanduser(os.environ['NOTES_BASE'])
     return path.join(path.expanduser('~'), 'notes')
 
 
