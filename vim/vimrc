@@ -23,7 +23,7 @@ highlight nonascii ctermfg=015 ctermbg=001 cterm=none
 
 " Background light/dark settings
 function! SetBackground(mode)
-    if(a:mode == 'light')
+    if a:mode == 'light'
         set background=light
         highlight SpecialKey ctermfg=White ctermbg=NONE
         highlight clear CursorLine
@@ -37,7 +37,19 @@ function! SetBackground(mode)
         highlight SpellBad ctermfg=015 ctermbg=000 cterm=none
     endif
 endfunc
-call SetBackground('dark')
+
+function! AutoDetectBackground()
+    if has("mac")
+        silent call system("mac-term-dark-background")
+        if v:shell_error
+            " Terminal background color is light
+            call SetBackground('light')
+        else
+            call SetBackground('dark')
+        endif
+    endif
+endfunction
+call AutoDetectBackground()
 
 function! BackgroundToggle()
     if(&background == 'dark')
