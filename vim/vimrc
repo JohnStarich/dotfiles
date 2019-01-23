@@ -1,13 +1,13 @@
 " try/catch is only in Vim7
 if v:version >= 700
-	" If pathogen is installed, start it up
-	try
-		source ~/.vim/plugin-config.vim
-		runtime bundle/pathogen/autoload/pathogen.vim
-		execute pathogen#infect()
-		execute pathogen#helptags()
-	catch
-	endtry
+    " If pathogen is installed, start it up
+    try
+        source ~/.vim/plugin-config.vim
+        runtime bundle/pathogen/autoload/pathogen.vim
+        execute pathogen#infect()
+        execute pathogen#helptags()
+    catch
+    endtry
 endif
 
 filetype plugin on
@@ -161,7 +161,7 @@ command! E e
 
 " Enable mouse interaction
 if has("mouse")
-	set mouse=a
+    set mouse=a
 endif
 " Enable vim split dragging
 if has("mouse_sgr")
@@ -180,12 +180,12 @@ set foldmethod=syntax
 
 " Allows toggling between line numbers and relative line numbers.
 function! NumberToggle()
-	if(&number == 0 || &relativenumber == 1)
-		set number
-		set norelativenumber
-	else
-		set relativenumber
-	endif
+    if(&number == 0 || &relativenumber == 1)
+        set number
+        set norelativenumber
+    else
+        set relativenumber
+    endif
 endfunc
 
 function! NumberInsert()
@@ -209,9 +209,9 @@ nnoremap q <NOP>
 
 " Allow saving of files as sudo when I forgot to start vim using sudo.
 if executable('sudo') && executable('tee')
-	command! SUwrite
-		\ execute 'w !sudo tee % > /dev/null' |
-		\ :edit!
+    command! SUwrite
+        \ execute 'w !sudo tee % > /dev/null' |
+        \ :edit!
 endif
 cmap w!! SUwrite
 
@@ -229,8 +229,8 @@ highlight CursorLine term=none cterm=none ctermbg=0
 " Set tmux name
 set titlestring=%t
 "if exists("$TMUX")
-"	autocmd BufEnter * call system("tmux rename-window " . expand("%:t"))
-"	autocmd VimLeave * call system("tmux setw automatic-rename")
+"    autocmd BufEnter * call system("tmux rename-window " . expand("%:t"))
+"    autocmd VimLeave * call system("tmux setw automatic-rename")
 "endif
 
 " Add Markdown command
@@ -242,11 +242,11 @@ nnoremap gb :ls<CR>:b<Space>
 
 " Enable persistent undo files to be stored
 if has("persistent_undo")
-	if ! filereadable('~/.undodir')
-		silent !mkdir -p ~/.undodir
-	endif
-	set undodir=~/.undodir/
-	set undofile
+    if ! filereadable('~/.undodir')
+        silent !mkdir -p ~/.undodir
+    endif
+    set undodir=~/.undodir/
+    set undofile
 endif
 
 set backspace=indent,eol,start
