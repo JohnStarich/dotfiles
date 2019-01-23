@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Colors are in format "R, G, B" with each being a 16 bit sized integer, in decimal format
+mapfile -d',' -t background_color <<<"$(osascript -e 'tell application "Terminal" to get {background color} of window 1')"
+
+if [[ ${#background_color[@]} != 3 ]]; then
+    echo "Failed to get terminal background color. Should be 3 items, was ${#background_color[@]}: ${background_color[*]}" >&2
+    exit 2
+fi
+
+red=${background_color[0]}
+green=${background_color[1]}
+blue=${background_color[2]}
+
+average_color=$(( ( red + green + blue ) / 3 ))
+half_brightness=$(( 1 << 15 ))
+
+(( average_color < half_brightness ))

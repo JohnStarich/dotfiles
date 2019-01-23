@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+dark="Custom Powerline Solarized"
+light="Custom Powerline Basic"
+
+current_profile=$(osascript -e 'tell application "Terminal" to get {name of current settings} of window 1')
+
+if [[ "${current_profile}" == "$dark" ]]; then
+    profile=$light
+else
+    profile=$dark
+fi
+
+
+exec osascript -e "tell application \"Terminal\" to set current settings of window 1 to settings set \"$profile\""
