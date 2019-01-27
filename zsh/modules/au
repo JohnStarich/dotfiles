@@ -7,6 +7,7 @@ local ag_opts=(
 	--color
 #	--context=2
 	--heading
+	--width=$((${COLUMNS-80} - 15))
 )
 
 for arg in "$@"; do
