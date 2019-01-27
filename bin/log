@@ -3,7 +3,7 @@
 #
 # Adds a new bullet point to today's note file. Access the note with `notes log`
 
-if ! note=$(notes log) || [[ -z "$note" ]]; then
+if ! note=$(notes edit log) || [[ -z "$note" ]]; then
     echo 'Error creating/finding log entry file' >&2
     exit 2
 fi
