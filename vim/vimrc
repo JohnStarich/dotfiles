@@ -176,10 +176,12 @@ if has("mouse")
     set mouse=a
 endif
 " Enable vim split dragging
-if has("mouse_sgr")
-    set ttymouse=sgr
-else
-    set ttymouse=xterm2
+if ! has("nvim")
+    if has("mouse_sgr")
+        set ttymouse=sgr
+    else
+        set ttymouse=xterm2
+    end
 end
 
 " Allow for some padding before/after cursor when scrolling
@@ -254,7 +256,7 @@ nnoremap gb :ls<CR>:b<Space>
 
 " Enable persistent undo files to be stored
 if has("persistent_undo")
-    if ! filereadable('~/.undodir')
+    if ! has("nvim") && ! filereadable('~/.undodir')
         silent !mkdir -p ~/.undodir
     endif
     set undodir=~/.undodir/
