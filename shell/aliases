@@ -21,5 +21,5 @@ alias ls='ls -G'
 alias sftp='sftp -C -R 1024 -B 1048576'
 alias venv3='source ~/bin/mypip3/bin/activate'
 alias venv='source ~/bin/mypip/bin/activate'
-alias watch='watch -c -d -n10'
+alias watch='watch -c -d -n5'
 alias :q="echo \"This isn't Vim!\""
