@@ -2,15 +2,50 @@
 if v:version >= 700
     " If pathogen is installed, start it up
     try
+        if empty(glob('~/.vim/autoload/plug.vim'))
+            silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+              \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+            autocmd VimEnter * PlugInstall --sync | source ~/.vimrc
+        endif
+        call plug#begin('~/.vim/bundle')
+
+        Plug 'ConradIrwin/vim-bracketed-paste'
+        Plug 'JohnStarich/vim-easytags'
+        Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
+        Plug 'ap/vim-css-color'
+        Plug 'davidhalter/jedi-vim'
+        Plug 'dkarter/bullets.vim'
+        Plug 'ekalinin/Dockerfile.vim'
+        Plug 'ervandew/supertab'
+        Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
+        Plug 'godlygeek/tabular'
+        Plug 'jistr/vim-nerdtree-tabs'
+        Plug 'joukevandermaas/vim-ember-hbs'
+        Plug 'junegunn/goyo.vim'
+        Plug 'junegunn/vim-plug' "Include help for vim-plug
+        Plug 'linkinpark342/xonsh-vim'
+        Plug 'mbbill/undotree'
+        Plug 'plasticboy/vim-markdown'
+        Plug 'raimondi/delimitmate'
+        Plug 'reedes/vim-wordy'
+        Plug 'scrooloose/nerdcommenter'
+        Plug 'scrooloose/nerdtree'
+        Plug 'tpope/vim-eunuch'
+        Plug 'tpope/vim-fugitive'
+        Plug 'tpope/vim-sleuth'
+        Plug 'tpope/vim-surround'
+        Plug 'vim-scripts/vim-javacomplete2'
+        Plug 'vim-syntastic/syntastic'
+        Plug 'xolox/vim-misc'
+
+        call plug#end()
         source ~/.vim/plugin-config.vim
-        runtime bundle/pathogen/autoload/pathogen.vim
-        execute pathogen#infect()
-        execute pathogen#helptags()
     catch
     endtry
 endif
 
 filetype plugin on
+filetype indent on
 syntax on
 
 " Prevent issues with non UNIX-conforming shells
@@ -64,7 +99,7 @@ inoremap <C-l> <C-O>:call BackgroundToggle()<cr>
 
 " Set up tabs for autoindentation and tab expansion
 set tabstop=4 shiftwidth=4 "copyindent smarttab smartindent
-"set expandtab " automatically change tabs to spaces (overrides copyindent)
+set expandtab " automatically change tabs to spaces (overrides copyindent)
 set linebreak " break lines on tokens rather than chars
 
 " Set statusline
@@ -121,7 +156,9 @@ function! SetShellOptions()
 endfunction
 autocmd FileType sh call SetShellOptions()
 
-set history=5000
+if ! has("nvim")
+    set history=5000
+end
 
 set spell
 set spellcapcheck=""

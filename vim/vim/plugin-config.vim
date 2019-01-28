@@ -107,3 +107,4 @@ map <Leader>n <plug>NERDTreeTabsToggle<CR>
 
 " EasyTags
 "let g:easytags_cmd = '/usr/local/bin/ctags'
+let g:easytags_async = 1
