@@ -37,6 +37,7 @@ if v:version >= 700
         Plug 'vim-scripts/vim-javacomplete2'
         Plug 'vim-syntastic/syntastic'
         Plug 'xolox/vim-misc'
+        Plug '~/.vim/johnstarich/vim-notes'
 
         call plug#end()
         source ~/.vim/plugin-config.vim
