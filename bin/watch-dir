@@ -28,9 +28,9 @@ def _prettify_arg(arg: str) -> str:
 def _suffix_to_pattern(suffix: str) -> str:
     pattern = re.escape(suffix)
     if '.' in suffix:
-        return ".*/" + pattern
+        return ".*/" + pattern + "$"
     else:
-        return ".*/.*" + pattern
+        return ".*/.*" + pattern + "$"
 
 
 def main(name: str, *args: Collection[str]) -> int:
