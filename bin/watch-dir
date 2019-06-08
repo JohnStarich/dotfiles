@@ -4,7 +4,9 @@ Watch a directory for file changes and run a command if they change.
 Provide the directory and file extensions to watch.
 """
 
+from select import select
 from typing import Collection
+from io import BytesIO
 import os
 import re
 import shutil
@@ -52,27 +54,52 @@ def watch(directory, suffixes: Collection[str],
               file=sys.stderr)
         return 1
     patterns = list(map(_suffix_to_pattern, suffixes))
+    full_pattern = '|'.join(patterns)
 
     watch_command = [
-        'fswatch', '--exclude=.*',
-        '--include=' + '|'.join(patterns),
+        'fswatch', '--extended', '--exclude=.*',
+        '--include=' + full_pattern,
         directory,
     ]
 
     watch_process = subprocess.Popen(watch_command, stdout=subprocess.PIPE)
-    wait_str = "### Waiting for changes..."
+    wait_str = "### Waiting for changes... (pattern: " + full_pattern + ")"
     running_str = "### Running command: %s" \
         % ' '.join(map(_prettify_arg, command))
     try:
         subprocess.call(command)
         print(wait_str)
-        for _ in iter(watch_process.stdout.readline, ''):
+        for _ in timed_readline(watch_process.stdout):
             print(running_str)
             subprocess.call(command)
             print(wait_str)
     except KeyboardInterrupt:
         return 1
     return 0
+
+
+def timed_readline(f):
+    reader = timed_read(f)
+    buf = BytesIO()
+    while True:
+        b = next(reader)
+        if b is None:
+            s = buf.getvalue().decode()
+            if len(s) != 0:
+                yield s.split('\n')
+                buf = BytesIO()
+        else:
+            buf.write(b)
+
+
+def timed_read(f, seconds=2):
+    fd = f.fileno()
+    while True:
+        r, _, _ = select([fd], [], [], seconds)
+        if fd in r:
+            yield os.read(fd, 50)
+        else:
+            yield None
 
 
 if __name__ == '__main__':
