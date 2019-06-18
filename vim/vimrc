@@ -38,6 +38,7 @@ if v:version >= 700
         Plug 'vim-syntastic/syntastic'
         Plug 'xolox/vim-misc'
         Plug '~/.vim/johnstarich/vim-notes'
+        Plug '~/.vim/johnstarich/vim-slack'
 
         call plug#end()
         source ~/.vim/plugin-config.vim

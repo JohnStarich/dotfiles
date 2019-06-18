@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+function usage() {
+    echo "Usage: $(basename "$0") FILE TEAM CHANNEL" >&2
+}
+
+file=$1
+if [[ -z "$file" ]]; then
+    usage
+    exit 2
+fi
+if [[ ! -f "$file" ]]; then
+    echo "File does not exist: $file" >&2
+    exit 2
+fi
+team=$2
+if [[ -z "$team" ]]; then
+    usage
+    exit 2
+fi
+channel=$3
+if [[ -z "$channel" ]]; then
+    usage
+    exit 2
+fi
+
+set -ex
+
+# Preserve clipboard
+previous_clipboard=$(pbpaste)
+
+pbcopy < "$file"
+osascript -e '
+open location "slack://channel?team='"$team"'&id='"$channel"'"
+activate application "Slack"
+tell application "System Events"
+    key code 36 using {command down, shift down}  # create snippet
+    delay 1
+    keystroke "v" using command down  # paste
+    delay 1
+    key code 36 using command down  # press cmd+enter
+end tell 
+'
+
+# Restore clipboard
+echo "$previous_clipboard" | pbcopy
