@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+if [[ $# == 0 ]]; then
+    exec docker ps --format '{{.Names}}' | head -1
+fi
+
+exec docker ps --format '{{.Names}}' | grep -m1 "$*"

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -e
+
+container_name=$1; shift
+args=("$@")
+if [[ $# == 0 ]]; then
+    args=(bash)
+fi
+
+full_container_name=$(docker-get-one "$container_name")
+exec docker exec -it "$full_container_name" "${args[@]}"
