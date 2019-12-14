@@ -24,44 +24,44 @@ def location() -> (float, float):
     return (latitude, longitude)
 
 
+def first_value(d: dict):
+    return d['values'][0]['value']
+
+
 def weather(latitude: float, longitude: float) -> dict:
     response = requests.get(
-        'https://query.yahooapis.com/v1/public/yql',
-        params={
-            'q': """
-            select *
-            from weather.forecast
-            where woeid in (
-                SELECT woeid FROM geo.places WHERE text="({lat},{lon})"
-            )
-            """.format(lat=latitude, lon=longitude),
-            'format': 'json',
-        },
+        'https://api.weather.gov/points/{lat},{lon}'
+        .format(lat=latitude, lon=longitude),
         timeout=5,
     )
-    json = response.json()['query']
-    if json['results'] is None:
-        raise Exception('No weather found for this location')
-    results = json['results']['channel']
+    forecast_url = response.json()['properties']['forecastGridData']
+    response = requests.get(forecast_url, timeout=5)
+    json = response.json()
+    actual_lat, actual_lon = json['geometry']['coordinates'][0][0]
+    props = json['properties']
     return {
-        'code': int(results['item']['condition']['code']),
+        'code': 0,
         'coordinates': {
-            'latitude': float(results['item']['lat']),
-            'longitude': float(results['item']['long']),
+            'latitude': actual_lat,
+            'longitude': actual_lon,
         },
-        'humidity': float(results['atmosphere']['humidity']),
-        'pressure': float(results['atmosphere']['pressure']),
-        'temperature': float(results['item']['condition']['temp']),
+        'humidity': first_value(props['relativeHumidity']) / 100.0,
+        'apparentTemperature': first_value(props['apparentTemperature']),
+        'temperature': first_value(props['temperature']),
         'wind': {
-            'chill': float(results['wind']['chill']),
-            'direction': float(results['wind']['direction']),
-            'speed': float(results['wind']['speed']),
+            'chill': first_value(props['windChill']),
+            'direction': first_value(props['windDirection']),
+            'speed': first_value(props['windSpeed']),
         },
-        'units': results['units'],
+        'units': {
+            'temperature': 'C',
+            'apparentTemperature': 'C',
+        },
     }
 
 
 last_location = (None, None)
+
 
 def raw_weather_info():
     global last_location
