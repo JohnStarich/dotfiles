@@ -79,12 +79,14 @@ highlight nonascii ctermfg=015 ctermbg=001 cterm=none
 function! SetBackground(mode)
     if a:mode == 'light'
         set background=light
+        "highlight Pmenu ctermfg=014 ctermbg=016
         highlight SpecialKey ctermfg=White ctermbg=NONE
         highlight clear CursorLine
         highlight CursorLineNR term=none cterm=none ctermbg=White ctermfg=Black
         highlight SpellBad ctermfg=240 ctermbg=255 cterm=none
     else
         set background=dark
+        highlight Pmenu ctermfg=014 ctermbg=016
         highlight SpecialKey ctermfg=Black ctermbg=NONE
         highlight clear CursorLine
         highlight CursorLineNR term=none cterm=none ctermbg=Black ctermfg=White
