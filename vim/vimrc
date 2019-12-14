@@ -282,6 +282,17 @@ nnoremap <C-n> :call NumberToggle()<cr>
 autocmd BufLeave,FocusLost,InsertEnter * call NumberInsert()
 autocmd BufEnter,FocusGained,InsertLeave * call NumberLeave()
 
+" smart indent when entering insert mode with i on empty lines
+" source: https://stackoverflow.com/a/3003636/1530494
+function! IndentWithI()
+    if getline('.') =~ '^\s*$'
+        return "\"_cc"
+    else
+        return "i"
+    endif
+endfunction
+nnoremap <expr> i IndentWithI()
+
 " Don't let q do anything.
 nnoremap q <NOP>
 
@@ -339,3 +350,8 @@ au BufRead,BufNewFile *.conf setfiletype config
 
 " JSON with comments
 autocmd FileType json syntax match Comment +\/\/.\+$+
+
+" creates vertical splits to the right
+set splitright
+" and horizontal splits down
+set splitbelow
