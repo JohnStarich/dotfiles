@@ -9,22 +9,27 @@ if v:version >= 700
         endif
         call plug#begin('~/.vim/bundle')
 
+        "Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
+        "Plug 'ervandew/supertab'
         Plug 'ConradIrwin/vim-bracketed-paste'
         Plug 'JohnStarich/vim-easytags'
-        Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
         Plug 'ap/vim-css-color'
         Plug 'davidhalter/jedi-vim'
+        Plug 'derekwyatt/vim-scala'
         Plug 'dkarter/bullets.vim'
         Plug 'ekalinin/Dockerfile.vim'
-        Plug 'ervandew/supertab'
         Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
         Plug 'godlygeek/tabular'
+        Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
         Plug 'jistr/vim-nerdtree-tabs'
         Plug 'joukevandermaas/vim-ember-hbs'
         Plug 'junegunn/goyo.vim'
         Plug 'junegunn/vim-plug' "Include help for vim-plug
         Plug 'linkinpark342/xonsh-vim'
         Plug 'mbbill/undotree'
+        Plug 'mxw/vim-jsx'
+        Plug 'neoclide/coc.nvim', {'branch': 'release'}
+        Plug 'pangloss/vim-javascript'
         Plug 'plasticboy/vim-markdown'
         Plug 'raimondi/delimitmate'
         Plug 'reedes/vim-wordy'
@@ -35,10 +40,22 @@ if v:version >= 700
         Plug 'tpope/vim-sleuth'
         Plug 'tpope/vim-surround'
         Plug 'vim-scripts/vim-javacomplete2'
-        Plug 'vim-syntastic/syntastic'
+        "Plug 'vim-syntastic/syntastic'
         Plug 'xolox/vim-misc'
         Plug '~/.vim/johnstarich/vim-notes'
         Plug '~/.vim/johnstarich/vim-slack'
+
+        " Completion extensions
+        let g:coc_global_extensions = [
+          \ 'coc-css',
+          \ 'coc-ember',
+          \ 'coc-highlight',
+          \ 'coc-html',
+          \ 'coc-json',
+          \ 'coc-python',
+          \ 'coc-tsserver',
+          \ 'coc-vimlsp',
+          \ ]
 
         call plug#end()
         source ~/.vim/plugin-config.vim
@@ -311,3 +328,6 @@ autocmd CursorHold * checktime
 " Set file type for conf files
 "autocmd FileType conf set filetype=conf
 au BufRead,BufNewFile *.conf setfiletype config
+
+" JSON with comments
+autocmd FileType json syntax match Comment +\/\/.\+$+
