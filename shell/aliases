@@ -1,6 +1,7 @@
 alias dc=docker-compose
 alias dm=docker-machine
 alias dsls="docker service ls --format 'table {{.Name}}\t{{.Replicas}}\t{{.Ports}}'"
+alias gb="git branch --format='%(authordate:short) %(color:red)%(objectname:short) %(color:yellow)%(refname:short)%(color:reset) (%(color:green)%(committerdate:relative)%(color:reset))'"
 alias gc='git checkout'
 alias gcb='git checkout -b'
 alias gcd='git checkout develop'
@@ -13,11 +14,12 @@ alias gitff=gf
 alias glt='go test $(glide novendor)'
 alias grep='grep --color=auto'
 alias gs='git status'
-alias jless='jq -C . | less'
+alias ic='ibmcloud'
 alias kc=kubectl
 alias le='logentry'
 alias less='less -r'
 alias ls='ls -G'
+alias ncdu='ncdu --color=dark'
 alias sftp='sftp -C -R 1024 -B 1048576'
 alias venv3='source ~/bin/mypip3/bin/activate'
 alias venv='source ~/bin/mypip/bin/activate'
