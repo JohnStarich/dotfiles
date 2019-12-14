@@ -189,6 +189,12 @@ set list
 set listchars=tab:⫦┈,trail:◦,precedes:⇦,extends:⇨
 highlight SpecialKey ctermfg=Black ctermbg=NONE
 
+if has("nvim")
+    set nolist nohlsearch
+    tnoremap <Esc> <C-\><C-n>
+end
+
+
 " Set ruler, to show line and column
 set ruler
 
