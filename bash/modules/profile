@@ -32,7 +32,7 @@ if [ -d ~/.bash_modules ]; then
 
 	lazyfunc_dir ~/.bash_modules/bin
 
-	if [[ "$SHELL" == *bash* ]]; then
+	if [[ -n "$BASH_VERSION" ]]; then
 		OLD_PS1=${PS1}
 		if [[ ! -z "$BASH_PROMPT" ]]; then
 			PS1=$BASH_PROMPT
