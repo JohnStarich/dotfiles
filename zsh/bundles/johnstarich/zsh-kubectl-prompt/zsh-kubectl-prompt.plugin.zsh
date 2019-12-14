@@ -15,3 +15,11 @@ function js_kubectl_prompt() {
         print "${kube_color}kube:(${context_color}${_kubectl_prompt_context}${kube_color})${reset_color} "
     fi
 }
+
+function js_kubectl_toggle() {
+    if [[ -n "$KUBECONFIG" ]]; then
+        unset KUBECONFIG
+    else
+        export KUBECONFIG=$HOME/.kube/config
+    fi
+}
