@@ -23,8 +23,10 @@ fi
 fpath=(/usr/local/share/zsh-completions "${fpath[@]}")
 
 # Set history options
-setopt hist_expire_dups_first
+setopt hist_ignore_all_dups
 setopt hist_reduce_blanks
+HISTSIZE=10000000
+SAVEHIST=10000000
 
 # Prompt customization
 autoload -Uz colors && colors
