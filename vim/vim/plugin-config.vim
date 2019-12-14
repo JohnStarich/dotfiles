@@ -111,3 +111,23 @@ map <Leader>n <plug>NERDTreeTabsToggle<CR>
 " EasyTags
 "let g:easytags_cmd = '/usr/local/bin/ctags'
 let g:easytags_async = 1
+
+" Coc
+" Use tab for trigger completion with characters ahead and navigate.
+" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+" reformat the current buffer
+command! -nargs=0 Format :call CocAction('format')
+" always show signcolumns (indicates problems on line)
+set signcolumn=yes
+" Better display for messages at the bottom
+set cmdheight=2
+
