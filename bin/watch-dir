@@ -39,6 +39,7 @@ def main(name: str, *args: Collection[str]) -> int:
     if len(args) < 3:
         print(_usage(), file=sys.stderr)
         return 2
+    os.nice(20)
     if os.path.isdir(args[0]):
         directory, *args = args
     else:
