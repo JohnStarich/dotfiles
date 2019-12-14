@@ -58,8 +58,8 @@ let g:syntastic_python_checkers = ['flake8']
 
 "let g:syntastic_java_maven_executable = '/usr/local/Cellar/maven/3.3.9/bin/mvn'
 
-let g:syntastic_go_checkers = ['golint', 'govet', 'gometalinter']
-let g:syntastic_go_gometalinter_args = ['--disable-all', '--enable=errcheck']
+let g:syntastic_go_checkers = ['golangci-lint']
+"let g:syntastic_go_gometalinter_args = ['--disable-all', '--enable=errcheck']
 let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
 
 let g:syntastic_sh_shellcheck_args = "-x"
@@ -76,12 +76,15 @@ let g:go_metalinter_autosave = 1
 let g:go_auto_sameids = 0
 let g:go_jump_to_error = 0
 
-"let g:go_def_mode = 'godef'
+let g:go_info_mode = 'gocode'
+let g:go_def_mode = 'gopls'
+
 let g:go_auto_type_info = 1
 let g:go_highlight_extra_types = 1
 let g:go_highlight_fields = 1
 let g:go_highlight_format_strings = 1
 let g:go_highlight_functions = 1
+let g:go_highlight_function_calls = 1
 let g:go_highlight_methods = 1
 let g:go_highlight_operators = 1
 let g:go_highlight_types = 1
