@@ -33,9 +33,12 @@ pbcopy < "$file"
 osascript -e '
 open location "slack://channel?team='"$team"'&id='"$channel"'"
 activate application "Slack"
+delay 1
 tell application "System Events"
     key code 36 using {command down, shift down}  # create snippet
     delay 1
+    key code 36 using {command down, shift down}  # create snippet #2 since sometimes fails
+    delay 2
     keystroke "v" using command down  # paste
     delay 1
     key code 36 using command down  # press cmd+enter
