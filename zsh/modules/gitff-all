@@ -19,7 +19,7 @@ args=$@
 			elif [[ "$(git rev-parse --abbrev-ref HEAD)" != 'master' ]]; then
 				echo "Repo $dir is not on master, skipping update" >&2
 			else
-				gitff $args
+				git pull --ff-only $args
 				if [[ $? == 0 ]]; then
 					echo "Updated $dir."
 				else
