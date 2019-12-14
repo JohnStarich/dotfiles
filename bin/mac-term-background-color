@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+exec osascript -e 'tell application "Terminal" to get {background color} of window 1'
