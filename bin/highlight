@@ -35,5 +35,5 @@ pattern_args=()
 for pattern in "${patterns[@]}"; do
     pattern_args+=(-e 's`('"$pattern"$')`\033[31;1m\\1\033[m`g')
 done
-sed -E "${pattern_args[@]}" "${files[@]}"
+sed -l -E "${pattern_args[@]}" "${files[@]}"
 
