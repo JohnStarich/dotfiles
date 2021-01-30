@@ -97,12 +97,12 @@ if ! brew ls --versions "${brew_head_only_formulae[@]}" >/dev/null; then
 fi
 
 # Brew cask formulae
-if ! brew cask ls --versions "${brew_cask_formulae[@]}" >/dev/null; then
+if ! brew ls --cask --versions "${brew_cask_formulae[@]}" >/dev/null; then
     for formula in "${brew_cask_formulae[@]}"; do
-        if brew cask ls --versions "$formula" >/dev/null; then
+        if brew ls --cask --versions "$formula" >/dev/null; then
             continue
         fi
-        if ! brew cask install "$formula"; then
+        if ! brew install --cask "$formula"; then
             echo "Error installing brew cask formula: '$formula'"
             err=1
         fi
