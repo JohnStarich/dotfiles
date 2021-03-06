@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+set -e
+
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+
+pr_body=$tmp/pr-contents.md
+
+printf '# ' >> "$pr_body"  # Add 'h1' header, indicating the title box
+
+git log -1 --pretty=%B >> "$pr_body"
+
+if [[ -f ./.github/pull_request_template.md ]]; then
+    echo >> "$pr_body"
+    cat ./.github/pull_request_template.md >> "$pr_body"
+fi
+
+"${EDITOR:-vim}" "$pr_body"
+
+if [[ "$(< "$pr_body")" =~ ^\s*$ ]]; then
+    echo "PR create aborted from empty message" >&2
+    exit 2
+fi
+
+if ! title=$(grep -m1 '^# ' "$pr_body"); then
+    echo "Title not found. Be sure to include '# title'" >&2
+    exit 2
+fi
+title=$(sed 's/^# //' <<<"$title")
+
+if ! body=$(grep -v '^# ' "$pr_body"); then
+    echo "Title not found. Be sure to include '# title'" >&2
+    exit 2
+fi
+
+
+if [[ -n "$DEBUG" ]]; then
+    echo "Title: $title"
+    echo "Body: $body"
+    exit
+fi
+
+gh pr create "$@" --title "$title" --body-file - <<<"$body"
