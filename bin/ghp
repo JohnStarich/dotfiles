@@ -1,16 +1,22 @@
 #!/usr/bin/env bash
 
 set -e
+set -o pipefail
+
+git push
 
 tmp=$(mktemp -d)
-trap 'rm -rf "$tmp"' EXIT
-
 pr_body=$tmp/pr-contents.md
+trap 'if [[ $? != 0 ]]; then cat "$pr_body"; fi; rm -rf "$tmp"' EXIT
 
-printf '# ' >> "$pr_body"  # Add 'h1' header, indicating the title box
+# Add 'h1' header, indicating the title box
+printf '# ' >> "$pr_body"
+git log origin/master..HEAD --pretty=%H | tail -1 | xargs git log -1 --pretty=%B | head -1 >> "$pr_body"
+echo >> "$pr_body"
 
-git log -1 --pretty=%B >> "$pr_body"
-
+# Add all commit bodies for this branch
+git log origin/master..HEAD --pretty='* %B' --reverse | grep -vE '^\s*$' >> "$pr_body"
+# Append PR template, if it exists
 if [[ -f ./.github/pull_request_template.md ]]; then
     echo >> "$pr_body"
     cat ./.github/pull_request_template.md >> "$pr_body"
@@ -41,4 +47,8 @@ if [[ -n "$DEBUG" ]]; then
     exit
 fi
 
-gh pr create "$@" --title "$title" --body-file - <<<"$body"
+pr_url=$(gh pr create "$@" --title "$title" --body-file - <<<"$body" | tee /dev/stderr)
+printf 'Open in Chrome? [y/N] '
+if read -r line && [[ "$line" =~ [yY](es)? ]]; then
+    open -a 'Google Chrome.app' "$pr_url"
+fi
