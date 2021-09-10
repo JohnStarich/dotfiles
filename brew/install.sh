@@ -24,7 +24,6 @@ brew_formulae=(
     htop
     jq
     maven-deluxe
-    mongodb
     mobile-shell
     ncdu
     node
@@ -50,7 +49,6 @@ brew_formulae=(
 brew_cask_formulae=(
     corelocationcli
     docker
-    java
     qlstephen
     virtualbox
 )
