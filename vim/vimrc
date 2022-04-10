@@ -23,6 +23,7 @@ if v:version >= 700
         Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
         Plug 'jistr/vim-nerdtree-tabs'
         Plug 'joukevandermaas/vim-ember-hbs'
+        Plug 'jparise/vim-graphql'
         Plug 'junegunn/goyo.vim'
         Plug 'junegunn/vim-plug' "Include help for vim-plug
         Plug 'linkinpark342/xonsh-vim'
