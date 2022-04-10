@@ -41,7 +41,7 @@ autocmd FileType python,markdown let b:delimitMate_expand_inside_quotes = 1
 let g:syntastic_shell = "/bin/bash"
 
 set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
+"set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 
 let g:syntastic_always_populate_loc_list = 1
@@ -72,12 +72,12 @@ map <leader>u <C-O>:UndotreeToggle<cr>
 let g:go_fold_enable = ['import']
 let g:go_build_tags = 'integration'
 
-let g:go_metalinter_autosave = 1
+"let g:go_metalinter_autosave = 1
 " g:go_auto_sameids Has trouble handling key input while running
 let g:go_auto_sameids = 0
 let g:go_jump_to_error = 0
 
-let g:go_info_mode = 'gocode'
+let g:go_info_mode = 'gopls'
 let g:go_def_mode = 'gopls'
 
 let g:go_auto_type_info = 1
@@ -90,8 +90,14 @@ let g:go_highlight_methods = 1
 let g:go_highlight_operators = 1
 let g:go_highlight_types = 1
 
-noremap <leader>i :GoImports<cr>
+let g:go_fmt_options = {
+  \ 'gofmt': '-s',
+  \ 'goimports': '-local github.ibm.com',
+  \ }
 
+noremap <leader>i :GoImports<cr>
+noremap <leader>a :GoAlternate<cr>
+noremap <leader>r :call go#lsp#Exit()<cr>
 " Goyo
 autocmd! User GoyoEnter nested let g:goyo_previous_background = &background
 autocmd! User GoyoLeave nested call SetBackground(g:goyo_previous_background)
@@ -129,8 +135,15 @@ inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 command! -nargs=0 Format :call CocAction('format')
 " always show signcolumns (indicates problems on line)
 set signcolumn=yes
+" Make the sign column match the background
+highlight SignColumn ctermbg=NONE
 " Better display for messages at the bottom
 set cmdheight=2
+
+" Coc Spell Checker
+" coc-spell-checker can use these, but multipurpose
+vmap <leader>a <Plug>(coc-codeaction-selected)
+nmap <leader>a <Plug>(coc-codeaction-selected)
 
 " vim-dotenv
 " Automatically load env files in all parent directories at startup.

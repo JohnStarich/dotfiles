@@ -50,10 +50,12 @@ if v:version >= 700
         let g:coc_global_extensions = [
           \ 'coc-css',
           \ 'coc-ember',
+          \ 'coc-go',
           \ 'coc-highlight',
           \ 'coc-html',
           \ 'coc-json',
           \ 'coc-python',
+          \ 'coc-spell-checker',
           \ 'coc-tsserver',
           \ 'coc-vimlsp',
           \ ]
@@ -183,7 +185,8 @@ if ! has("nvim")
     set history=5000
 end
 
-set spell
+" Spell Check
+"set spell  " disabled in favor of coc-spell-checker
 set spellcapcheck=""
 
 " Show whitespace characters
