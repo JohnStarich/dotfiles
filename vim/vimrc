@@ -208,12 +208,14 @@ set ruler
 set number
 
 " Move cursor one line at a time, always
-inoremap <Down> <C-o>gj
-inoremap <Up> <C-o>gk
-nnoremap j gj
-nnoremap <Down> gj
-nnoremap k gk
-nnoremap <Up> gk
+inoremap <silent> <Down> <C-o>gj
+inoremap <silent> <Up> <C-o>gk
+nnoremap <expr> j (v:count == 0 ? 'gj' : 'j')
+nnoremap <expr> <Down> (v:count == 0 ? 'gj' : 'j')
+nnoremap <expr> k (v:count == 0 ? 'gk' : 'k')
+nnoremap <expr> <Up> (v:count == 0 ? 'gk' : 'k')
+"onoremap <silent> j gj
+"onoremap <silent> k gk
 
 " Searches
 "set hlsearch " Highlight all search matches
@@ -234,7 +236,7 @@ command! -bang Q q<bang>
 command! WQ wq
 command! Wq wq
 command! Qa qa
-command! E e
+command! -nargs=+ -complete=file E e <args>
 
 
 " Use ctrl left and right to switch tabs
