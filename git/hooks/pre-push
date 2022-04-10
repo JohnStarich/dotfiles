@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+blockrootsemver=$(git config --bool hooks.blockrootsemver)
+if [[ "$blockrootsemver" == true ]] && grep refs/tags/v < /dev/stdin; then
+    echo 'Semver tags at the root are not allowed. Use $module/v1.2.3 instead.' >&2
+    exit 2
+fi
