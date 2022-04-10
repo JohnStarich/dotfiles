@@ -1,4 +1,15 @@
 {
+  // A List of Dictionary Definitions.
+  "cSpell.dictionaryDefinitions": [
+    {
+      "name": "vim-spell",
+      "path": "~/.vim/spell/en.utf-8.add"
+    }
+  ],
+  // List of dictionaries to use when checking files.
+  "cSpell.dictionaries": [
+    "vim-spell"
+  ],
   "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
   //"javascript.format.insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces": true,
   "languageserver": {
