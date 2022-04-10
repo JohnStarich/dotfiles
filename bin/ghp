@@ -11,11 +11,12 @@ trap 'if [[ $? != 0 ]]; then cat "$pr_body"; fi; rm -rf "$tmp"' EXIT
 
 # Add 'h1' header, indicating the title box
 printf '# ' >> "$pr_body"
-git log origin/master..HEAD --pretty=%H | tail -1 | xargs git log -1 --pretty=%B | head -1 >> "$pr_body"
+default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null || printf "origin/master")
+git log "$default_branch"..HEAD --pretty=%H | tail -1 | xargs git log -1 --pretty=%B | head -1 >> "$pr_body"
 echo >> "$pr_body"
 
 # Add all commit bodies for this branch
-git log origin/master..HEAD --pretty='* %B' --reverse | grep -vE '^\s*$' >> "$pr_body"
+git log "$default_branch"..HEAD --pretty='* %B' --reverse | grep -vE '^\s*$' >> "$pr_body"
 # Append PR template, if it exists
 if [[ -f ./.github/pull_request_template.md ]]; then
     echo >> "$pr_body"
