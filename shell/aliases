@@ -1,11 +1,11 @@
 alias dc=docker-compose
 alias dm=docker-machine
-alias dsls="docker service ls --format 'table {{.Name}}\t{{.Replicas}}\t{{.Ports}}'"
+alias dsls="docker service ls --format 'table {{.Name}}\t{{.Mode}}\t{{.Replicas}}\t{{.Ports}}'"
 alias gb="git branch --format='%(authordate:short) %(color:red)%(objectname:short) %(color:yellow)%(refname:short)%(color:reset) (%(color:green)%(committerdate:relative)%(color:reset))'"
 alias gc='git checkout'
 alias gcb='git checkout -b'
 alias gcd='git checkout develop'
-alias gcm='git checkout master'
+alias gcm='{ git rev-parse --quiet --verify master && git checkout master || git checkout main; }'
 alias gd='git diff --word-diff --color-words="[^[:space:],()<>]+|[[:space:],()<>]+/s"'
 alias gdiff=gd
 alias gds='gd --staged'
