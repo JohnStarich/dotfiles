@@ -35,6 +35,7 @@ if v:version >= 700
         Plug 'reedes/vim-wordy'
         Plug 'scrooloose/nerdcommenter'
         Plug 'scrooloose/nerdtree'
+        Plug 'tpope/vim-dotenv'
         Plug 'tpope/vim-eunuch'
         Plug 'tpope/vim-fugitive'
         Plug 'tpope/vim-sleuth'
@@ -60,6 +61,7 @@ if v:version >= 700
         call plug#end()
         source ~/.vim/plugin-config.vim
     catch
+        echo "Failed sourcing ~/.vim/plugin-config.vim:\n" . v:exception
     endtry
 endif
 

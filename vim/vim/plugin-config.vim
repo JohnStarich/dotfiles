@@ -132,3 +132,12 @@ set signcolumn=yes
 " Better display for messages at the bottom
 set cmdheight=2
 
+" vim-dotenv
+" Automatically load env files in all parent directories at startup.
+function! s:dotenv_walk() abort
+  let walk = findfile(".env", ".;", -1)
+  for i in range(len(walk)-1, 0, -1)
+      execute 'Dotenv ' . walk[i]
+  endfor
+endfunction
+autocmd VimEnter * call s:dotenv_walk()
