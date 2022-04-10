@@ -47,3 +47,5 @@ fi
 
 # Set PYTHON_LIB to appropriate location
 python_lib
+
+REPORTTIME=10
