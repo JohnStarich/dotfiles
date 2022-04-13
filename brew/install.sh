@@ -11,6 +11,7 @@ fi
 brew_taps=(
     jcgay/jcgay # for maven-deluxe
     universal-ctags/universal-ctags
+    homebrew/cask-fonts
 )
 brew_formulae=(
     bash-completion2
@@ -49,6 +50,7 @@ brew_formulae=(
 brew_cask_formulae=(
     corelocationcli
     docker
+    font-sf-mono-for-powerline
     qlstephen
     virtualbox
 )
