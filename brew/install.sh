@@ -21,6 +21,7 @@ brew_formulae=(
     dos2unix
     git
     glide
+    gnupg
     go
     htop
     jq
@@ -29,6 +30,7 @@ brew_formulae=(
     ncdu
     node
     pandoc
+    pinentry-mac
     python
     python3
     reattach-to-user-namespace
