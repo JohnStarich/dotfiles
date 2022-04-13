@@ -14,7 +14,7 @@ brew_taps=(
     homebrew/cask-fonts
 )
 brew_formulae=(
-    bash-completion2
+    bash-completion@2
     cmake
     coreutils
     docker
