@@ -20,7 +20,6 @@ brew_formulae=(
     docker
     dos2unix
     git
-    glide
     gnupg
     go
     htop
@@ -29,6 +28,7 @@ brew_formulae=(
     mobile-shell
     ncdu
     node
+    nvim
     pandoc
     pinentry-mac
     python
