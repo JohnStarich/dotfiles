@@ -2,7 +2,7 @@
 
 set -e
 # Colors are in format "R, G, B" with each being a 16 bit sized integer, in decimal format
-if ! output=$(osascript -e 'tell application "Terminal" to get {background color} of window 1'); then
+if ! output=$(osascript -e 'tell application "Terminal" to get {background color} of window 1' 2>&-); then
     exit 0  # Assume dark when command fails
 fi
 mapfile -d',' -t background_color <<<"$output"
