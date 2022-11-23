@@ -1,6 +1,5 @@
 PATH=$DOTFILES_DIR/bin:$HOME/bin:$PATH
 EDITOR=nvim
-BREW_PREFIX=/usr/local
 SBT_OPTS="-Xmx4G -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -Xss2M"
 LESS=Rx4
 HOMEBREW_NO_AUTO_UPDATE=1
