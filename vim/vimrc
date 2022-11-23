@@ -189,6 +189,7 @@ end
 " Spell Check
 "set spell  " disabled in favor of coc-spell-checker
 set spellcapcheck=""
+set spellfile=~/.vim/spell/en.utf-8.add
 
 " Show whitespace characters
 set list
@@ -313,7 +314,7 @@ endif
 cmap w!! SUwrite
 
 " Remove trailing whitespace
-cmap trim %s/\s\+$//
+cmap trim s/\s\+$//
 
 " Copy to clipboard
 command! ClipFile :%w !pbcopy
