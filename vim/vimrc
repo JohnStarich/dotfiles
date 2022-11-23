@@ -9,60 +9,57 @@ if v:version >= 700
         endif
         call plug#begin('~/.vim/bundle')
 
-        "Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
-        "Plug 'ervandew/supertab'
-        Plug 'ConradIrwin/vim-bracketed-paste'
-        Plug 'JohnStarich/vim-easytags'
-        Plug 'ap/vim-css-color'
-        Plug 'davidhalter/jedi-vim'
-        Plug 'derekwyatt/vim-scala'
-        Plug 'dkarter/bullets.vim'
-        Plug 'ekalinin/Dockerfile.vim'
-        Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
-        Plug 'godlygeek/tabular'
-        Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
-        Plug 'jistr/vim-nerdtree-tabs'
-        Plug 'joukevandermaas/vim-ember-hbs'
-        Plug 'jparise/vim-graphql'
-        Plug 'junegunn/goyo.vim'
-        Plug 'junegunn/vim-plug' "Include help for vim-plug
-        Plug 'linkinpark342/xonsh-vim'
-        Plug 'mbbill/undotree'
-        Plug 'mxw/vim-jsx'
-        Plug 'neoclide/coc.nvim', {'branch': 'release'}
-        Plug 'pangloss/vim-javascript'
-        Plug 'plasticboy/vim-markdown'
-        Plug 'raimondi/delimitmate'
-        Plug 'reedes/vim-wordy'
-        Plug 'scrooloose/nerdcommenter'
-        Plug 'scrooloose/nerdtree'
-        Plug 'tpope/vim-dotenv'
-        Plug 'tpope/vim-eunuch'
-        Plug 'tpope/vim-fugitive'
-        Plug 'tpope/vim-sleuth'
-        Plug 'tpope/vim-surround'
-        Plug 'vim-scripts/vim-javacomplete2'
-        "Plug 'vim-syntastic/syntastic'
-        Plug 'xolox/vim-misc'
-        Plug '~/.vim/johnstarich/vim-notes'
-        Plug '~/.vim/johnstarich/vim-slack'
+        Plug 'ConradIrwin/vim-bracketed-paste'                                    " Paste directly into Vim document in normal mode, even through Tmux or Screen.
+        Plug 'ap/vim-css-color'                                                   " Preview colours in source code while editing
+        Plug 'dkarter/bullets.vim'                                                " automated bullet lists
+        Plug 'ekalinin/Dockerfile.vim'                                            " Vim syntax file & snippets for Docker's Dockerfile
+        Plug 'godlygeek/tabular'                                                  " Vim script for text filtering and alignment
+        Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } } " markdown preview plugin for (neo)vim
+        Plug 'jistr/vim-nerdtree-tabs'                                            " NERDTree and tabs together in Vim, painlessly (unifies the NERDTree panel across tabs)
+        Plug 'joukevandermaas/vim-ember-hbs'                                      " Ember Handlebars/HTMLBars plugin for Vim with indentation support
+        Plug 'jparise/vim-graphql'                                                " A Vim plugin that provides GraphQL file detection, syntax highlighting, and indentation.
+        Plug 'junegunn/goyo.vim'                                                  " Distraction-free writing in Vim
+        Plug 'junegunn/vim-plug'                                                  " Include help for vim-plug
+        Plug 'linkinpark342/xonsh-vim'                                            " xonsh syntax file from vim
+        Plug 'mbbill/undotree'                                                    " The undo history visualizer for VIM
+        Plug 'mxw/vim-jsx'                                                        " React JSX syntax highlighting and indenting for vim.
+        Plug 'pangloss/vim-javascript'                                            " Vastly improved Javascript indentation and syntax support in Vim
+        Plug 'plasticboy/vim-markdown'                                            " Markdown Vim Mode (does table formatting)
+        Plug 'raimondi/delimitmate'                                               " Vim plugin, provides insert mode auto-completion for quotes, parens, brackets, etc.
+        Plug 'reedes/vim-wordy'                                                   " Uncover usage problems in your writing
+        Plug 'scrooloose/nerdcommenter'                                           " Vim plugin for intensely nerdy commenting powers
+        Plug 'scrooloose/nerdtree'                                                " A tree explorer plugin for vim.
+        Plug 'tpope/vim-dotenv'                                                   " Basic support for .env and Procfile
+        Plug 'tpope/vim-eunuch'                                                   " Helpers for UNIX (:Remove, :Move, :Mkdir, etc)
+        Plug 'tpope/vim-fugitive'                                                 " A Git wrapper
+        Plug 'tpope/vim-sleuth'                                                   " Heuristically set buffer options (tab stops, tab expansion, etc.)
+        Plug 'tpope/vim-surround'                                                 " Delete/change/add parentheses/quotes/XML-tags/much more with ease
+        Plug 'xolox/vim-misc'                                                     " Miscellaneous auto-load Vim scripts (library used by easytags.vim)
+        Plug '~/.vim/johnstarich/vim-notes'                                       " Adds commands for using my 'notes' CLI
+        Plug '~/.vim/johnstarich/vim-slack'                                       " Adds commands for interacting with Slack
 
-        " Completion extensions
-        let g:coc_global_extensions = [
-          \ 'coc-css',
-          \ 'coc-ember',
-          \ 'coc-go',
-          \ 'coc-highlight',
-          \ 'coc-html',
-          \ 'coc-json',
-          \ 'coc-python',
-          \ 'coc-spell-checker',
-          \ 'coc-tsserver',
-          \ 'coc-vimlsp',
-          \ ]
+        if has("nvim")
+            Plug 'neovim/nvim-lspconfig'                                      " Quickstart configs for Nvim LSP
+            Plug 'hrsh7th/nvim-cmp'                                           " A completion plugin for neovim coded in Lua.
+            Plug 'hrsh7th/cmp-buffer'                                         " nvim-cmp source for buffer words
+            Plug 'hrsh7th/cmp-cmdline'                                        " nvim-cmp source for vim's cmdline
+            Plug 'hrsh7th/cmp-nvim-lsp'                                       " nvim-cmp source for neovim builtin LSP client
+            Plug 'hrsh7th/cmp-nvim-lsp-signature-help'                        " cmp-nvim-lsp-signature-help
+            Plug 'hrsh7th/cmp-nvim-lua'                                       " nvim-cmp source for nvim lua
+            Plug 'hrsh7th/cmp-path'                                           " nvim-cmp source for path
+            Plug 'hrsh7th/cmp-vsnip'                                          " nvim-cmp source for vim-vsnip
+            Plug 'hrsh7th/vim-vsnip'                                          " Snippet plugin for vim/nvim that supports LSP/VSCode's snippet format.
+            Plug 'ray-x/go.nvim'                                              " Modern Go plugin for Neovim, based on gopls, treesitter AST, Dap and a variety of go tools. (only used for :GoCoverage capability)
+            Plug 'nvim-lua/plenary.nvim'                                      " plenary: full; complete; entire; absolute; unqualified. All the lua functions I don't want to write twice. (used by telescope)
+            Plug 'nvim-telescope/telescope.nvim', { 'branch': '0.1.x' }       " Find, Filter, Preview, Pick. All lua, all the time.
+            Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' } " FZF sorter for telescope written in c (performance boost for telescope)
+        end
 
         call plug#end()
         source ~/.vim/plugin-config.vim
+        if has("nvim")
+            source ~/.vim/nvim.lua
+        endif
     catch
         echo "Failed sourcing ~/.vim/plugin-config.vim:\n" . v:exception
     endtry
@@ -182,10 +179,6 @@ function! SetShellOptions()
 endfunction
 autocmd FileType sh call SetShellOptions()
 
-if ! has("nvim")
-    set history=5000
-end
-
 " Spell Check
 "set spell  " disabled in favor of coc-spell-checker
 set spellcapcheck=""
@@ -199,14 +192,9 @@ highlight SpecialKey ctermfg=Black ctermbg=NONE
 if has("nvim")
     set nolist nohlsearch
     tnoremap <Esc> <C-\><C-n>
+else
+    set history=5000
 end
-
-
-" Set ruler, to show line and column
-set ruler
-
-" Set line numbers on
-set number
 
 " Move cursor one line at a time, always
 inoremap <silent> <Down> <C-o>gj
@@ -239,7 +227,6 @@ command! Wq wq
 command! Qa qa
 command! -nargs=+ -complete=file E e <args>
 
-
 " Use ctrl left and right to switch tabs
 "nnoremap H :tabprevious<CR>
 "nnoremap L :tabnext<CR>
@@ -265,7 +252,11 @@ set scrolljump=5
 set nofoldenable
 set foldmethod=syntax
 
-" Allows toggling between line numbers and relative line numbers.
+" Line numbers
+" Enable line numbers
+set number
+" Set ruler, to show line and column
+set ruler
 function! NumberToggle()
     if(&number == 0 || &relativenumber == 1)
         set number
@@ -274,22 +265,22 @@ function! NumberToggle()
         set relativenumber
     endif
 endfunc
-
-function! NumberInsert()
+function! ShowAbsoluteLineNumbers()
     if (&number == 1)
        set norelativenumber
     endif
 endfunc
-
-function! NumberLeave()
+function! ShowRelativeLineNumbers()
     if (&number == 1)
        set relativenumber
     endif
 endfunc
-
+" Allows toggling between line numbers and relative line numbers.
 nnoremap <C-n> :call NumberToggle()<cr>
-autocmd BufLeave,FocusLost,InsertEnter * call NumberInsert()
-autocmd BufEnter,FocusGained,InsertLeave * call NumberLeave()
+" Show absolute line numbers in insert mode or when switching away from a buffer
+autocmd BufLeave,FocusLost,InsertEnter * call ShowAbsoluteLineNumbers()
+" Show relative line numbers in normal mode or when switching to a buffer
+autocmd BufEnter,FocusGained,InsertLeave * call ShowRelativeLineNumbers()
 
 " smart indent when entering insert mode with i on empty lines
 " source: https://stackoverflow.com/a/3003636/1530494

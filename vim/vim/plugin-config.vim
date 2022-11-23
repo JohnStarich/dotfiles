@@ -1,3 +1,5 @@
+set completeopt=menu,menuone,noselect
+
 
 imap <F7> <Plug>(JavaComplete-Imports-RemoveUnused)
 
@@ -69,17 +71,6 @@ map <leader>u <C-O>:UndotreeToggle<cr>
 
 
 " Vim Go
-let g:go_fold_enable = ['import']
-let g:go_build_tags = 'integration'
-
-"let g:go_metalinter_autosave = 1
-" g:go_auto_sameids Has trouble handling key input while running
-let g:go_auto_sameids = 0
-let g:go_jump_to_error = 0
-
-let g:go_info_mode = 'gopls'
-let g:go_def_mode = 'gopls'
-
 let g:go_auto_type_info = 1
 let g:go_highlight_extra_types = 1
 let g:go_highlight_fields = 1
@@ -90,14 +81,6 @@ let g:go_highlight_methods = 1
 let g:go_highlight_operators = 1
 let g:go_highlight_types = 1
 
-let g:go_fmt_options = {
-  \ 'gofmt': '-s',
-  \ 'goimports': '-local github.ibm.com',
-  \ }
-
-noremap <leader>i :GoImports<cr>
-noremap <leader>a :GoAlternate<cr>
-noremap <leader>r :call go#lsp#Exit()<cr>
 " Goyo
 autocmd! User GoyoEnter nested let g:goyo_previous_background = &background
 autocmd! User GoyoLeave nested call SetBackground(g:goyo_previous_background)
@@ -119,32 +102,6 @@ map <Leader>n <plug>NERDTreeTabsToggle<CR>
 "let g:easytags_cmd = '/usr/local/bin/ctags'
 let g:easytags_async = 1
 
-" Coc
-" Use tab for trigger completion with characters ahead and navigate.
-" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-" reformat the current buffer
-command! -nargs=0 Format :call CocAction('format')
-" always show signcolumns (indicates problems on line)
-set signcolumn=yes
-" Make the sign column match the background
-highlight SignColumn ctermbg=NONE
-" Better display for messages at the bottom
-set cmdheight=2
-
-" Coc Spell Checker
-" coc-spell-checker can use these, but multipurpose
-vmap <leader>a <Plug>(coc-codeaction-selected)
-nmap <leader>a <Plug>(coc-codeaction-selected)
-
 " vim-dotenv
 " Automatically load env files in all parent directories at startup.
 function! s:dotenv_walk() abort
@@ -154,3 +111,8 @@ function! s:dotenv_walk() abort
   endfor
 endfunction
 autocmd VimEnter * call s:dotenv_walk()
+
+" always show signcolumns (indicates problems on line)
+set signcolumn=yes
+" Make the sign column match the background
+highlight SignColumn ctermbg=NONE
