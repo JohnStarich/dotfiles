@@ -2,6 +2,7 @@
 /vim/vim/autoload/plug.vim.old
 /vim/vim/bundle
 secrets*
+/bin/goop
 
 # Created by https://www.gitignore.io/api/vim,java,macos,linux,scala,python,windows,intellij+iml
 
