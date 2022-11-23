@@ -100,30 +100,24 @@ local on_attach = function(client, bufnr)
     -- Mappings.
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     local bufopts = { noremap=true, silent=true, buffer=bufnr }
-    -- vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
-    -- vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
-    -- vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-    -- vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-    -- vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
-    -- vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
-    -- vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
-    -- vim.keymap.set('n', '<space>wl', function()
-    --   print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-    -- end, bufopts)
-    -- vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, bufopts)
-    -- vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
-    -- vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
-    -- vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-    -- vim.keymap.set('n', '<space>f', function() vim.lsp.buf.format { async = true } end, bufopts)
-
-
+    -- Workspace commands.
+    vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
+    vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
+    vim.keymap.set('n', '<space>wl', function()
+        print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+    end, bufopts)
+    -- Code jumps and docs.
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
     vim.keymap.set('n', '<C-]>', vim.lsp.buf.definition, bufopts)
+    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
     vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-
+    -- Code actions.
     vim.keymap.set('n', '<leader>fo', vim.lsp.buf.formatting_sync, bufopts)
     vim.keymap.set('n', '<leader>r', vim.lsp.buf.rename, bufopts)
     vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
+
+    -- Go mappings.
+    -- Switch to alternate file. Code <-> Test.
     vim.keymap.set('n', '<leader>a', function()
         -- Switch to test file or vice versa:
         if vim.fn.expand('%:e') ~= "go" then
@@ -140,6 +134,7 @@ local on_attach = function(client, bufnr)
         alternateGoFile = alternateGoFile .. '.' .. vim.fn.expand('%:e')
         vim.api.nvim_command("edit " .. alternateGoFile)
     end, bufopts)
+    -- Run equivalent of gofmt and goimports on save.
     vim.api.nvim_create_autocmd("BufWritePre", {
         -- Format & goimports:
         pattern = { "*.go" },
@@ -163,7 +158,7 @@ local on_attach = function(client, bufnr)
 end
 
 
--- Set up nvim-cmp.
+-- Set up nvim-cmp for tab completions.
 local cmp = require('cmp')
 -- Current issues:
 -- * Wrong completion for '%': https://github.com/hrsh7th/nvim-cmp/issues/1058
@@ -271,9 +266,6 @@ local servers = {
                 staticcheck = true,
             },
         },
-        -- init_options = {
-        --     usePlaceholders = true,
-        -- },
     },
 }
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
