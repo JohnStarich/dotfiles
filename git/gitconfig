@@ -1,6 +1,7 @@
 [user]
 	name = John Starich
 	email = johnstarich@johnstarich.com
+	signingkey = 2A845EAC15D2A1A847B7BF7648C77B8BE9A15B77
 [branch]
 	sort = -committerdate
 [fetch]
@@ -20,3 +21,5 @@
 # Org-specific configs (not checked in to dotfiles)
 [includeIf "gitdir:~/Documents/IBM/Projects/**"]
     path = ~/.gitconfig_ibm
+[commit]
+	gpgsign = true
