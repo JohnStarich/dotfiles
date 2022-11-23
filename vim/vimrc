@@ -363,3 +363,9 @@ autocmd FileType json syntax match Comment +\/\/.\+$+
 set splitright
 " and horizontal splits down
 set splitbelow
+
+if $DEMO == "true"
+    if filereadable(expand("~/.vim/demo.vim"))
+        source ~/.vim/demo.vim
+    endif
+endif
