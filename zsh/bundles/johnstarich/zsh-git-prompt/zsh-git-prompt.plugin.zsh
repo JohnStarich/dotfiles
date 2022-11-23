@@ -7,7 +7,7 @@ function js_git_prompt() {
     ref=$(git symbolic-ref HEAD 2> /dev/null) || ref=$(git rev-parse --short HEAD 2> /dev/null) || return 0
     ref=${ref#refs/heads/}
     echo -n "%{${fg[blue]}%}git:(%{${fg[red]}%}$ref%{${fg[blue]}%})%{$reset_color%} "
-    if ! git diff --no-ext-diff --quiet --exit-code; then
+    if ! git diff --no-ext-diff --quiet --exit-code || git ls-files --others --exclude-standard --error-unmatch . >&- 2>&-; then
         echo -n "%{${fg[yellow]}%}✗%{$reset_color%} "
     fi
 }
