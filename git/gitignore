@@ -9,3 +9,6 @@ target
 .idea/
 .vscode/
 node_modules/
+*.*prof
+*.*trace
+*.cov
