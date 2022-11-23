@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+if (( $# != 2 )); then
+    echo 'Usage: mac-term-background-ternary DARK LIGHT' >&2
+    echo 'Prints the first arg if the background is dark, second otherwise.' >&2
+    exit 2
+fi
+
+if mac-term-dark-background; then
+    echo "$1"
+else
+    echo "$2"
+fi

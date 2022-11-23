@@ -6,7 +6,13 @@ alias gc='git checkout'
 alias gcb='git checkout -b'
 alias gcd='git checkout develop'
 alias gcm='{ git rev-parse --quiet --verify master && git checkout master || git checkout main; }'
-alias gd='git diff --word-diff --color-words="[^[:space:],()<>]+|[[:space:],()<>]+/s"'
+alias gd='git diff'
+alias git-word-diff='git diff --word-diff --color-words="[^[:space:],()<>]+|[[:space:],()<>]+/s"'
+if macos; then
+    alias git='git -c delta.light="$(mac-term-background-ternary false true)"'
+else
+    alias gd=git-word-diff
+fi
 alias gdiff=gd
 alias gds='gd --staged'
 alias gf='git pull --ff-only'
