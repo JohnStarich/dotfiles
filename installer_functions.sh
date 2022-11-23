@@ -27,7 +27,7 @@ function dotbinlink() {
 # from showing up in someone else's git commits or something.
 definitely_me() {
     if [[ "$DEFINITELY_ME" == 'yes' ]]; then
-        eval "$@"
+        "$@"
     fi
 }
 
