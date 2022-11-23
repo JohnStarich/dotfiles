@@ -16,7 +16,12 @@ git log "$default_branch"..HEAD --pretty=%H | tail -1 | xargs git log -1 --prett
 echo >> "$pr_body"
 
 # Add all commit bodies for this branch
-git log "$default_branch"..HEAD --pretty='* %B' --reverse | grep -vE '^\s*$' >> "$pr_body"
+log=$(git log "$default_branch"..HEAD --pretty='* %B' --reverse | grep -vE '^\s*$')
+if (( $(wc -l <<<"$log") == 1 )); then
+    # If only one commit, remove the bullet point.
+    log=$(sed 's/^\* //' <<<"$log")
+fi
+echo "$log" >> "$pr_body"
 # Append PR template, if it exists
 if [[ -f ./.github/pull_request_template.md ]]; then
     echo >> "$pr_body"
