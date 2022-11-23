@@ -17,6 +17,7 @@ brew_formulae=(
     bash-completion@2
     cmake
     coreutils
+    delta
     docker
     dos2unix
     git
@@ -24,6 +25,7 @@ brew_formulae=(
     go
     htop
     jq
+    kubectl
     maven-deluxe
     mobile-shell
     ncdu
@@ -53,6 +55,7 @@ brew_cask_formulae=(
     corelocationcli
     docker
     font-sf-mono-for-powerline
+    graphql-playground
     qlstephen
     virtualbox
 )
