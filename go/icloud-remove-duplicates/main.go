@@ -12,29 +12,34 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/fatih/color"
 	"github.com/hack-pad/hackpadfs"
 	osfs "github.com/hack-pad/hackpadfs/os"
 	"github.com/pkg/errors"
 )
 
 func main() {
-	err := run(os.Args[1:])
+	err := run(os.Args[1:], os.Stdout, os.Stderr)
 	if err != nil {
-		fmt.Fprintf(os.Stdout, "%+v\n", err)
+		fmt.Fprintf(os.Stderr, "%s %+v\n", color.RedString("Failed:"), err)
 		os.Exit(1)
 	}
 }
 
 type Args struct {
-	DryRun bool
-	FS     hackpadfs.FS
-	Root   string
+	DryRun    bool
+	ErrWriter io.Writer
+	FS        hackpadfs.FS
+	OutWriter io.Writer
+	Root      string
 }
 
-func run(osArgs []string) error {
+func run(osArgs []string, outWriter, errWriter io.Writer) error {
 	fs := osfs.NewFS()
 	args := Args{
-		FS: fs,
+		ErrWriter: errWriter,
+		FS:        fs,
+		OutWriter: outWriter,
 	}
 	set := flag.NewFlagSet("icloud-remove-duplicates", flag.ContinueOnError)
 	set.BoolVar(&args.DryRun, "dry-run", true, "Set to --dry-run=false to actually clean up the files printed from the dry run.")
@@ -65,9 +70,12 @@ func runArgs(args Args) error {
 
 	var duplicateFiles []string
 	for filePath := range duplicateCandidates {
-		isDuplicate, err := isDuplicate(filePath, args.FS)
+		isDuplicate, warningErr, err := isDuplicate(filePath, args.FS)
 		if err != nil {
 			return err
+		}
+		if warningErr != nil {
+			fmt.Fprintln(args.ErrWriter, color.YellowString("Warning:"), warningErr)
 		}
 		if isDuplicate {
 			duplicateFiles = append(duplicateFiles, filePath)
@@ -76,7 +84,7 @@ func runArgs(args Args) error {
 
 	for _, filePath := range duplicateFiles {
 		if args.DryRun {
-			fmt.Println(filePath)
+			fmt.Fprintln(args.OutWriter, filePath)
 		} else {
 			err := hackpadfs.Remove(args.FS, filePath)
 			if err != nil {
@@ -97,8 +105,11 @@ func endInSpaceAndPositiveInteger(s string) bool {
 	return err == nil && lastWordInt > 0
 }
 
-func isDuplicate(candidateFilePath string, fs hackpadfs.FS) (_ bool, err error) {
-	defer func() { err = errors.WithStack(err) }()
+func isDuplicate(candidateFilePath string, fs hackpadfs.FS) (_ bool, warningErr, err error) {
+	defer func() {
+		warningErr = errors.Wrapf(warningErr, "checking for duplicate from %q", candidateFilePath)
+		err = errors.Wrapf(err, "checking for duplicate from %q", candidateFilePath)
+	}()
 
 	name := path.Base(candidateFilePath)
 	ext := path.Ext(name)
@@ -110,54 +121,54 @@ func isDuplicate(candidateFilePath string, fs hackpadfs.FS) (_ bool, err error) 
 
 	rootInfo, err := hackpadfs.LstatOrStat(fs, rootFilePath)
 	if err != nil && !errors.Is(err, hackpadfs.ErrNotExist) {
-		return false, err
+		return false, nil, err
 	}
 	if errors.Is(err, hackpadfs.ErrNotExist) {
 		// Failed to find root file, so attempt brctl download.
 		err = brctlDownload(fs, rootFilePath)
 		if err != nil {
-			return false, err
+			return false, err, nil
 		}
 		rootInfo, err = hackpadfs.LstatOrStat(fs, rootFilePath)
 		if errors.Is(err, hackpadfs.ErrNotExist) {
 			// file really doesn't exist, skip...
-			return false, nil
+			return false, errors.New("looks like an icloud duplicate, but no root file was found"), nil
 		}
 		if err != nil {
-			return false, err
+			return false, nil, err
 		}
 	}
 	candidateInfo, err := hackpadfs.LstatOrStat(fs, rootFilePath)
 	if err != nil {
-		return false, err
+		return false, nil, err
 	}
 	if rootInfo.Mode().Type() != candidateInfo.Mode().Type() {
 		// mismatched types, skip...
-		return false, nil
+		return false, errors.Errorf("type bits do not match: %s != %s", rootInfo.Mode().Type().String(), candidateInfo.Mode().Type().String()), nil
 	}
 	if rootInfo.Mode()&hackpadfs.ModeSymlink != 0 {
 		// NOTE: Doesn't check the link's destination.
 		// For cleaning up duplicates, this usually isn't a problem. Worst case, the link can be recreated.
-		return true, nil
+		return true, nil, nil
 	}
 	if !rootInfo.Mode().IsRegular() {
 		// unexpected typed file, skip...
-		return false, nil
+		return false, errors.Errorf("unrecognized file type: %s", rootInfo.Mode().Type().String()), nil
 	}
 	if rootInfo.Size() != candidateInfo.Size() {
 		// sizes differ, skip...
-		return false, nil
+		return false, errors.Errorf("file size differs: %d != %d", rootInfo.Size(), candidateInfo.Size()), nil
 	}
 
 	rootHash, err := hashFile(fs, rootFilePath)
 	if err != nil {
-		return false, err
+		return false, nil, err
 	}
 	candidateHash, err := hashFile(fs, candidateFilePath)
 	if err != nil {
-		return false, err
+		return false, nil, err
 	}
-	return rootHash == candidateHash, nil
+	return rootHash == candidateHash, nil, nil
 }
 
 func hashFile(fs hackpadfs.FS, filePath string) (string, error) {
