@@ -1,6 +1,0 @@
-{
-	"groups": {
-        "osx_battery": { "fg": "brightred", "bg": "gray0" },
-        "hi": {}
-	}
-}
