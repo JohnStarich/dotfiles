@@ -26,6 +26,13 @@ function js_git_prompt() {
     local has_modifications=$(js_git_prompt_ternary_string ! git diff --no-ext-diff --quiet --exit-code)
     local has_untracked=$(js_git_prompt_ternary_string git ls-files --others --exclude-standard --error-unmatch .)
     if [[ "$has_modifications" == true || "$has_untracked" == true ]]; then
-        echo -n "%{${fg[yellow]}%}✗%{$reset_color%} "
+        if [[ "$has_modifications" == true ]]; then
+            echo -n "%{${fg[yellow]}%}"
+            printf "✗"
+        else
+            echo -n "%{${fg[green]}%}"
+            printf "✔"
+        fi
+        echo "%{$reset_color%} "
     fi
 }
