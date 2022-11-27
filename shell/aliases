@@ -9,7 +9,7 @@ alias gcm='{ git rev-parse --quiet --verify master && git checkout master || git
 alias gd='git diff'
 alias git-word-diff='git diff --word-diff --color-words="[^[:space:],()<>]+|[[:space:],()<>]+/s"'
 if macos; then
-    alias git='git -c delta.light="$(mac-term-background-ternary false true)"'
+    alias git='git -c delta.light="${mac_term_light_background:-$(mac-term-background-ternary false true)}"'
 else
     alias gd=git-word-diff
 fi
