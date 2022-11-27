@@ -3,27 +3,19 @@
 autoload -Uz colors && colors
 
 js_git_prompt=''
-js_git_prev_dir=''
-js_git_cache_main_ref=''
 function js_git_gen_prompt() {
-    local current_git_dir
-    if ! current_git_dir=$(git rev-parse --show-toplevel --quiet 2>&-); then
+    local ref
+    if ! { ref=$(git symbolic-ref HEAD 2> /dev/null) || ref=$(git rev-parse --short HEAD 2> /dev/null) }; then
         js_git_prompt=''
         return 0
     fi
-    if [[ "$js_git_prev_dir" != "$current_git_dir" || "$js_git_cache_main_ref" == '' ]]; then
-        js_git_cache_main_ref=$(git symbolic-ref HEAD 2> /dev/null) || js_git_cache_main_ref=$(git rev-parse --short HEAD 2> /dev/null) || true
-        js_git_cache_main_ref=${js_git_cache_main_ref#refs/heads/}
-        js_git_prev_dir=$current_git_dir
-    fi
+    ref=${ref#refs/heads/}
 
-    js_git_prompt="%{${fg[blue]}%}git:(%{${fg[red]}%}$js_git_cache_main_ref%{${fg[blue]}%})"
+    js_git_prompt="%{${fg[blue]}%}git:(%{${fg[red]}%}$ref%{${fg[blue]}%})"
 
-    if ! git diff --no-ext-diff --quiet --exit-code >&- 2>&-; then
-        # Has modifications
+    if js_git_has_modifications; then
         js_git_prompt+=" %{${fg[yellow]}%}✗"
-    elif git ls-files --others --exclude-standard --error-unmatch . >&- 2>&-; then
-        # Has untracked files
+    elif js_git_has_untracked_files; then
         js_git_prompt+=" %{${fg[green]}%}✔"
     fi
     js_git_prompt+="%{$reset_color%} "
@@ -31,3 +23,15 @@ function js_git_gen_prompt() {
 
 autoload -Uz add-zsh-hook 
 add-zsh-hook precmd js_git_gen_prompt
+
+function js_git_has_modifications() {
+    if ! git diff --no-ext-diff --quiet --exit-code >&- 2>&-; then
+        return 0
+    fi
+    return 1
+}
+
+function js_git_has_untracked_files() {
+    git ls-files --others --exclude-standard --error-unmatch . >&- 2>&-
+}
+
