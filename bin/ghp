@@ -54,7 +54,11 @@ if [[ -n "$DEBUG" ]]; then
 fi
 
 pr_url=$(gh pr create "$@" --title "$title" --body-file - <<<"$body" | tee /dev/stderr)
-printf 'Open in Chrome? [y/N] '
-if read -r line && [[ "$line" =~ [yY](es)? ]]; then
-    open -a 'Google Chrome.app' "$pr_url"
+if which open >/dev/null 2>/dev/null; then
+    printf 'Open in the browser? [y/N] '
+    if read -r line && [[ "$line" =~ [yY](es)? ]]; then
+        open "$pr_url"
+    fi
+else
+    echo "PR opened at: $pr_url"
 fi
