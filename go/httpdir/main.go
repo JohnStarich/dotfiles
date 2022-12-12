@@ -13,7 +13,7 @@ import (
 func main() {
 	open := flag.Bool("open", false, "On systems with an 'open' command, runs 'open $SERVER_URL'")
 	dir := flag.String("path", ".", "The directory to serve via HTTP. Defaults to current directory.")
-	basePath := flag.String("base", "/", "The base URL to use. All paths must use this prefix.")
+	basePath := flag.String("base", "", "The base URL to use. All paths must use this prefix.")
 	flag.Parse()
 
 	listener, err := net.Listen("tcp", "localhost:0")
