@@ -90,6 +90,11 @@ type callbackFunc func(filePath string) error
 // runWatch runs a recursive file watcher starting at 'rootDir', which calls 'callback' on every file change.
 // Only returns when 'ctx' is canceled.
 func runWatch(ctx context.Context, rootDir string, errWriter io.Writer, callback callbackFunc) error {
+	rootDir, err := filepath.Abs(rootDir)
+	if err != nil {
+		return err
+	}
+
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		return err
@@ -125,13 +130,20 @@ func runWatch(ctx context.Context, rootDir string, errWriter io.Writer, callback
 			return nil
 		case event := <-watcher.Events:
 			switch {
-			case event.Op&fsnotify.Write == fsnotify.Write,
-				event.Op&fsnotify.Create == fsnotify.Create:
+			case event.Op&fsnotify.Create == fsnotify.Create:
+				_ = watcher.Add(event.Name)
+				fallthrough
+			case event.Op&fsnotify.Write == fsnotify.Write:
 				lastEvent = event
 				timer.Reset(debounce)
 			}
 		case err := <-watcher.Errors:
-			fmt.Fprintln(errWriter, "Watch error:", err)
+			var pathErr *os.PathError
+			if errors.As(err, &pathErr) && errors.Is(err, os.ErrNotExist) {
+				_ = watcher.Remove(pathErr.Path)
+			} else {
+				fmt.Fprintln(errWriter, "Watch error:", err)
+			}
 		}
 	}
 }
