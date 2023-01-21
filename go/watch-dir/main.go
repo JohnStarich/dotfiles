@@ -62,6 +62,13 @@ func run(ctx context.Context, args Args) error {
 	if len(args.CommandArgs) == 0 {
 		return errors.New("must provide at least one command arg")
 	}
+	var env []string
+	if contents, err := os.ReadFile(filepath.Join(args.RootDir, ".env")); err == nil {
+		env, err = parseEnvFile(contents)
+		if err != nil {
+			return errors.Wrap(err, "failed to parse .env file in root directory")
+		}
+	}
 
 	ranOnce := false
 	return runWatch(ctx, args.RootDir, args.Stderr, func(filePath string) error {
@@ -76,6 +83,10 @@ func run(ctx context.Context, args Args) error {
 		cmd.Stdin = args.Stdin
 		cmd.Stdout = args.Stdout
 		cmd.Stderr = args.Stderr
+		if len(env) > 0 {
+			cmd.Env = append(os.Environ(), env...)
+			fmt.Fprintln(args.Stdout, "### Including environment from .env")
+		}
 		err := cmd.Run()
 		if err != nil {
 			fmt.Fprintln(args.Stderr, err)
