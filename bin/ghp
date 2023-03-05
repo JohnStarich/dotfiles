@@ -23,7 +23,7 @@ if (( $(wc -l <<<"$log") == 1 )); then
 fi
 echo "$log" >> "$pr_body"
 # Append PR template, if it exists
-if [[ -f ./.github/pull_request_template.md ]]; then
+if [[ -f "$(git rev-parse --show-toplevel)"/.github/pull_request_template.md ]]; then
     echo >> "$pr_body"
     cat ./.github/pull_request_template.md >> "$pr_body"
 fi
