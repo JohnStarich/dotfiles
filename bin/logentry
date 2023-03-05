@@ -1,1 +1,11 @@
-log
+#!/bin/bash
+# Usage: logentry "Log entry" "items" "to add"
+#
+# Adds a new bullet point to today's note file. Access the note with `notes log`
+
+if ! note=$(notes edit log) || [[ -z "$note" ]]; then
+    echo 'Error creating/finding log entry file' >&2
+    exit 2
+fi
+
+echo "* $(date "+%I:%M %p") | $*" >> "$note"
