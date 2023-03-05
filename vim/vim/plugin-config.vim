@@ -104,13 +104,21 @@ let g:easytags_async = 1
 
 " vim-dotenv
 " Automatically load env files in all parent directories at startup.
+let s:dotenv_walked = 0
+function! s:dotenv_walk_once()
+  if s:dotenv_walked == 0
+    call s:dotenv_walk()
+    let s:dotenv_walked = 1
+  endif
+endfunction
 function! s:dotenv_walk() abort
   let walk = findfile(".env", ".;", -1)
   for i in range(len(walk)-1, 0, -1)
+      echo "dotenving " . walk[i]
       execute 'Dotenv ' . walk[i]
   endfor
 endfunction
-autocmd VimEnter * call s:dotenv_walk()
+autocmd BufReadPre * call s:dotenv_walk_once()
 
 " always show signcolumns (indicates problems on line)
 set signcolumn=yes
