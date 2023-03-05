@@ -9,6 +9,7 @@
 	pruneTags = true
 [push]
 	default = upstream
+	autoSetupRemote = true
 [color]
 	ui = true
 [core]
