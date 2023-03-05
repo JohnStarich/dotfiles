@@ -26,3 +26,5 @@
     path = ~/.gitconfig_ibm
 [commit]
 	gpgsign = true
+[init]
+	defaultBranch = main
