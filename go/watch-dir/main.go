@@ -21,17 +21,18 @@ func main() {
 	defer cancel()
 	increaseNoFile()
 
-	flag.Parse()
 	args := Args{
-		RootDir:      flag.Arg(0),
-		FilePatterns: strings.Split(flag.Arg(1), ","),
-		CommandArgs:  skipStrings(flag.Args(), 2),
-		Stdin:        os.Stdin,
-		Stdout:       os.Stdout,
-		Stderr:       os.Stderr,
+		Stdin:  os.Stdin,
+		Stdout: os.Stdout,
+		Stderr: os.Stderr,
 	}
+	flag.IntVar(&args.MaxDepth, "max-depth", 20, "Maximum watch depth. Uses a default for better performance.")
+	flag.Parse()
+	args.RootDir = flag.Arg(0)
+	args.FilePatterns = strings.Split(flag.Arg(1), ",")
+	args.CommandArgs = skipStrings(flag.Args(), 2)
 
-	err := run(ctx, args)
+	err := args.Run(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -45,25 +46,26 @@ func skipStrings(str []string, skip int) []string {
 }
 
 type Args struct {
-	RootDir        string
-	FilePatterns   []string
 	CommandArgs    []string
+	FilePatterns   []string
+	MaxDepth       int
+	RootDir        string
 	Stdin          io.Reader
 	Stdout, Stderr io.Writer
 }
 
-func run(ctx context.Context, args Args) error {
-	if args.RootDir == "" {
+func (a Args) Run(ctx context.Context) error {
+	if a.RootDir == "" {
 		return errors.New("provide a root directory to watch")
 	}
-	if len(args.FilePatterns) == 0 {
+	if len(a.FilePatterns) == 0 {
 		return errors.New("provide at least one file extension to filter by, or more than one separated by commas ','")
 	}
-	if len(args.CommandArgs) == 0 {
+	if len(a.CommandArgs) == 0 {
 		return errors.New("must provide at least one command arg")
 	}
 	var env []string
-	if contents, err := os.ReadFile(filepath.Join(args.RootDir, ".env")); err == nil {
+	if contents, err := os.ReadFile(filepath.Join(a.RootDir, ".env")); err == nil {
 		env, err = parseEnvFile(contents)
 		if err != nil {
 			return errors.Wrap(err, "failed to parse .env file in root directory")
@@ -71,27 +73,27 @@ func run(ctx context.Context, args Args) error {
 	}
 
 	ranOnce := false
-	return runWatch(ctx, args.RootDir, args.Stderr, func(filePath string) error {
-		if ranOnce && !matchesFilePatterns(args.FilePatterns, filePath) {
+	return a.runWatch(ctx, func(filePath string) error {
+		if ranOnce && !matchesFilePatterns(a.FilePatterns, filePath) {
 			return nil
 		}
 		ranOnce = true
 		clearScreen()
-		fmt.Fprintln(args.Stdout, "### Running command:", strings.Join(args.CommandArgs, " "))
+		fmt.Fprintln(a.Stdout, "### Running command:", strings.Join(a.CommandArgs, " "))
 
-		cmd := exec.CommandContext(ctx, args.CommandArgs[0], args.CommandArgs[1:]...)
-		cmd.Stdin = args.Stdin
-		cmd.Stdout = args.Stdout
-		cmd.Stderr = args.Stderr
+		cmd := exec.CommandContext(ctx, a.CommandArgs[0], a.CommandArgs[1:]...)
+		cmd.Stdin = a.Stdin
+		cmd.Stdout = a.Stdout
+		cmd.Stderr = a.Stderr
 		if len(env) > 0 {
 			cmd.Env = append(os.Environ(), env...)
-			fmt.Fprintln(args.Stdout, "### Including environment from .env")
+			fmt.Fprintln(a.Stdout, "### Including environment from .env")
 		}
 		err := cmd.Run()
 		if err != nil {
-			fmt.Fprintln(args.Stderr, err)
+			fmt.Fprintln(a.Stderr, err)
 		}
-		fmt.Fprintf(args.Stdout, "### Waiting for changes... (patterns: %s)\n", strings.Join(args.FilePatterns, ", "))
+		fmt.Fprintf(a.Stdout, "### Waiting for changes... (patterns: %s)\n", strings.Join(a.FilePatterns, ", "))
 		return nil
 	})
 }
@@ -100,8 +102,8 @@ type callbackFunc func(filePath string) error
 
 // runWatch runs a recursive file watcher starting at 'rootDir', which calls 'callback' on every file change.
 // Only returns when 'ctx' is canceled.
-func runWatch(ctx context.Context, rootDir string, errWriter io.Writer, callback callbackFunc) error {
-	rootDir, err := filepath.Abs(rootDir)
+func (a Args) runWatch(ctx context.Context, callback callbackFunc) error {
+	rootDir, err := filepath.Abs(a.RootDir)
 	if err != nil {
 		return err
 	}
@@ -117,6 +119,9 @@ func runWatch(ctx context.Context, rootDir string, errWriter io.Writer, callback
 			return err
 		}
 		if info.IsDir() {
+			if strings.Count(path, string(filepath.Separator)) > a.MaxDepth {
+				return filepath.SkipDir
+			}
 			return watcher.Add(path)
 		}
 		return nil
@@ -135,16 +140,21 @@ func runWatch(ctx context.Context, rootDir string, errWriter io.Writer, callback
 		case <-timer.C:
 			err := callback(lastEvent.Name)
 			if err != nil {
-				fmt.Fprintln(errWriter, "Error running watch call:", err)
+				fmt.Fprintln(a.Stderr, "Error running watch call:", err)
 			}
 		case <-ctx.Done():
 			return nil
 		case event := <-watcher.Events:
-			switch {
-			case event.Op&fsnotify.Create == fsnotify.Create:
-				_ = watcher.Add(event.Name)
-				fallthrough
-			case event.Op&fsnotify.Write == fsnotify.Write:
+			if event.Op&fsnotify.Remove != 0 {
+				_ = watcher.Remove(event.Name)
+			}
+			if event.Op&fsnotify.Create != 0 {
+				info, err := os.Stat(event.Name)
+				if err == nil && info.IsDir() {
+					_ = watcher.Add(event.Name)
+				}
+			}
+			if event.Op&(fsnotify.Write|fsnotify.Remove|fsnotify.Create|fsnotify.Rename) != 0 {
 				lastEvent = event
 				timer.Reset(debounce)
 			}
@@ -153,7 +163,7 @@ func runWatch(ctx context.Context, rootDir string, errWriter io.Writer, callback
 			if errors.As(err, &pathErr) && errors.Is(err, os.ErrNotExist) {
 				_ = watcher.Remove(pathErr.Path)
 			} else {
-				fmt.Fprintln(errWriter, "Watch error:", err)
+				fmt.Fprintln(a.Stderr, "Watch error:", err)
 			}
 		}
 	}
