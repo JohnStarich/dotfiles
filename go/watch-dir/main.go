@@ -119,7 +119,12 @@ func (a Args) runWatch(ctx context.Context, callback callbackFunc) error {
 			return err
 		}
 		if info.IsDir() {
-			if strings.Count(path, string(filepath.Separator)) > a.MaxDepth {
+			relPath, err := filepath.Rel(rootDir, path)
+			if err != nil {
+				return err
+			}
+			depth := strings.Count(relPath, string(filepath.Separator))
+			if depth > a.MaxDepth {
 				return filepath.SkipDir
 			}
 			return watcher.Add(path)
