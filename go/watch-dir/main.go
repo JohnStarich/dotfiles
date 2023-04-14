@@ -150,13 +150,16 @@ func (a Args) runWatch(ctx context.Context, callback callbackFunc) error {
 		case <-ctx.Done():
 			return nil
 		case event := <-watcher.Events:
-			if event.Op&fsnotify.Remove != 0 {
-				_ = watcher.Remove(event.Name)
-			}
-			if event.Op&fsnotify.Create != 0 {
+			if event.Op&(fsnotify.Remove|fsnotify.Create) != 0 {
 				info, err := os.Stat(event.Name)
-				if err == nil && info.IsDir() {
+				isDir := err == nil && info.IsDir()
+				switch {
+				case isDir && event.Op&fsnotify.Remove != 0:
+					_ = watcher.Remove(event.Name)
+				case isDir && event.Op&fsnotify.Create != 0:
 					_ = watcher.Add(event.Name)
+				case !isDir && event.Op&fsnotify.Create != 0:
+					_ = watcher.Add(filepath.Dir(event.Name))
 				}
 			}
 			if event.Op&(fsnotify.Write|fsnotify.Remove|fsnotify.Create|fsnotify.Rename) != 0 {
