@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -28,7 +29,7 @@ func main() {
 	}
 	flag.BoolVar(&args.IgnoreHidden, "hidden", true, "Ignore hidden files (starts with '.').")
 	flag.IntVar(&args.MaxDepth, "max-depth", 20, "Maximum watch depth. Uses a default for better performance.")
-	flag.StringVar(&args.IgnorePattern, "ignore", "", "File path pattern to ignore.")
+	flag.Var(&args.IgnorePatterns, "ignore", "File path pattern to ignore.")
 	flag.Parse()
 	args.RootDir = flag.Arg(0)
 	args.FilePatterns = strings.Split(flag.Arg(1), ",")
@@ -51,7 +52,7 @@ type Args struct {
 	CommandArgs    []string
 	FilePatterns   []string
 	IgnoreHidden   bool
-	IgnorePattern  string
+	IgnorePatterns stringSliceVar
 	MaxDepth       int
 	RootDir        string
 	Stdin          io.Reader
@@ -82,13 +83,13 @@ func (a Args) Run(ctx context.Context) error {
 	}
 
 	ranOnce := false
-	return a.runWatch(ctx, func(filePath string) error {
-		if ranOnce && !matchesFilePatterns(a.FilePatterns, filePath) {
+	return a.runWatch(ctx, func(filePaths []string) error {
+		if ranOnce && !matchesFilePatterns(a.FilePatterns, filePaths) {
 			return nil
 		}
-		shouldIgnore, err := a.ShouldIgnore(filePath)
-		if err != nil || shouldIgnore {
-			return err
+		shouldIgnore, err := a.ShouldIgnoreAll(filePaths)
+		if err == nil && shouldIgnore {
+			return nil
 		}
 
 		ranOnce = true
@@ -112,7 +113,7 @@ func (a Args) Run(ctx context.Context) error {
 	})
 }
 
-type callbackFunc func(filePath string) error
+type callbackFunc func(filePaths []string) error
 
 // runWatch runs a recursive file watcher starting at 'rootDir', which calls 'callback' on every file change.
 // Only returns when 'ctx' is canceled.
@@ -123,11 +124,11 @@ func (a Args) runWatch(ctx context.Context, callback callbackFunc) error {
 	}
 	defer watcher.Close()
 
-	err = filepath.Walk(a.RootDir, func(path string, info os.FileInfo, err error) error {
+	err = filepath.WalkDir(a.RootDir, func(path string, dirEntry fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
-		if info.IsDir() {
+		if dirEntry.IsDir() {
 			if shouldIgnore, err := a.ShouldIgnore(path); err != nil || shouldIgnore {
 				return filepath.SkipDir
 			}
@@ -143,11 +144,16 @@ func (a Args) runWatch(ctx context.Context, callback callbackFunc) error {
 	defer timer.Stop()
 
 	const debounce = 2 * time.Second
-	var lastEvent fsnotify.Event
+	var lastEvents []fsnotify.Event
 	for {
 		select {
 		case <-timer.C:
-			err := callback(lastEvent.Name)
+			var filePaths []string
+			for _, event := range lastEvents {
+				filePaths = append(filePaths, event.Name)
+			}
+			lastEvents = nil
+			err := callback(filePaths)
 			if err != nil {
 				fmt.Fprintln(a.Stderr, "Error running watch call:", err)
 			}
@@ -167,7 +173,7 @@ func (a Args) runWatch(ctx context.Context, callback callbackFunc) error {
 				}
 			}
 			if event.Op&(fsnotify.Write|fsnotify.Remove|fsnotify.Create|fsnotify.Rename) != 0 {
-				lastEvent = event
+				lastEvents = append(lastEvents, event)
 				timer.Reset(debounce)
 			}
 		case err := <-watcher.Errors:
@@ -181,10 +187,12 @@ func (a Args) runWatch(ctx context.Context, callback callbackFunc) error {
 	}
 }
 
-func matchesFilePatterns(filePatterns []string, filePath string) bool {
-	for _, pattern := range filePatterns {
-		if strings.HasSuffix(filePath, "."+pattern) {
-			return true
+func matchesFilePatterns(filePatterns []string, filePaths []string) bool {
+	for _, filePath := range filePaths {
+		for _, pattern := range filePatterns {
+			if strings.HasSuffix(filePath, "."+pattern) {
+				return true
+			}
 		}
 	}
 	return false
@@ -192,6 +200,16 @@ func matchesFilePatterns(filePatterns []string, filePath string) bool {
 
 func clearScreen() {
 	fmt.Print("\033[H\033[2J")
+}
+
+func (a Args) ShouldIgnoreAll(paths []string) (shouldIgnore bool, err error) {
+	for _, path := range paths {
+		shouldIgnore, err = a.ShouldIgnore(path)
+		if err != nil || !shouldIgnore {
+			return
+		}
+	}
+	return
 }
 
 func (a Args) ShouldIgnore(path string) (bool, error) {
@@ -209,12 +227,12 @@ func (a Args) ShouldIgnore(path string) (bool, error) {
 	if depth > a.MaxDepth {
 		return true, nil
 	}
-	if a.IgnorePattern != "" {
-		matches, err := filepath.Glob(a.IgnorePattern)
+	for _, ignorePattern := range a.IgnorePatterns {
+		matched, err := filepath.Match(ignorePattern, relPath)
 		if err != nil {
 			return false, err
 		}
-		if len(matches) > 0 {
+		if matched {
 			return true, nil
 		}
 	}
