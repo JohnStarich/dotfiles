@@ -26,6 +26,9 @@ echo "$log" >> "$pr_body"
 if [[ -f "$(git rev-parse --show-toplevel)"/.github/pull_request_template.md ]]; then
     echo >> "$pr_body"
     cat ./.github/pull_request_template.md >> "$pr_body"
+elif [[ -f "$(git rev-parse --show-toplevel)"/.github/PULL_REQUEST_TEMPLATE/pull_request_template.md ]]; then
+    echo >> "$pr_body"
+    cat ./.github/PULL_REQUEST_TEMPLATE/pull_request_template.md >> "$pr_body"
 fi
 
 "${EDITOR:-vim}" "$pr_body"
