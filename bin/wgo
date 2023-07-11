@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
-watch-dir . go,mod,sum go "$@" 2>&1 | highlight-ext go
+export GORACE="halt_on_error=1"  # Make it easy to run with race detector on with a very high -count=N.
+
+watch-dir . go,mod,sum,json,yaml,graphql go "$@" 2>&1 | highlight-ext go
