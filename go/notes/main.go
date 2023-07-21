@@ -62,10 +62,13 @@ func subjectBasePath(subject string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if len(possibleSubjectPaths) == 0 {
-		return "", errors.Errorf("subject not found matching pattern: %s", subjectBasePattern)
+	for _, possiblePath := range possibleSubjectPaths {
+		info, err := os.Stat(possiblePath)
+		if err == nil && info.IsDir() {
+			return possiblePath, nil
+		}
 	}
-	return possibleSubjectPaths[0], nil
+	return "", errors.Errorf("subject not found matching pattern: %s", subjectBasePattern)
 }
 
 func edit(subject string, day time.Time) error {
@@ -74,8 +77,8 @@ func edit(subject string, day time.Time) error {
 		return err
 	}
 	notePath := filepath.Join(subjectBasePath, day.Format(noteDateFormat)+noteExtension)
-	if !term.IsTerminal(int(os.Stdin.Fd())) {
-		fmt.Println(notePath)
+	if !term.IsTerminal(int(os.Stdout.Fd())) {
+		fmt.Print(notePath)
 		return nil
 	}
 
