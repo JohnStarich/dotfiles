@@ -6,7 +6,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/markusmobius/go-dateparser"
 	"github.com/pkg/errors"
@@ -35,13 +34,9 @@ func run(args []string) error {
 	switch args[0] {
 	case "edit", "e":
 		subject := args[1]
-		day := time.Now()
+		day := "today"
 		if len(args) > 2 {
-			date, err := dateparser.Parse(nil, strings.Join(args[2:], " "))
-			if err != nil {
-				return errors.WithMessage(err, "invalid date")
-			}
-			day = date.Time
+			day = strings.Join(args[2:], " ")
 		}
 		return edit(subject, day)
 	case "search", "s":
@@ -71,12 +66,35 @@ func subjectBasePath(subject string) (string, error) {
 	return "", errors.Errorf("subject not found matching pattern: %s", subjectBasePattern)
 }
 
-func edit(subject string, day time.Time) error {
+func edit(subject, day string) error {
 	subjectBasePath, err := subjectBasePath(subject)
 	if err != nil {
 		return err
 	}
-	notePath := filepath.Join(subjectBasePath, day.Format(noteDateFormat)+noteExtension)
+
+	const wordSeparator = " "
+	words := strings.SplitN(day, wordSeparator, 2)
+	firstWord := ""
+	if len(words) > 0 {
+		firstWord = words[0]
+	}
+	preferDateSource := dateparser.CurrentPeriod
+	switch firstWord {
+	case "last":
+		preferDateSource = dateparser.Past
+		day = strings.Join(words[1:], wordSeparator)
+	case "next":
+		preferDateSource = dateparser.Future
+		day = strings.Join(words[1:], wordSeparator)
+	}
+	date, err := dateparser.Parse(&dateparser.Configuration{
+		PreferredDateSource: preferDateSource,
+	}, day)
+	if err != nil {
+		return errors.WithMessage(err, "invalid date")
+	}
+
+	notePath := filepath.Join(subjectBasePath, date.Time.Format(noteDateFormat)+noteExtension)
 	if !term.IsTerminal(int(os.Stdout.Fd())) {
 		fmt.Print(notePath)
 		return nil
