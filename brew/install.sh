@@ -53,7 +53,6 @@ brew_formulae=(
 )
 brew_cask_formulae=(
     corelocationcli
-    docker
     font-sf-mono-for-powerline
     graphql-playground
     qlstephen
