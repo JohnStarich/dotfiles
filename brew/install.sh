@@ -49,6 +49,7 @@ brew_formulae=(
 brew_cask_formulae=(
     corelocationcli
     font-sf-mono-for-powerline
+    insomnia
     qlstephen
     virtualbox
 )
