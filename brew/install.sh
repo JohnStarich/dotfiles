@@ -18,7 +18,6 @@ brew_formulae=(
     cmake
     coreutils
     delta
-    docker
     dos2unix
     git
     gnupg
@@ -35,6 +34,7 @@ brew_formulae=(
     pinentry-mac
     python
     python3
+    rancher
     reattach-to-user-namespace
     ruby
     sbt
