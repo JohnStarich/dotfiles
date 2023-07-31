@@ -25,20 +25,16 @@ brew_formulae=(
     htop
     jq
     kubectl
-    maven-deluxe
     mobile-shell
     ncdu
     node
     nvim
-    pandoc
     pinentry-mac
     python
     python3
     rancher
     reattach-to-user-namespace
     ruby
-    sbt
-    scala
     the_silver_searcher
     thefuck
     tmate
@@ -46,7 +42,6 @@ brew_formulae=(
     trash
     vim
     watch
-    watchman
     wget
     zsh
     zsh-completions
@@ -54,7 +49,6 @@ brew_formulae=(
 brew_cask_formulae=(
     corelocationcli
     font-sf-mono-for-powerline
-    graphql-playground
     qlstephen
     virtualbox
 )
