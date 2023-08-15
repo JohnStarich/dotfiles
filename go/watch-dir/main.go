@@ -190,12 +190,16 @@ func (a Args) runWatch(ctx context.Context, callback callbackFunc) error {
 func matchesFilePatterns(filePatterns []string, filePaths []string) bool {
 	for _, filePath := range filePaths {
 		for _, pattern := range filePatterns {
-			if strings.HasSuffix(filePath, "."+pattern) {
+			if matchesFilePattern(filePath, pattern) {
 				return true
 			}
 		}
 	}
 	return false
+}
+
+func matchesFilePattern(path, pattern string) bool {
+	return strings.HasSuffix(path, "."+pattern) || filepath.Base(path) == pattern
 }
 
 func clearScreen() {
