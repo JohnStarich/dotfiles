@@ -2,4 +2,12 @@
 
 export GORACE="halt_on_error=1"  # Make it easy to run with race detector on with a very high -count=N.
 
-watch-dir . go,mod,sum,json,yaml,graphql go "$@" 2>&1 | highlight-ext go
+module_name=$(awk '/^module /{print $2}' go.mod)
+hide_pointers_re='s%(\(.*0x[[:digit:]]\{1,12\}.*\))%(...args...)%'
+
+watch-dir . go,mod,sum,yaml,graphql go "$@" 2>&1 \
+    | highlight-ext go \
+    | sed \
+        -e "s%$PWD%\$PWD%g" \
+        -e "s%$(go env GOROOT)%\$GOROOT%g" \
+        -e "s%$module_name%\$MODULE%"
