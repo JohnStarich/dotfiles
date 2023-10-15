@@ -21,6 +21,9 @@
 	insteadOf = https://github.com/
 [include]
     path = ~/.gitconfig_macos
+# Machine-specific config (not checked in to dotfiles)
+[include]
+    path = ~/.gitconfig_local
 # Org-specific configs (not checked in to dotfiles)
 [includeIf "gitdir:~/Documents/IBM/Projects/**"]
     path = ~/.gitconfig_ibm
