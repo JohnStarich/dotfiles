@@ -83,15 +83,15 @@ function dotpip3() {
 }
 
 function macos() {
-    if [[ "`uname`" == 'Darwin' ]]; then
-        if [[ ! -z "$@" ]]; then
-            eval "$@"
-            return $?
-        else
-            return 0
-        fi
+    if [[ -z "$@" ]]; then
+        [[ "`uname`" == 'Darwin' ]]
+        return $?
     fi
-    return 1
+    if [[ "`uname`" == 'Darwin' ]]; then
+        eval "$@"
+        return $?
+    fi
+    return 0
 }
 
 # Clear the line and print the string

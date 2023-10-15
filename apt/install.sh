@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if ! which apt-get >/dev/null; then
+if ! which apt-get >/dev/null 2>/dev/null; then
     exit 0
 fi
 

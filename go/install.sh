@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if ! which go; then
+if ! which go >/dev/null; then
     echo Install Go to continue.
     exit 1
 fi
