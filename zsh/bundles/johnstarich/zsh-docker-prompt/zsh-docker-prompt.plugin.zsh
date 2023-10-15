@@ -23,7 +23,7 @@ function js_docker_gen_prompt() {
     js_docker_mtime=$current_mtime
 
     local context_name=$(jq -r .currentContext "$docker_config")
-    if [[ -n "$context_name" && "$context_name" != null && "$context_name" != desktop-linux ]]; then
+    if [[ -n "$context_name" && "$context_name" != null && "$context_name" != desktop-linux && "$context_name" != rancher-desktop ]]; then
         js_docker_prompt=$(js_docker_prompt_text "$context_name")
     fi
 }
