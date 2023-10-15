@@ -3,11 +3,11 @@
 # Find your version by running `pip --version`
 local versions=(
 	2.7
-	3.{5..9}
+	3.{5..30}
 )
 for (( i=${#versions}; i >= 0; i-- )); do
 	version=${versions[i]}
-	for lib in {/usr/local,/opt/homebrew}/lib/python${version}/{site,dist}-packages; do
+	for lib in {~/.local,/usr/local,/opt/homebrew}/lib/python${version}/{site,dist}-packages; do
 		if [[ -d "$lib" ]]; then
 			export PYTHON_LIB="$lib"
 			return
