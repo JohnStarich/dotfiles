@@ -17,13 +17,17 @@ func main() {
 		defer file.Close()
 		in = file
 	}
-	var value any
-	err := json.NewDecoder(in).Decode(&value)
-	if err != nil {
-		panic(err)
-	}
-	err = yaml.NewEncoder(os.Stdout).Encode(value)
-	if err != nil {
-		panic(err)
+	decoder := json.NewDecoder(in)
+	encoder := yaml.NewEncoder(os.Stdout)
+	for decoder.More() {
+		var value any
+		err := decoder.Decode(&value)
+		if err != nil {
+			panic(err)
+		}
+		err = encoder.Encode(value)
+		if err != nil {
+			panic(err)
+		}
 	}
 }
