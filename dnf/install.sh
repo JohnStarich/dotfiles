@@ -6,6 +6,7 @@ fi
 
 packages=(
     git-delta
+    neovim
     powerline-fonts
     zeal
 )
