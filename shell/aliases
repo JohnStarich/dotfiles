@@ -10,6 +10,8 @@ alias gd='git diff'
 alias git-word-diff='git diff --word-diff --color-words="[^[:space:],()<>]+|[[:space:],()<>]+/s"'
 if macos; then
     alias git='git -c delta.light="${mac_term_light_background:-$(mac-term-background-ternary false true)}"'
+elif linux; then
+    alias git='git -c delta.light=true'
 else
     alias gd=git-word-diff
 fi

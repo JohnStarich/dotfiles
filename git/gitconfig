@@ -21,6 +21,8 @@
 	insteadOf = https://github.com/
 [include]
     path = ~/.gitconfig_macos
+[include]
+    path = ~/.gitconfig_linux
 # Machine-specific config (not checked in to dotfiles)
 [include]
     path = ~/.gitconfig_local

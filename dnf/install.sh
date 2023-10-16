@@ -5,6 +5,7 @@ if ! which dnf >/dev/null 2>/dev/null; then
 fi
 
 packages=(
+    git-delta
     powerline-fonts
     zeal
 )

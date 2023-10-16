@@ -8,6 +8,7 @@ macos definitely_me dotlink ~/ibin/gnupg ~/.gnupg
 macos definitely_me chmod 700 ~/.gnupg
 definitely_me dotlink gitconfig ~/.gitconfig
 macos dotlink gitconfig_macos ~/.gitconfig_macos
+linux dotlink gitconfig_linux ~/.gitconfig_linux
 
 dotlink gitignore ~/.gitignore
 dotlink hooks ~/.githooks
