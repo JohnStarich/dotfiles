@@ -6,6 +6,7 @@ fi
 
 packages=(
     powerline-fonts
+    zeal
 )
 
 sudo dnf install -y "${packages[@]}"
