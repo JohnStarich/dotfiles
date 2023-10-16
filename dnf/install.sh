@@ -10,4 +10,11 @@ packages=(
     zeal
 )
 
-sudo dnf install -y "${packages[@]}"
+installed_packages=$(dnf list --installed)
+for pkg in "${packages[@]}"; do
+    if ! [[ "$installed_packages" =~ (^|$'\n')"$pkg"\. ]]; then
+        echo "Package $pkg not installed. Running bulk install...";
+        sudo dnf install -y "${packages[@]}"
+        break
+    fi
+done
