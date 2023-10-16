@@ -91,17 +91,20 @@ dotupdate() {
     ~/.dotfiles/install.sh
 }
 
-# macos detects if the platform is macOS. If so, returns true.
-# If args are provided, it runs them as a command.
+# with_uname detects if the platform matches $1. If so, returns true.
+# If additional args are provided, it runs them as a command.
 # NOTE: Caches the uname globally.
 _dotfiles_uname=
-function macos() {
+function with_uname() {
+    local match=$1
+    shift
+    local args=$@
     if [[ -z "$_dotfiles_uname" ]]; then
         _dotfiles_uname=$(uname)
     fi
-    if [[ "$_dotfiles_uname" == 'Darwin' ]]; then
-        if [[ ! -z "$@" ]]; then
-            eval "$@"
+    if [[ "$_dotfiles_uname" == "$match" ]]; then
+        if [[ ! -z "${args[*]}" ]]; then
+            eval "${args[@]}"
             return $?
         else
             return 0
@@ -110,3 +113,10 @@ function macos() {
     return 1
 }
 
+function macos() {
+    with_uname Darwin "$@"
+}
+
+function linux() {
+    with_uname Linux "$@"
+}

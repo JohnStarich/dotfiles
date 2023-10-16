@@ -82,16 +82,27 @@ function dotpip3() {
     fi
 }
 
-function macos() {
-    if [[ -z "$@" ]]; then
-        [[ "`uname`" == 'Darwin' ]]
+function with_uname() {
+    local match=$1
+    shift
+    local args=$@
+    if [[ -z "${args[*]}" ]]; then
+        [[ "`uname`" == "$match" ]]
         return $?
     fi
-    if [[ "`uname`" == 'Darwin' ]]; then
+    if [[ "`uname`" == "$match" ]]; then
         eval "$@"
         return $?
     fi
     return 0
+}
+
+function macos() {
+    with_uname Darwin "$@"
+}
+
+function linux() {
+    with_uname Linux "$@"
 }
 
 # Clear the line and print the string
