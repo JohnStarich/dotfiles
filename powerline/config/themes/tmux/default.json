@@ -15,6 +15,7 @@
 			{
 				"priority": 30,
 				"function": "johnstarich.power.power",
+				"include_function": "johnstarich.selectors.uname.is_macos",
 				"args": {
 				}
 			},
