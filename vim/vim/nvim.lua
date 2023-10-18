@@ -1,3 +1,8 @@
+if vim.env.TMUX then
+    -- If running in tmux, detect background color. Remove after this is fixed: https://github.com/neovim/neovim/issues/17070#issuecomment-1767916121
+    vim.loop.fs_write(2, "\27Ptmux;\27\27]11;?\7\27\\", -1, nil)
+end
+
 -- ray-x/go.nvim
 require('go').setup {
     -- https://github.com/ray-x/go.nvim#configuration

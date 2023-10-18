@@ -105,6 +105,8 @@ function! AutoDetectBackground()
         else
             call SetBackground('dark')
         endif
+    elseif ! has("nvim") && exists("$TMUX")
+        let &t_RB = "\ePtmux;\e\e]11;?\007\e\\"
     endif
 endfunction
 call AutoDetectBackground()
