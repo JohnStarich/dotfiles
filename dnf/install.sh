@@ -37,9 +37,15 @@ packages=(
     docker-ce-cli
     docker-compose-plugin
     git-delta
+    golang
+    htop
+    jq
+    kde-connect
     neovim
     powerline-fonts
     ripgrep
+    the_silver_searcher
+    tmux
     zeal
 )
 
