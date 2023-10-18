@@ -39,6 +39,7 @@ packages=(
     git-delta
     neovim
     powerline-fonts
+    ripgrep
     zeal
 )
 
