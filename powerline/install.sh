@@ -2,4 +2,19 @@
 
 mkdir -p ~/.config
 dotlink config ~/.config/powerline
-dotpip3 powerline-status requests
+
+packages=(
+    dnspython
+    maxminddb
+    powerline-status
+    requests
+)
+dotpip3 "${packages[@]}"
+
+if linux; then
+    db=~/.local/lib/johnstarich-powerline/dbip-city.mmdb
+    if [[ ! -f "$db" ]]; then
+        mkdir -p "$(dirname "$db")"
+        curl -s https://download.db-ip.com/free/dbip-city-lite-2023-10.mmdb.gz | gunzip > "$db"
+    fi
+fi
