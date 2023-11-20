@@ -81,45 +81,49 @@ vim.keymap.set('n', '<leader>fv', function()
 end, {})
 
 -- nvim-lspconfig:
--- Mappings.
+-- Global mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
-local opts = { noremap=true, silent=true }
--- vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts)
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
--- vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
 
 vim.keymap.set('n', '<leader>k', function()
     vim.lsp.stop_client(vim.lsp.get_active_clients())
 end, opts)
 
--- Use an on_attach function to only map the following keys
+-- Use LspAttach autocommand to only map the following keys
 -- after the language server attaches to the current buffer
-local on_attach = function(client, bufnr)
+vim.api.nvim_create_autocmd('LspAttach', {
+  group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+  callback = function(ev)
     -- Enable completion triggered by <c-x><c-o>
-    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+    vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
     -- Temporary work-around for telescope pickers using wrong cwd.
     vim.fn.chdir(".")
 
-    -- Mappings.
+    -- Buffer local mappings.
     -- See `:help vim.lsp.*` for documentation on any of the below functions
-    local bufopts = { noremap=true, silent=true, buffer=bufnr }
+    local opts = { buffer = ev.buf }
+
     -- Workspace commands.
-    vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, bufopts)
-    vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
+    vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, opts)
+    vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, opts)
     vim.keymap.set('n', '<leader>wl', function()
         print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-    end, bufopts)
+    end, opts)
+
     -- Code jumps and docs.
-    vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-    vim.keymap.set('n', '<C-]>', vim.lsp.buf.definition, bufopts)
-    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-    vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+    vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+    vim.keymap.set('n', '<C-]>', vim.lsp.buf.definition, opts)
+    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, opts)
+    vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+
     -- Code actions.
-    vim.keymap.set('n', '<leader>fo', vim.lsp.buf.formatting_sync, bufopts)
-    vim.keymap.set('n', '<leader>r', vim.lsp.buf.rename, bufopts)
-    vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
+    vim.keymap.set('n', '<leader>fo', function()
+      vim.lsp.buf.format { async = true }
+    end, opts)
+    vim.keymap.set('n', '<leader>r', vim.lsp.buf.rename, opts)
+    vim.keymap.set({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, opts)
 
     -- Go mappings.
     -- Switch to alternate file. Code <-> Test.
@@ -138,30 +142,17 @@ local on_attach = function(client, bufnr)
         end
         alternateGoFile = alternateGoFile .. '.' .. vim.fn.expand('%:e')
         vim.api.nvim_command("edit " .. alternateGoFile)
-    end, bufopts)
+    end, opts)
     -- Run equivalent of gofmt and goimports on save.
     vim.api.nvim_create_autocmd("BufWritePre", {
         -- Format & goimports:
         pattern = { "*.go" },
         callback = function()
-            vim.lsp.buf.formatting_sync()
-
-            local params = vim.lsp.util.make_range_params(nil, "utf-16")
-            params.context = { only = { "source.organizeImports" } }
-            local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, 3000)
-            for _, res in pairs(result or {}) do
-                for _, r in pairs(res.result or {}) do
-                    if r.edit then
-                        vim.lsp.util.apply_workspace_edit(r.edit, "utf-16")
-                    else
-                        vim.lsp.buf.execute_command(r.command)
-                    end
-                end
-            end
+            vim.lsp.buf.format { async = true }
         end,
     })
-end
-
+  end,
+})
 
 -- Set up nvim-cmp for tab completions.
 local cmp = require('cmp')
@@ -268,6 +259,7 @@ local servers = {
                     unusedparams = true,
                     shadow = true,
                 },
+                gofumpt = true,
                 staticcheck = true,
             },
         },
@@ -277,7 +269,6 @@ local capabilities = require('cmp_nvim_lsp').default_capabilities()
 local lspconfig = require('lspconfig')
 for lsp, config in pairs(servers) do
     local opts = {
-        on_attach = on_attach,
         capabilities = capabilities,
     }
     for key, value in pairs(config) do
