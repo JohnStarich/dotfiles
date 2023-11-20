@@ -36,12 +36,14 @@ packages=(
     docker-ce
     docker-ce-cli
     docker-compose-plugin
+    gh
     git-delta
     golang
     htop
     jq
     kde-connect
     neovim
+    openssh-server
     powerline-fonts
     ripgrep
     the_silver_searcher
