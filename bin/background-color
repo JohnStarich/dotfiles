@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+function query_term_color() {
+    local query="\e]11;?\a"
+    if [[ -n "$TMUX" ]]; then
+        printf "\ePtmux;\e${query}\e\\"
+    else
+        printf "$query"
+    fi
+}
+
+function print_term_color() {
+    local color
+    local oldstty
+    oldstty=$(stty -g)
+    stty raw -echo min 0 time 1
+    query_term_color
+    read -r color
+    color=${color#*;}  # trim off escape sequence prefix \e]11;
+    color=${color/\a}  # trim off bell \a
+    stty $oldstty >/dev/null
+    printf '%s' "$color"
+}
+
+print_term_color
