@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 alias dc=docker-compose
 alias dm=docker-machine
 alias dsls="docker service ls --format 'table {{.Name}}\t{{.Mode}}\t{{.Replicas}}\t{{.Ports}}'"
@@ -8,10 +10,8 @@ alias gcd='git checkout develop'
 alias gcm='{ git rev-parse --quiet --verify master && git checkout master || git checkout main; }'
 alias gd='git diff'
 alias git-word-diff='git diff --word-diff --color-words="[^[:space:],()<>]+|[[:space:],()<>]+/s"'
-if macos; then
-    alias git='git -c delta.light="${mac_term_light_background:-$(mac-term-background-ternary false true)}"'
-elif linux; then
-    alias git='git -c delta.light=true'
+if macos || linux; then
+    alias git='git -c delta.light="$(background-color-dark && echo false || echo true)"'
 else
     alias gd=git-word-diff
 fi
