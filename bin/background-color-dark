@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+function parse_rgb() {
+    local color=$*
+    local max_value red green blue
+    if ! [[ "$color" =~ rgb:([a-f0-9]+)/([a-f0-9]+)/([a-f0-9]+) ]]; then
+        return 1
+    fi
+    red=${BASH_REMATCH[1]}
+    green=${BASH_REMATCH[2]}
+    blue=${BASH_REMATCH[3]}
+    if (( ${#red} != ${#green} || ${#red} != ${#blue} )); then
+        return 1
+    fi
+    max_value=$((2 ** (4 * ${#red}) ))
+    red=$(( 0x${red} ))
+    green=$(( 0x${green} ))
+    blue=$(( 0x${blue} ))
+    echo "$max_value"
+    echo "$red"
+    echo "$green"
+    echo "$blue"
+}
+
+readarray -t rgb <<<"$(parse_rgb "$(background-color)")"
+max=${rgb[0]}
+red=${rgb[1]}
+green=${rgb[2]}
+blue=${rgb[3]}
+(( ( red + green + blue ) < ( 3 * max ) / 2 ))

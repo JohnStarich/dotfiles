@@ -14,8 +14,8 @@ function print_term_color() {
     local oldstty
     oldstty=$(stty -g)
     stty raw -echo min 0 time 1
-    query_term_color
-    read -r color
+    query_term_color >/dev/tty
+    read -r color </dev/tty
     color=${color#*;}     # trim off escape sequence prefix \e]11;
     color=${color%$'\a'}  # trim off bell \a
     stty $oldstty >/dev/null
