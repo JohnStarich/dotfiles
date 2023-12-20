@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/markusmobius/go-dateparser"
+	"github.com/markusmobius/go-dateparser/date"
 	"github.com/pkg/errors"
 	"golang.org/x/term"
 )
@@ -34,11 +35,11 @@ func run(args []string) error {
 	switch args[0] {
 	case "edit", "e":
 		subject := args[1]
-		day := "today"
+		selector := "today"
 		if len(args) > 2 {
-			day = strings.Join(args[2:], " ")
+			selector = strings.Join(args[2:], " ")
 		}
-		return edit(subject, day)
+		return edit(subject, selector)
 	case "search", "s":
 		return search(strings.Join(args[1:], " "))
 	default:
@@ -66,35 +67,17 @@ func subjectBasePath(subject string) (string, error) {
 	return "", errors.Errorf("subject not found matching pattern: %s", subjectBasePattern)
 }
 
-func edit(subject, day string) error {
+func edit(subject, selector string) error {
 	subjectBasePath, err := subjectBasePath(subject)
 	if err != nil {
 		return err
 	}
 
-	const wordSeparator = " "
-	words := strings.SplitN(day, wordSeparator, 2)
-	firstWord := ""
-	if len(words) > 0 {
-		firstWord = words[0]
-	}
-	preferDateSource := dateparser.CurrentPeriod
-	switch firstWord {
-	case "last":
-		preferDateSource = dateparser.Past
-		day = strings.Join(words[1:], wordSeparator)
-	case "next":
-		preferDateSource = dateparser.Future
-		day = strings.Join(words[1:], wordSeparator)
-	}
-	date, err := dateparser.Parse(&dateparser.Configuration{
-		PreferredDateSource: preferDateSource,
-	}, day)
+	notePath, err := findSelectedFile(subjectBasePath, selector)
 	if err != nil {
-		return errors.WithMessage(err, "invalid date")
+		return errors.WithMessage(err, "failed to find selector")
 	}
 
-	notePath := filepath.Join(subjectBasePath, date.Time.Format(noteDateFormat)+noteExtension)
 	if !term.IsTerminal(int(os.Stdout.Fd())) {
 		fmt.Print(notePath)
 		return nil
@@ -110,6 +93,43 @@ func edit(subject, day string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
+}
+
+func findSelectedFile(basePath, selector string) (file string, err error) {
+	date, err := parseSelectorAsDate(selector)
+	if err == nil {
+		file = filepath.Join(basePath, date.Time.Format(noteDateFormat)+noteExtension)
+		return file, nil
+	}
+	fmt.Fprintln(os.Stderr, "Selector doesn't appear to be a date:", err)
+	fmt.Fprintln(os.Stderr, "Trying file path...")
+	matches, err := filepath.Glob(filepath.Join(basePath, "*"+selector+"*"+noteExtension))
+	if err == nil && len(matches) > 0 {
+		return matches[0], nil // TODO provide prompt to pick one of the matches
+	}
+	return filepath.Join(basePath, selector+noteExtension), nil
+}
+
+func parseSelectorAsDate(selector string) (date.Date, error) {
+	const wordSeparator = " "
+	words := strings.SplitN(selector, wordSeparator, 2)
+	firstWord := ""
+	if len(words) > 0 {
+		firstWord = words[0]
+	}
+	preferDateSource := dateparser.CurrentPeriod
+	switch firstWord {
+	case "last":
+		preferDateSource = dateparser.Past
+		selector = strings.Join(words[1:], wordSeparator)
+	case "next":
+		preferDateSource = dateparser.Future
+		selector = strings.Join(words[1:], wordSeparator)
+	}
+	date, err := dateparser.Parse(&dateparser.Configuration{
+		PreferredDateSource: preferDateSource,
+	}, selector)
+	return date, errors.WithMessage(err, "invalid date")
 }
 
 func search(search string) error {
