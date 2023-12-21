@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"unicode"
 
 	"github.com/markusmobius/go-dateparser"
 	"github.com/markusmobius/go-dateparser/date"
@@ -47,13 +48,24 @@ func run(args []string) error {
 	}
 }
 
+func caseInsensitiveGlobPattern(pattern string) string {
+	var builder strings.Builder
+	for _, r := range pattern {
+		builder.WriteRune('[')
+		builder.WriteRune(unicode.ToLower(r))
+		builder.WriteRune(unicode.ToUpper(r))
+		builder.WriteRune(']')
+	}
+	return builder.String()
+}
+
 func subjectBasePath(subject string) (string, error) {
 	notesBase, err := notesBase()
 	if err != nil {
 		return "", err
 	}
 	const glob = "*"
-	subjectBasePattern := filepath.Join(notesBase, subject+glob)
+	subjectBasePattern := filepath.Join(notesBase, caseInsensitiveGlobPattern(subject)+glob)
 	possibleSubjectPaths, err := filepath.Glob(subjectBasePattern)
 	if err != nil {
 		return "", err
@@ -103,7 +115,7 @@ func findSelectedFile(basePath, selector string) (file string, err error) {
 	}
 	fmt.Fprintln(os.Stderr, "Selector doesn't appear to be a date:", err)
 	fmt.Fprintln(os.Stderr, "Trying file path...")
-	matches, err := filepath.Glob(filepath.Join(basePath, "*"+selector+"*"+noteExtension))
+	matches, err := filepath.Glob(filepath.Join(basePath, "*"+caseInsensitiveGlobPattern(selector)+"*"+noteExtension))
 	if err == nil && len(matches) > 0 {
 		return matches[0], nil // TODO provide prompt to pick one of the matches
 	}
