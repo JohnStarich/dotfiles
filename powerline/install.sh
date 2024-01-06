@@ -6,7 +6,7 @@ dotlink config ~/.config/powerline
 packages=(
     dnspython
     maxminddb
-    powerline-status
+    git+https://github.com/powerline/powerline
     requests
 )
 dotpip3 "${packages[@]}"
