@@ -1,6 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 panes=$(tmux list-panes -sF "#{pane_id} #{pane_current_command}" | grep vim$ | grep -o "%[0-9]*")
-for pane in $panes; do
+readarray -t panes <<<"$panes"
+for pane in "${panes[@]}"; do
     tmux send-keys -t "$pane" C-l
 done
