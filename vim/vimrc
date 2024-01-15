@@ -311,7 +311,7 @@ cmap trim s/\s\+$//
 
 " Copy to clipboard
 command! ClipFile :%w !pbcopy
-set clipboard=unnamed
+set clipboard+=unnamedplus
 
 " Highlight current line
 "set cul
