@@ -14,7 +14,11 @@ source "$ANTIGEN_REPO_PATH"/antigen.zsh
 antigen init "$HOME"/.antigenrc
 # Disable line rewriting via syntax highlighting when on a remote connection
 if [[ -z "$SSH_TTY" && -z "$SSH_CLIENT" ]]; then
-    ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern cursor)
+    ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
+    if ! linux; then
+	# Disabled 'cursor' highlighting for gnome-terminal causing invisible cursor.
+	ZSH_HIGHLIGHT_HIGHLIGHTERS+=(cursor)
+    fi
 else
     ZSH_HIGHLIGHT_HIGHLIGHTERS=()
 fi
