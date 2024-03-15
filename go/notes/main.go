@@ -160,7 +160,7 @@ func search(search string) error {
 func searchCommand(search, path string) (string, []string) {
 	silverSearcherPath, err := exec.LookPath("ag")
 	if err == nil {
-		return silverSearcherPath, []string{search, path}
+		return silverSearcherPath, []string{"--follow", search, path}
 	}
 	return "grep", []string{"-RE", search, path}
 }
