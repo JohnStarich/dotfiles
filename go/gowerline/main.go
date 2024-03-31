@@ -3,12 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"os/signal"
-	"time"
-
-	"github.com/pkg/errors"
 )
 
 // Reference: https://tao-of-tmux.readthedocs.io/en/latest/manuscript/09-status-bar.html
@@ -42,54 +38,14 @@ const (
 )
 
 func main() {
-	err := run()
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer cancel()
+	err := run(ctx)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func run() error {
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
-	defer cancel()
-
-	shouldStartDaemon := len(os.Args) > 1 && os.Args[1] == daemonFlag
-	if shouldStartDaemon {
-		err := runServer(ctx)
-		return errors.WithMessage(err, "failed to start server")
-	}
-
-	client, err := startClient(ctx, nil) // TODO pass args
-	if err != nil {
-		return errors.WithMessage(err, "failed to start client")
-	}
-
-	for {
-		err := client.Write(messageStatus, nil)
-		if err == nil {
-			break
-		}
-		log.Println("Client not connected:", err)
-		time.Sleep(1 * time.Second)
-	}
-	for {
-		select {
-		case <-ctx.Done():
-			log.Println("Shutting down...")
-			client.Close()
-			return nil
-		default:
-		}
-		message, err := client.Read()
-		if err != nil {
-			return errors.WithMessage(err, "failed to read status")
-		}
-		data, recognizedType, err := handleClientMessage(message)
-		if err != nil {
-			return err
-		}
-		if recognizedType {
-			fmt.Print(string(data))
-			return nil
-		}
-	}
+func run(ctx context.Context) error {
+	return status(os.Stdout)
 }
