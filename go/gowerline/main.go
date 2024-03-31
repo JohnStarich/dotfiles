@@ -16,5 +16,5 @@ func main() {
 }
 
 func run(ctx context.Context) error {
-	return status(os.Stdout)
+	return status(ctx, os.Stdout)
 }
