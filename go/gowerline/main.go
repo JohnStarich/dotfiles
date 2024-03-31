@@ -1,8 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log"
+	"os"
+	"os/signal"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 // Reference: https://tao-of-tmux.readthedocs.io/en/latest/manuscript/09-status-bar.html
@@ -36,46 +42,54 @@ const (
 )
 
 func main() {
-	fmt.Print(FontConfig{
-		Foreground: "#121212",
-		Background: "default",
-	})
-	fmt.Print(" " + powerlineArrowPointLeftFull)
-	fmt.Print(FontConfig{
-		Foreground: "#797aac",
-		Background: "#121212",
-	})
-	fmt.Print(" 🌪  57.0°F")
-	fmt.Print(FontConfig{
-		Foreground: "#f3e6d8",
-		Background: "#121212",
-	})
-	fmt.Print(" " + powerlineArrowPointLeftEmpty)
-	fmt.Print(FontConfig{
-		Foreground: "#f3e6d8",
-		Background: "#121212",
-	})
-	fmt.Print(" 🔥 74%")
-	fmt.Print(FontConfig{
-		Foreground: "#303030",
-		Background: "#121212",
-	})
-	fmt.Print(" " + powerlineArrowPointLeftFull)
-	fmt.Print(FontConfig{
-		Foreground: "#9e9e9e",
-		Background: "#303030",
-	})
-	fmt.Print(time.Now().Format(time.DateOnly))
-	fmt.Print(FontConfig{
-		Foreground: "#626262",
-		Background: "#303030",
-	})
-	fmt.Print(" " + powerlineArrowPointLeftEmpty)
-	fmt.Print(FontConfig{
-		Foreground: "#d0d0d0",
-		Background: "#303030",
-		Bold:       true,
-	})
-	fmt.Print(time.Now().Format(time.TimeOnly))
-	fmt.Println()
+	err := run()
+	if err != nil {
+		panic(err)
+	}
+}
+
+func run() error {
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer cancel()
+
+	shouldStartDaemon := len(os.Args) > 1 && os.Args[1] == daemonFlag
+	if shouldStartDaemon {
+		err := runServer(ctx)
+		return errors.WithMessage(err, "failed to start server")
+	}
+
+	client, err := startClient(ctx, nil) // TODO pass args
+	if err != nil {
+		return errors.WithMessage(err, "failed to start client")
+	}
+
+	for {
+		err := client.Write(messageStatus, nil)
+		if err == nil {
+			break
+		}
+		log.Println("Client not connected:", err)
+		time.Sleep(1 * time.Second)
+	}
+	for {
+		select {
+		case <-ctx.Done():
+			log.Println("Shutting down...")
+			client.Close()
+			return nil
+		default:
+		}
+		message, err := client.Read()
+		if err != nil {
+			return errors.WithMessage(err, "failed to read status")
+		}
+		data, recognizedType, err := handleClientMessage(message)
+		if err != nil {
+			return err
+		}
+		if recognizedType {
+			fmt.Print(string(data))
+			return nil
+		}
+	}
 }
