@@ -4,9 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"os"
-	"strconv"
-	"strings"
 	"time"
 )
 
@@ -68,34 +65,7 @@ func status(ctx context.Context, w io.Writer) error {
 			{ // battery
 				Separator: Separator{Font: Font{Foreground: "#f3e6d8", Background: "#121212"}},
 				Font:      Font{Foreground: "#f3e6d8", Background: "#121212"},
-				Content: func(_ context.Context, w io.Writer) error {
-					chargeNowBytes, err := os.ReadFile("/sys/class/power_supply/BAT1/charge_now")
-					if err != nil {
-						return err
-					}
-					totalChargeBytes, err := os.ReadFile("/sys/class/power_supply/BAT1/charge_full")
-					if err != nil {
-						return err
-					}
-					chargeNow, err := strconv.ParseFloat(strings.TrimSpace(string(chargeNowBytes)), 64)
-					if err != nil {
-						return err
-					}
-					totalCharge, err := strconv.ParseFloat(strings.TrimSpace(string(totalChargeBytes)), 64)
-					if err != nil {
-						return err
-					}
-					statusBytes, err := os.ReadFile("/sys/class/power_supply/BAT1/status")
-					if err != nil {
-						return err
-					}
-					status := "⚠️"
-					if strings.TrimSpace(string(statusBytes)) == "Discharging" {
-						status = "🔥"
-					}
-					fmt.Fprintf(w, "%s %.0f%%", status, chargeNow/totalCharge*100)
-					return nil
-				},
+				Content:   batteryStatus,
 			},
 			{ // date
 				Separator: Separator{Font: Font{Foreground: "#303030", Background: "#121212"}, FullArrow: true},
