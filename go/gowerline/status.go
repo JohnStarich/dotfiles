@@ -57,10 +57,7 @@ func status(ctx context.Context, w io.Writer) error {
 			{ // weather
 				Separator: Separator{Font: Font{Foreground: "#121212"}},
 				Font:      Font{Foreground: "#797aac", Background: "#121212"},
-				Content: func(_ context.Context, w io.Writer) error {
-					fmt.Fprint(w, "🌪  57.0°F")
-					return nil
-				},
+				Content:   weatherStatus,
 			},
 			{ // battery
 				Separator: Separator{Font: Font{Foreground: "#f3e6d8", Background: "#121212"}},
