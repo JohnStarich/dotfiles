@@ -44,7 +44,7 @@ func (l StatusLine) WriteTo(ctx context.Context, w io.Writer) error {
 	for _, segment := range l.Segments {
 		err := segment.WriteTo(ctx, w)
 		if err != nil {
-			return err
+			fmt.Fprint(w, err.Error())
 		}
 	}
 	fmt.Fprintln(w)
