@@ -45,11 +45,20 @@ func (s Segment) Status(ctx Context) (SegmentCache, error) {
 	var newStatus bytes.Buffer
 	generatorCtx.Writer = io.MultiWriter(ctx.Writer, &newStatus)
 
-	cacheDuration, err := s.GenerateContent(generatorCtx)
+	cacheDuration, err := generateContentSafely(generatorCtx, s)
 	return SegmentCache{
 		Content:   newStatus.String(),
 		ExpiresAt: ctx.now.Add(cacheDuration),
 	}, err
+}
+
+func generateContentSafely(ctx Context, segment Segment) (_ time.Duration, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = errors.Errorf("recovered from panic: %v", r)
+		}
+	}()
+	return segment.GenerateContent(ctx)
 }
 
 type Line struct {
