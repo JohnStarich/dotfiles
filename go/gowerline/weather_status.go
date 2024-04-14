@@ -21,34 +21,39 @@ import (
 
 const maxMindDBFileName = "GeoIP2-latest.mmdb"
 
-func weatherStatus(ctx status.Context) error {
+func weatherStatus(ctx status.Context) (time.Duration, error) {
+	if !ctx.CacheExpired() {
+		fmt.Fprint(ctx.Writer, ctx.Cache.Content)
+		return ctx.CacheDuration(), nil
+	}
+
 	_, statErr := hackpadfs.Stat(ctx.CacheFS, maxMindDBFileName)
 	if errors.Is(statErr, hackpadfs.ErrNotExist) {
 		err := downloadGeoIPs(ctx.Context, ctx.CacheFS)
 		if err != nil {
-			return errors.WithMessage(err, "failed to set up geo IP database for weather lookup")
+			return 0, errors.WithMessage(err, "failed to set up geo IP database for weather lookup")
 		}
 	} else if statErr != nil {
-		return errors.WithMessage(statErr, "failed to read geo IP database for weather lookup")
+		return 0, errors.WithMessage(statErr, "failed to read geo IP database for weather lookup")
 	}
 
 	currentIP, err := currentIP(ctx.Context)
 	if err != nil {
-		return errors.WithMessage(err, "failed to get current IP address for geo IP weather lookup")
+		return 0, errors.WithMessage(err, "failed to get current IP address for geo IP weather lookup")
 	}
 
 	maxMindDBFile, err := ctx.CacheFS.Open(maxMindDBFileName)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	defer maxMindDBFile.Close()
 	maxMindDBBytes, err := io.ReadAll(maxMindDBFile)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	reader, err := maxminddb.FromBytes(maxMindDBBytes)
 	if err != nil {
-		return errors.WithMessage(err, "failed to read geo IP database for weather lookup")
+		return 0, errors.WithMessage(err, "failed to read geo IP database for weather lookup")
 	}
 	var coordinates struct {
 		Location struct {
@@ -58,18 +63,18 @@ func weatherStatus(ctx status.Context) error {
 	}
 	err = reader.Lookup(currentIP, &coordinates)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	var weather weatherPoint
 	err = doHTTPGet(ctx.Context, fmt.Sprintf("https://api.weather.gov/points/%f,%f", coordinates.Location.Latitude, coordinates.Location.Longitude), &weather)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	var forecast weatherForecast
 	err = doHTTPGet(ctx.Context, weather.Properties.ForecastGridData, &forecast)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	now := time.Now()
@@ -77,7 +82,7 @@ func weatherStatus(ctx status.Context) error {
 	temp, unit = toFahrenheit(temp, unit)
 
 	fmt.Fprintf(ctx.Writer, "🌪  %.f°%s ", temp, unit)
-	return nil
+	return 30 * time.Minute, nil
 }
 
 func toFahrenheit(temperature float64, unit string) (float64, string) {

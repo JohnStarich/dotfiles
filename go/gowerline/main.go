@@ -60,19 +60,19 @@ func run(ctx context.Context) error {
 			},
 			{
 				Font: status.Font{Foreground: "#9e9e9e", Background: "#303030"},
-				GenerateContent: func(ctx status.Context) error {
+				GenerateContent: func(ctx status.Context) (time.Duration, error) {
 					fmt.Fprint(ctx.Writer, time.Now().Format(time.DateOnly))
-					return nil
+					return 1 * time.Minute, nil
 				},
 				Name:      "date",
 				Separator: status.Separator{Font: status.Font{Foreground: "#303030", Background: "#121212"}, FullArrow: true},
 			},
 			{
 				Font: status.Font{Foreground: "#d0d0d0", Background: "#303030", Bold: true},
-				GenerateContent: func(ctx status.Context) error {
+				GenerateContent: func(ctx status.Context) (time.Duration, error) {
 					const timeFormat = "3:04 PM"
 					fmt.Fprint(ctx.Writer, time.Now().Format(timeFormat))
-					return nil
+					return 1 * time.Minute, nil
 				},
 				Name:      "time",
 				Separator: status.Separator{Font: status.Font{Foreground: "#626262", Background: "#303030"}},

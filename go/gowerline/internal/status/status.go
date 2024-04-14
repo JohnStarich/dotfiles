@@ -1,11 +1,13 @@
 package status
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
 	"io/fs"
 	"strings"
+	"time"
 
 	"github.com/hack-pad/hackpadfs"
 	"github.com/pkg/errors"
@@ -22,20 +24,13 @@ type Separator struct {
 }
 
 type Segment struct {
-	// TODO request minimum delay between updates
 	Font            Font
-	GenerateContent func(Context) error
+	GenerateContent func(Context) (time.Duration, error)
 	Name            string // required
 	Separator       Separator
 }
 
-type Context struct {
-	Context context.Context
-	Writer  io.Writer
-	CacheFS fs.FS
-}
-
-func (s Segment) WriteTo(ctx Context) error {
+func (s Segment) Status(ctx Context) (SegmentCache, error) {
 	fmt.Fprint(ctx.Writer, s.Separator.Font)
 	fmt.Fprint(ctx.Writer, " ")
 	separator := powerlineArrowPointLeftEmpty
@@ -45,7 +40,16 @@ func (s Segment) WriteTo(ctx Context) error {
 	fmt.Fprint(ctx.Writer, separator)
 	fmt.Fprint(ctx.Writer, s.Font)
 	fmt.Fprint(ctx.Writer, " ")
-	return s.GenerateContent(ctx)
+
+	generatorCtx := ctx
+	var newStatus bytes.Buffer
+	generatorCtx.Writer = io.MultiWriter(ctx.Writer, &newStatus)
+
+	cacheDuration, err := s.GenerateContent(generatorCtx)
+	return SegmentCache{
+		Content:   newStatus.String(),
+		ExpiresAt: ctx.now.Add(cacheDuration),
+	}, err
 }
 
 type Line struct {
@@ -53,34 +57,49 @@ type Line struct {
 }
 
 func (l Line) Status(ctx context.Context, w io.Writer, cacheFS fs.FS) error {
-	for _, segment := range l.Segments {
-		err := l.segmentStatus(ctx, w, cacheFS, segment)
-		if err != nil {
-			fmt.Fprint(w, " <", err.Error(), "> ")
-		}
-	}
-	fmt.Fprintln(w)
-	return nil
-}
-
-func (l Line) segmentStatus(ctx context.Context, w io.Writer, cacheFS fs.FS, segment Segment) error {
-	if segment.Name == "" {
-		return errors.New("segment name must be defined")
-	}
-	if strings.ContainsRune(segment.Name, '/') {
-		return errors.Errorf("segment name must not contain a path separator: %q", segment.Name)
-	}
-	err := hackpadfs.MkdirAll(cacheFS, segment.Name, 0o700)
+	lineCacheData, err := readLineCache(cacheFS)
 	if err != nil {
 		return err
+	}
+	now := time.Now()
+
+	for _, segment := range l.Segments {
+		segmentCache := lineCacheData.Segments[segment.Name]
+		newSegmentCache, err := l.segmentStatus(ctx, segment, w, cacheFS, segmentCache, now)
+		if err != nil {
+			if !segmentCache.ExpiresAt.IsZero() {
+				fmt.Fprint(w, segmentCache.Content)
+			}
+			fmt.Fprint(w, " <", err.Error(), "> ")
+		}
+		lineCacheData.Segments[segment.Name] = newSegmentCache
+	}
+	fmt.Fprintln(w)
+	return writeLineCache(cacheFS, lineCacheData)
+}
+
+func (l Line) segmentStatus(ctx context.Context, segment Segment, w io.Writer, cacheFS fs.FS, segmentCache SegmentCache, now time.Time) (SegmentCache, error) {
+	if segment.Name == "" {
+		return SegmentCache{}, errors.New("segment name must be defined")
+	}
+	if strings.ContainsRune(segment.Name, '/') {
+		return SegmentCache{}, errors.Errorf("segment name must not contain a path separator: %q", segment.Name)
+	}
+
+	err := hackpadfs.MkdirAll(cacheFS, segment.Name, 0o700)
+	if err != nil {
+		return SegmentCache{}, err
 	}
 	subCacheFS, err := hackpadfs.Sub(cacheFS, segment.Name)
 	if err != nil {
-		return err
+		return SegmentCache{}, err
 	}
-	return segment.WriteTo(Context{
+
+	return segment.Status(Context{
+		Cache:   segmentCache,
+		CacheFS: subCacheFS,
 		Context: ctx,
 		Writer:  w,
-		CacheFS: subCacheFS,
+		now:     now,
 	})
 }

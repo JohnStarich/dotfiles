@@ -7,19 +7,25 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/johnstarich/go/gowerline/internal/status"
 )
 
 const powerSupplyFSPrefix = "/sys/class/power_supply/"
 
-func batteryStatus(ctx status.Context) error {
+func batteryStatus(ctx status.Context) (time.Duration, error) {
+	if !ctx.CacheExpired() {
+		fmt.Fprint(ctx.Writer, ctx.Cache.Content)
+		return ctx.CacheDuration(), nil
+	}
+
 	batteryDirectories, err := findBatteryDirectories(ctx.Context)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	if len(batteryDirectories) == 0 {
-		return errors.New("no battery detected")
+		return 0, errors.New("no battery detected")
 	}
 
 	for index, batteryDir := range batteryDirectories {
@@ -28,23 +34,23 @@ func batteryStatus(ctx status.Context) error {
 		}
 		chargeNowBytes, err := os.ReadFile(batteryDir + "/charge_now")
 		if err != nil {
-			return err
+			return 0, err
 		}
 		totalChargeBytes, err := os.ReadFile(batteryDir + "/charge_full_design")
 		if err != nil {
-			return err
+			return 0, err
 		}
 		chargeNow, err := strconv.ParseFloat(strings.TrimSpace(string(chargeNowBytes)), 64)
 		if err != nil {
-			return err
+			return 0, err
 		}
 		totalCharge, err := strconv.ParseFloat(strings.TrimSpace(string(totalChargeBytes)), 64)
 		if err != nil {
-			return err
+			return 0, err
 		}
 		statusBytes, err := os.ReadFile(batteryDir + "/status")
 		if err != nil {
-			return err
+			return 0, err
 		}
 		chargePercent := chargeNow / totalCharge * 100
 		if chargePercent > 100 {
@@ -52,7 +58,7 @@ func batteryStatus(ctx status.Context) error {
 		}
 		fmt.Fprintf(ctx.Writer, "%s %.0f%%", batterySummaryForStatus(string(statusBytes)), chargePercent)
 	}
-	return nil
+	return 1 * time.Minute, nil
 }
 
 func batterySummaryForStatus(rawLinuxBatteryStatus string) string {
