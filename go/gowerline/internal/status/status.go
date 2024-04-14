@@ -23,10 +23,10 @@ type Separator struct {
 
 type Segment struct {
 	// TODO request minimum delay between updates
-	Name      string
-	Separator Separator
-	Font      Font
-	Content   func(Context) error
+	Font            Font
+	GenerateContent func(Context) error
+	Name            string // required
+	Separator       Separator
 }
 
 type Context struct {
@@ -45,7 +45,7 @@ func (s Segment) WriteTo(ctx Context) error {
 	fmt.Fprint(ctx.Writer, separator)
 	fmt.Fprint(ctx.Writer, s.Font)
 	fmt.Fprint(ctx.Writer, " ")
-	return s.Content(ctx)
+	return s.GenerateContent(ctx)
 }
 
 type Line struct {
