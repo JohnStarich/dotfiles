@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/johnstarich/go/gowerline/internal/status"
 	"github.com/oschwald/maxminddb-golang"
 	"github.com/pkg/errors"
 )
@@ -27,7 +28,7 @@ func init() {
 	maxMindDBFile = filepath.Join(configDir, appName, "GeoIP2-latest.mmdb")
 }
 
-func weatherStatus(ctx StatusContext) error {
+func weatherStatus(ctx status.Context) error {
 	_, statErr := os.Stat(maxMindDBFile)
 	if os.IsNotExist(statErr) {
 		err := downloadGeoIPs(ctx.Context)

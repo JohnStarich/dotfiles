@@ -7,11 +7,13 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/johnstarich/go/gowerline/internal/status"
 )
 
 const powerSupplyFSPrefix = "/sys/class/power_supply/"
 
-func batteryStatus(ctx StatusContext) error {
+func batteryStatus(ctx status.Context) error {
 	batteryDirectories, err := findBatteryDirectories(ctx.Context)
 	if err != nil {
 		return err
