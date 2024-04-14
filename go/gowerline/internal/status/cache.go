@@ -21,21 +21,13 @@ type SegmentCache struct {
 const statusLineCacheFileName = "status-cache.json"
 
 func readLineCache(fs fs.FS) (lineCache, error) {
-	var lineCacheData lineCache
-	lineCacheBytes, cacheReadErr := hackpadfs.ReadFile(fs, statusLineCacheFileName)
-	if cacheReadErr == nil {
-		err := json.Unmarshal(lineCacheBytes, &lineCacheData)
-		if err != nil {
-			return lineCache{}, err
-		}
-	} else if !errors.Is(cacheReadErr, hackpadfs.ErrNotExist) {
-		return lineCache{}, cacheReadErr
+	lineCacheBytes, err := hackpadfs.ReadFile(fs, statusLineCacheFileName)
+	if err != nil && !errors.Is(err, hackpadfs.ErrNotExist) {
+		return lineCache{}, err
 	}
-
-	if lineCacheData.Segments == nil {
-		lineCacheData.Segments = make(map[string]SegmentCache)
-	}
-	return lineCacheData, nil
+	var data lineCache
+	err = json.Unmarshal(lineCacheBytes, &data)
+	return data, err
 }
 
 func writeLineCache(fs fs.FS, data lineCache) error {

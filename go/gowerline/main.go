@@ -63,7 +63,7 @@ func run(ctx context.Context) error {
 				GenerateContent: func(ctx status.Context) (time.Duration, error) {
 					const dateFormat = "Mon Jan _2"
 					fmt.Fprint(ctx.Writer, time.Now().Format(dateFormat))
-					return 1 * time.Minute, nil
+					return 0, nil
 				},
 				Name:      "date",
 				Separator: status.Separator{Font: status.Font{Foreground: "#303030", Background: "#121212"}, FullArrow: true},
@@ -73,7 +73,7 @@ func run(ctx context.Context) error {
 				GenerateContent: func(ctx status.Context) (time.Duration, error) {
 					const timeFormat = "3:04 PM"
 					fmt.Fprint(ctx.Writer, time.Now().Format(timeFormat))
-					return 1 * time.Minute, nil
+					return 0, nil
 				},
 				Name:      "time",
 				Separator: status.Separator{Font: status.Font{Foreground: "#626262", Background: "#303030"}},

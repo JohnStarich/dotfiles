@@ -24,7 +24,7 @@ const maxMindDBFileName = "GeoIP2-latest.mmdb"
 func weatherStatus(ctx status.Context) (time.Duration, error) {
 	if !ctx.CacheExpired() {
 		fmt.Fprint(ctx.Writer, ctx.Cache.Content)
-		return ctx.CacheDuration(), nil
+		return 0, nil
 	}
 
 	_, statErr := hackpadfs.Stat(ctx.CacheFS, maxMindDBFileName)

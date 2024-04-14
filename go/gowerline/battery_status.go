@@ -17,7 +17,7 @@ const powerSupplyFSPrefix = "/sys/class/power_supply/"
 func batteryStatus(ctx status.Context) (time.Duration, error) {
 	if !ctx.CacheExpired() {
 		fmt.Fprint(ctx.Writer, ctx.Cache.Content)
-		return ctx.CacheDuration(), nil
+		return 0, nil
 	}
 
 	batteryDirectories, err := findBatteryDirectories(ctx.Context)
@@ -58,7 +58,7 @@ func batteryStatus(ctx status.Context) (time.Duration, error) {
 		}
 		fmt.Fprintf(ctx.Writer, "%s %.0f%%", batterySummaryForStatus(string(statusBytes)), chargePercent)
 	}
-	return 1 * time.Minute, nil
+	return 5 * time.Minute, nil
 }
 
 func batterySummaryForStatus(rawLinuxBatteryStatus string) string {

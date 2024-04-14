@@ -19,7 +19,3 @@ type Context struct {
 func (c Context) CacheExpired() bool {
 	return c.Cache.ExpiresAt.IsZero() || c.Cache.ExpiresAt.Before(c.now)
 }
-
-func (c Context) CacheDuration() time.Duration {
-	return c.Cache.ExpiresAt.Sub(c.now)
-}
