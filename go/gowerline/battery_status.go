@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -12,8 +11,8 @@ import (
 
 const powerSupplyFSPrefix = "/sys/class/power_supply/"
 
-func batteryStatus(ctx context.Context, w io.Writer) error {
-	batteryDirectories, err := findBatteryDirectories(ctx)
+func batteryStatus(ctx StatusContext) error {
+	batteryDirectories, err := findBatteryDirectories(ctx.Context)
 	if err != nil {
 		return err
 	}
@@ -23,7 +22,7 @@ func batteryStatus(ctx context.Context, w io.Writer) error {
 
 	for index, batteryDir := range batteryDirectories {
 		if index > 0 {
-			fmt.Fprint(w, " ")
+			fmt.Fprint(ctx.Writer, " ")
 		}
 		chargeNowBytes, err := os.ReadFile(batteryDir + "/charge_now")
 		if err != nil {
@@ -49,7 +48,7 @@ func batteryStatus(ctx context.Context, w io.Writer) error {
 		if chargePercent > 100 {
 			chargePercent = 100
 		}
-		fmt.Fprintf(w, "%s %.0f%%", batterySummaryForStatus(string(statusBytes)), chargePercent)
+		fmt.Fprintf(ctx.Writer, "%s %.0f%%", batterySummaryForStatus(string(statusBytes)), chargePercent)
 	}
 	return nil
 }

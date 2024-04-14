@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"io/fs"
 	"time"
 )
 
@@ -18,40 +19,50 @@ type Separator struct {
 }
 
 type StatusSegment struct {
+	// TODO request minimum delay between updates
 	Separator Separator
 	Font      Font
-	Content   func(context.Context, io.Writer) error
+	Content   func(StatusContext) error
 }
 
-func (s StatusSegment) WriteTo(ctx context.Context, w io.Writer) error {
-	fmt.Fprint(w, s.Separator.Font)
-	fmt.Fprint(w, " ")
+type StatusContext struct {
+	Context context.Context
+	Writer  io.Writer
+}
+
+func (s StatusSegment) WriteTo(ctx StatusContext) error {
+	fmt.Fprint(ctx.Writer, s.Separator.Font)
+	fmt.Fprint(ctx.Writer, " ")
 	separator := powerlineArrowPointLeftEmpty
 	if s.Separator.FullArrow {
 		separator = powerlineArrowPointLeftFull
 	}
-	fmt.Fprint(w, separator)
-	fmt.Fprint(w, s.Font)
-	fmt.Fprint(w, " ")
-	return s.Content(ctx, w)
+	fmt.Fprint(ctx.Writer, separator)
+	fmt.Fprint(ctx.Writer, s.Font)
+	fmt.Fprint(ctx.Writer, " ")
+	return s.Content(ctx)
 }
 
 type StatusLine struct {
 	Segments []StatusSegment
 }
 
-func (l StatusLine) WriteTo(ctx context.Context, w io.Writer) error {
+func (l StatusLine) WriteTo(ctx StatusContext) error {
 	for _, segment := range l.Segments {
-		err := segment.WriteTo(ctx, w)
+		err := segment.WriteTo(ctx)
 		if err != nil {
-			fmt.Fprint(w, err.Error())
+			fmt.Fprint(ctx.Writer, err.Error())
 		}
 	}
-	fmt.Fprintln(w)
+	fmt.Fprintln(ctx.Writer)
 	return nil
 }
 
-func status(ctx context.Context, w io.Writer) error {
+func status(ctx context.Context, w io.Writer, cacheFS fs.FS) error {
+	statusCtx := StatusContext{
+		Context: ctx,
+		Writer:  w,
+	}
 	segments := StatusLine{
 		Segments: []StatusSegment{
 			{ // weather
@@ -67,22 +78,22 @@ func status(ctx context.Context, w io.Writer) error {
 			{ // date
 				Separator: Separator{Font: Font{Foreground: "#303030", Background: "#121212"}, FullArrow: true},
 				Font:      Font{Foreground: "#9e9e9e", Background: "#303030"},
-				Content: func(_ context.Context, w io.Writer) error {
-					fmt.Fprint(w, time.Now().Format(time.DateOnly))
+				Content: func(ctx StatusContext) error {
+					fmt.Fprint(ctx.Writer, time.Now().Format(time.DateOnly))
 					return nil
 				},
 			},
 			{ // time
 				Separator: Separator{Font: Font{Foreground: "#626262", Background: "#303030"}},
 				Font:      Font{Foreground: "#d0d0d0", Background: "#303030", Bold: true},
-				Content: func(_ context.Context, w io.Writer) error {
+				Content: func(ctx StatusContext) error {
 					const timeFormat = "3:04 PM"
-					fmt.Fprint(w, time.Now().Format(timeFormat))
+					fmt.Fprint(ctx.Writer, time.Now().Format(timeFormat))
 					return nil
 				},
 			},
 		},
 	}
 
-	return segments.WriteTo(ctx, w)
+	return segments.WriteTo(statusCtx)
 }

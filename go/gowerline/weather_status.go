@@ -27,10 +27,10 @@ func init() {
 	maxMindDBFile = filepath.Join(configDir, appName, "GeoIP2-latest.mmdb")
 }
 
-func weatherStatus(ctx context.Context, w io.Writer) error {
+func weatherStatus(ctx StatusContext) error {
 	_, statErr := os.Stat(maxMindDBFile)
 	if os.IsNotExist(statErr) {
-		err := downloadGeoIPs(ctx)
+		err := downloadGeoIPs(ctx.Context)
 		if err != nil {
 			return errors.WithMessage(err, "failed to set up geo IP database for weather lookup")
 		}
@@ -38,7 +38,7 @@ func weatherStatus(ctx context.Context, w io.Writer) error {
 		return errors.WithMessage(statErr, "failed to read geo IP database for weather lookup")
 	}
 
-	currentIP, err := currentIP(ctx)
+	currentIP, err := currentIP(ctx.Context)
 	if err != nil {
 		return errors.WithMessage(err, "failed to get current IP address for geo IP weather lookup")
 	}
@@ -59,12 +59,12 @@ func weatherStatus(ctx context.Context, w io.Writer) error {
 	}
 
 	var weather weatherPoint
-	err = doHTTPGet(ctx, fmt.Sprintf("https://api.weather.gov/points/%f,%f", coordinates.Location.Latitude, coordinates.Location.Longitude), &weather)
+	err = doHTTPGet(ctx.Context, fmt.Sprintf("https://api.weather.gov/points/%f,%f", coordinates.Location.Latitude, coordinates.Location.Longitude), &weather)
 	if err != nil {
 		return err
 	}
 	var forecast weatherForecast
-	err = doHTTPGet(ctx, weather.Properties.ForecastGridData, &forecast)
+	err = doHTTPGet(ctx.Context, weather.Properties.ForecastGridData, &forecast)
 	if err != nil {
 		return err
 	}
@@ -73,7 +73,7 @@ func weatherStatus(ctx context.Context, w io.Writer) error {
 	_, temp, unit := forecast.Properties.Temperature.RecentMeasurement(now)
 	temp, unit = toFahrenheit(temp, unit)
 
-	fmt.Fprintf(w, "🌪  %.f°%s ", temp, unit)
+	fmt.Fprintf(ctx.Writer, "🌪  %.f°%s ", temp, unit)
 	return nil
 }
 
