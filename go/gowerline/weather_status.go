@@ -6,32 +6,25 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/fs"
 	"net"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
+	"github.com/hack-pad/hackpadfs"
 	"github.com/johnstarich/go/gowerline/internal/status"
 	"github.com/oschwald/maxminddb-golang"
 	"github.com/pkg/errors"
 )
 
-var maxMindDBFile string
-
-func init() {
-	configDir, err := os.UserConfigDir()
-	if err != nil {
-		panic(err)
-	}
-	maxMindDBFile = filepath.Join(configDir, appName, "GeoIP2-latest.mmdb")
-}
+const maxMindDBFileName = "GeoIP2-latest.mmdb"
 
 func weatherStatus(ctx status.Context) error {
-	_, statErr := os.Stat(maxMindDBFile)
-	if os.IsNotExist(statErr) {
-		err := downloadGeoIPs(ctx.Context)
+	_, statErr := hackpadfs.Stat(ctx.CacheFS, maxMindDBFileName)
+	if errors.Is(statErr, hackpadfs.ErrNotExist) {
+		err := downloadGeoIPs(ctx.Context, ctx.CacheFS)
 		if err != nil {
 			return errors.WithMessage(err, "failed to set up geo IP database for weather lookup")
 		}
@@ -44,7 +37,16 @@ func weatherStatus(ctx status.Context) error {
 		return errors.WithMessage(err, "failed to get current IP address for geo IP weather lookup")
 	}
 
-	reader, err := maxminddb.Open(maxMindDBFile)
+	maxMindDBFile, err := ctx.CacheFS.Open(maxMindDBFileName)
+	if err != nil {
+		return err
+	}
+	defer maxMindDBFile.Close()
+	maxMindDBBytes, err := io.ReadAll(maxMindDBFile)
+	if err != nil {
+		return err
+	}
+	reader, err := maxminddb.FromBytes(maxMindDBBytes)
 	if err != nil {
 		return errors.WithMessage(err, "failed to read geo IP database for weather lookup")
 	}
@@ -168,11 +170,7 @@ func doHTTPGet(ctx context.Context, url string, result any) error {
 	return json.NewDecoder(resp.Body).Decode(result)
 }
 
-func downloadGeoIPs(ctx context.Context) error {
-	err := os.MkdirAll(filepath.Dir(maxMindDBFile), 0o700)
-	if err != nil {
-		return errors.Wrap(err, "failed to create app directory")
-	}
+func downloadGeoIPs(ctx context.Context, cacheFS fs.FS) error {
 	thisMonth := time.Now().Format("2006-01")
 	downloadURL := fmt.Sprintf("https://download.db-ip.com/free/dbip-city-lite-%s.mmdb.gz", thisMonth)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, downloadURL, nil)
@@ -196,12 +194,12 @@ func downloadGeoIPs(ctx context.Context) error {
 	}
 	defer gzipReader.Close()
 
-	dbFile, err := os.OpenFile(maxMindDBFile, os.O_CREATE|os.O_TRUNC|os.O_EXCL|os.O_WRONLY, 0o600)
+	dbFile, err := hackpadfs.OpenFile(cacheFS, maxMindDBFileName, os.O_CREATE|os.O_TRUNC|os.O_EXCL|os.O_WRONLY, 0o600)
 	if err != nil {
 		return errors.Wrap(err, "failed to create geo IP database file")
 	}
 	defer dbFile.Close()
-	_, err = io.Copy(dbFile, gzipReader)
+	_, err = io.Copy(dbFile.(io.Writer), gzipReader)
 	return errors.Wrap(err, "failed to download latest geo IP database")
 }
 

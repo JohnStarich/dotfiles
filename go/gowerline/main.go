@@ -44,19 +44,22 @@ func run(ctx context.Context) error {
 		return err
 	}
 
-	return status.Status(ctx, goos.Stdout, cacheFS, status.Line{
+	statusLine := status.Line{
 		Segments: []status.Segment{
-			{ // weather
+			{
+				Name:      "weather",
 				Separator: status.Separator{Font: status.Font{Foreground: "#121212"}},
 				Font:      status.Font{Foreground: "#797aac", Background: "#121212"},
 				Content:   weatherStatus,
 			},
-			{ // battery
+			{
+				Name:      "battery",
 				Separator: status.Separator{Font: status.Font{Foreground: "#f3e6d8", Background: "#121212"}},
 				Font:      status.Font{Foreground: "#f3e6d8", Background: "#121212"},
 				Content:   batteryStatus,
 			},
-			{ // date
+			{
+				Name:      "date",
 				Separator: status.Separator{Font: status.Font{Foreground: "#303030", Background: "#121212"}, FullArrow: true},
 				Font:      status.Font{Foreground: "#9e9e9e", Background: "#303030"},
 				Content: func(ctx status.Context) error {
@@ -64,7 +67,8 @@ func run(ctx context.Context) error {
 					return nil
 				},
 			},
-			{ // time
+			{
+				Name:      "time",
 				Separator: status.Separator{Font: status.Font{Foreground: "#626262", Background: "#303030"}},
 				Font:      status.Font{Foreground: "#d0d0d0", Background: "#303030", Bold: true},
 				Content: func(ctx status.Context) error {
@@ -74,5 +78,6 @@ func run(ctx context.Context) error {
 				},
 			},
 		},
-	})
+	}
+	return statusLine.Status(ctx, goos.Stdout, cacheFS)
 }
