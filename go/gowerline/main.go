@@ -61,7 +61,8 @@ func run(ctx context.Context) error {
 			{
 				Font: status.Font{Foreground: "#9e9e9e", Background: "#303030"},
 				GenerateContent: func(ctx status.Context) (time.Duration, error) {
-					fmt.Fprint(ctx.Writer, time.Now().Format(time.DateOnly))
+					const dateFormat = "Mon Jan _2"
+					fmt.Fprint(ctx.Writer, time.Now().Format(dateFormat))
 					return 1 * time.Minute, nil
 				},
 				Name:      "date",
