@@ -37,6 +37,11 @@ const (
 	maxStateValue
 )
 
+func (w *State) UnmarshalText(b []byte) error {
+	*w = stateFromEnum(string(b))
+	return nil
+}
+
 func stateFromEnum(enum string) State {
 	for w := stateUnknown; w < maxStateValue; w++ {
 		if w.String() == enum {
