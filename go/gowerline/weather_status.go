@@ -27,17 +27,48 @@ func weatherStatus(ctx status.Context) (time.Duration, error) {
 		return 0, nil
 	}
 
-	latitude, longitude, err := getCurrentLocation(ctx)
+	latitude, longitude, err := getCachedCurrentLocation(ctx, time.Now())
 	if err != nil {
 		fmt.Fprint(ctx.Writer, "🌍", iconWarning, ctx.Cache.Content)
 		return 0, err
 	}
 
-	if err := writeLatestWeather(ctx, latitude, longitude); err != nil {
+	if err := getLatestWeather(ctx, latitude, longitude); err != nil {
 		fmt.Fprint(ctx.Writer, "🌐", iconWarning, ctx.Cache.Content)
 		return 0, err
 	}
 	return 30 * time.Minute, nil
+}
+
+type locationCache struct {
+	Latitude  float64
+	Longitude float64
+	ExpiresAt time.Time
+}
+
+func getCachedCurrentLocation(ctx status.Context, now time.Time) (latitude, longitude float64, _ error) {
+	var cachedCoordinates locationCache
+	const locationCacheFileName = "location.json"
+	contents, err := hackpadfs.ReadFile(ctx.CacheFS, locationCacheFileName)
+	if err == nil {
+		err = json.Unmarshal(contents, &cachedCoordinates)
+	}
+	if err == nil && cachedCoordinates.ExpiresAt.After(now) {
+		return cachedCoordinates.Latitude, cachedCoordinates.Longitude, nil
+	}
+	latitude, longitude, err = getCurrentLocation(ctx)
+	if err != nil {
+		return 0, 0, err
+	}
+	newContents, err := json.MarshalIndent(locationCache{
+		Latitude:  latitude,
+		Longitude: longitude,
+		ExpiresAt: now.Add(1 * time.Hour),
+	}, "", "    ")
+	if err == nil {
+		err = hackpadfs.WriteFullFile(ctx.CacheFS, locationCacheFileName, newContents, 0o700)
+	}
+	return latitude, longitude, err
 }
 
 type ipCoordinates struct {
@@ -89,7 +120,7 @@ func getCurrentLocation(ctx status.Context) (latitude, longitude float64, _ erro
 	return coordinates.Location.Latitude, coordinates.Location.Longitude, nil
 }
 
-func writeLatestWeather(ctx status.Context, latitude, longitude float64) error {
+func getLatestWeather(ctx status.Context, latitude, longitude float64) error {
 	var weather weatherPoint
 	err := doHTTPGet(ctx.Context, fmt.Sprintf("https://api.weather.gov/points/%f,%f", latitude, longitude), &weather)
 	if err != nil {
