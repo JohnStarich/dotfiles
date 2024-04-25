@@ -40,6 +40,15 @@ func weatherStatus(ctx status.Context) (time.Duration, error) {
 	return 30 * time.Minute, nil
 }
 
+type ipCoordinates struct {
+	Location ipLocation `maxminddb:"location"`
+}
+
+type ipLocation struct {
+	Longitude float64 `maxminddb:"longitude"`
+	Latitude  float64 `maxminddb:"latitude"`
+}
+
 func getCurrentLocation(ctx status.Context) (latitude, longitude float64, _ error) {
 	_, statErr := hackpadfs.Stat(ctx.CacheFS, maxMindDBFileName)
 	if errors.Is(statErr, hackpadfs.ErrNotExist) {
@@ -69,15 +78,13 @@ func getCurrentLocation(ctx status.Context) (latitude, longitude float64, _ erro
 	if err != nil {
 		return 0, 0, errors.WithMessage(err, "failed to read geo IP database for weather lookup")
 	}
-	var coordinates struct {
-		Location struct {
-			Longitude float64 `maxminddb:"longitude"`
-			Latitude  float64 `maxminddb:"latitude"`
-		} `maxminddb:"location"`
-	}
+	var coordinates ipCoordinates
 	err = reader.Lookup(currentIP, &coordinates)
 	if err != nil {
 		return 0, 0, err
+	}
+	if coordinates == (ipCoordinates{}) {
+		return 0, 0, errors.New("failed to get valid coordinates for current location")
 	}
 	return coordinates.Location.Latitude, coordinates.Location.Longitude, nil
 }
