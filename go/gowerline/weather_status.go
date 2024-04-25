@@ -135,8 +135,9 @@ func getLatestWeather(ctx status.Context, latitude, longitude float64) error {
 	now := time.Now()
 	_, temp, unit := forecast.Properties.Temperature.RecentMeasurement(now)
 	temp, unit = toFahrenheit(temp, unit)
+	_, w := forecast.Properties.Weather.RecentMeasurement(now)
 
-	fmt.Fprintf(ctx.Writer, "🌪  %.f°%s ", temp, unit)
+	fmt.Fprintf(ctx.Writer, "%s  %.f°%s ", w.Icon(), temp, unit)
 	return nil
 }
 
@@ -158,6 +159,7 @@ type weatherForecast struct {
 		RelativeHumidity    weatherMeasurements
 		ApparentTemperature weatherMeasurements
 		Temperature         weatherMeasurements
+		Weather             weatherValueMeasurements
 		WindChill           weatherMeasurements
 		WindDirection       weatherMeasurements
 		WindSpeed           weatherMeasurements
@@ -193,6 +195,39 @@ func (m weatherMeasurements) RecentMeasurement(now time.Time) (t time.Time, valu
 type weatherMeasurement struct {
 	Value     float64
 	ValidTime timeAndDuration
+}
+
+type weatherValueMeasurements struct {
+	Values []weatherValueMeasurement
+}
+
+type weatherValueMeasurement struct {
+	ValidTime timeAndDuration
+	Value     []weatherValue
+}
+
+func (m weatherValueMeasurements) RecentMeasurement(now time.Time) (t time.Time, value weatherEnum) {
+	if len(m.Values) == 0 {
+		return time.Time{}, weatherUnknown
+	}
+	mostRecent := m.Values[0]
+	var mostRecentWeather weatherEnum
+	for _, measurement := range m.Values[1:] {
+		if measurement.ValidTime.Time.Before(now) && measurement.ValidTime.Time.After(mostRecent.ValidTime.Time) {
+			for _, value := range measurement.Value {
+				if value.Weather != nil {
+					mostRecent = measurement
+					mostRecentWeather = *value.Weather
+					break
+				}
+			}
+		}
+	}
+	return mostRecent.ValidTime.Time, mostRecentWeather
+}
+
+type weatherValue struct {
+	Weather *weatherEnum
 }
 
 type timeAndDuration struct {
