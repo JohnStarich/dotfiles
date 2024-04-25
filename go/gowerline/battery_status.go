@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/johnstarich/go/gowerline/internal/icon"
 	"github.com/johnstarich/go/gowerline/internal/status"
 )
 
@@ -21,7 +22,7 @@ func batteryStatus(ctx status.Context) (time.Duration, error) {
 	}
 	err := writeBatteryStatus(ctx)
 	if err != nil {
-		fmt.Fprint(ctx.Writer, iconWarning, ctx.Cache.Content)
+		fmt.Fprint(ctx.Writer, icon.Warning, ctx.Cache.Content)
 		return 0, nil
 	}
 	return 5 * time.Minute, nil
@@ -71,18 +72,17 @@ func writeBatteryStatus(ctx status.Context) error {
 
 func batterySummaryForStatus(rawLinuxBatteryStatus string) string {
 	linuxBatteryStatus := strings.ToLower(strings.TrimSpace(rawLinuxBatteryStatus))
-	const warning = "⚠️"
 	switch linuxBatteryStatus {
 	// Battery statuses are briefly described here: https://github.com/torvalds/linux/blob/026e680b0a08a62b1d948e5a8ca78700bfac0e6e/Documentation/power/power_supply_class.rst
 	// And might use similar names from here: https://github.com/torvalds/linux/blob/026e680b0a08a62b1d948e5a8ca78700bfac0e6e/drivers/acpi/battery.c#L41-L43
 	case "discharging":
-		return "🔥"
+		return icon.Fire
 	case "charging":
-		return "⚡"
+		return icon.LightningBolt
 	case "critical":
-		return warning
+		return icon.Warning
 	default:
-		return warning + " " + linuxBatteryStatus
+		return icon.Warning + " " + linuxBatteryStatus
 	}
 }
 

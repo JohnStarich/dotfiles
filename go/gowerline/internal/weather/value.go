@@ -1,6 +1,10 @@
-package main
+package weather
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/johnstarich/go/gowerline/internal/icon"
+)
 
 type weatherEnum int
 
@@ -97,5 +101,5 @@ func (w weatherEnum) String() string {
 }
 
 func (w weatherEnum) Icon() string {
-	return "🌪"
+	return icon.StormCloud
 }

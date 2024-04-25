@@ -11,6 +11,7 @@ import (
 
 	"github.com/hack-pad/hackpadfs/os"
 	"github.com/johnstarich/go/gowerline/internal/status"
+	"github.com/johnstarich/go/gowerline/internal/weather"
 )
 
 const appName = "gowerline"
@@ -48,7 +49,7 @@ func run(ctx context.Context) error {
 		Segments: []status.Segment{
 			{
 				Font:            status.Font{Foreground: "#797aac", Background: "#121212"},
-				GenerateContent: weatherStatus,
+				GenerateContent: weather.Status,
 				Name:            "weather",
 				Separator:       status.Separator{Font: status.Font{Foreground: "#121212"}},
 			},

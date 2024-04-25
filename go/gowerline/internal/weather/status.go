@@ -1,4 +1,4 @@
-package main
+package weather
 
 import (
 	"compress/gzip"
@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/hack-pad/hackpadfs"
+	"github.com/johnstarich/go/gowerline/internal/icon"
 	"github.com/johnstarich/go/gowerline/internal/status"
 	"github.com/oschwald/maxminddb-golang"
 	"github.com/pkg/errors"
@@ -21,7 +22,7 @@ import (
 
 const maxMindDBFileName = "GeoIP2-latest.mmdb"
 
-func weatherStatus(ctx status.Context) (time.Duration, error) {
+func Status(ctx status.Context) (time.Duration, error) {
 	if !ctx.CacheExpired() {
 		fmt.Fprint(ctx.Writer, ctx.Cache.Content)
 		return 0, nil
@@ -29,12 +30,12 @@ func weatherStatus(ctx status.Context) (time.Duration, error) {
 
 	latitude, longitude, err := getCachedCurrentLocation(ctx, time.Now())
 	if err != nil {
-		fmt.Fprint(ctx.Writer, "🌍", iconWarning, ctx.Cache.Content)
+		fmt.Fprint(ctx.Writer, icon.Globe, icon.Warning, ctx.Cache.Content)
 		return 0, err
 	}
 
 	if err := getLatestWeather(ctx, latitude, longitude); err != nil {
-		fmt.Fprint(ctx.Writer, "🌐", iconWarning, ctx.Cache.Content)
+		fmt.Fprint(ctx.Writer, icon.Internet, icon.Warning, ctx.Cache.Content)
 		return 0, err
 	}
 	return 30 * time.Minute, nil
