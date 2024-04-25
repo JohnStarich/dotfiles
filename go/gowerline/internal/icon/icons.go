@@ -1,10 +1,14 @@
 package icon
 
 const (
+	Critical      = "☢️ "
+	DustCloud     = "💨"
 	Fire          = "🔥"
 	Globe         = "🌍"
 	Internet      = "🌐"
 	LightningBolt = "⚡"
-	StormCloud    = "🌪"
+	RainCloud     = "🌧️"
+	SnowCloud     = "☃️ "
+	StormCloud    = "⛈️ "
 	Warning       = "⚠ "
 )

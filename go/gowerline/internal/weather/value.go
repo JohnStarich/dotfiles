@@ -101,5 +101,37 @@ func (w State) String() string {
 }
 
 func (w State) Icon() string {
-	return icon.StormCloud
+	switch w {
+	case
+		stateBlowingDust,
+		stateBlowingSand,
+		stateFog,
+		stateHaze,
+		stateSmoke:
+		return icon.DustCloud
+	case
+		stateFreezingFog,
+		stateIceFog,
+		stateFrost,
+		stateBlowingSnow,
+		stateIceCrystals,
+		stateHail,
+		stateSleet,
+		stateSnow,
+		stateSnowShowers:
+		return icon.SnowCloud
+	case
+		stateDrizzle,
+		stateRain,
+		stateRainShowers,
+		stateFreezingDrizzle,
+		stateFreezingRain,
+		stateFreezingSpray:
+		return icon.RainCloud
+	case stateThunderstorms:
+		return icon.StormCloud
+	case stateVolcanicAsh, stateWaterSpouts:
+		return icon.Critical
+	}
+	return icon.Warning
 }
