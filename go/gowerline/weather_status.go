@@ -27,33 +27,47 @@ func weatherStatus(ctx status.Context) (time.Duration, error) {
 		return 0, nil
 	}
 
+	latitude, longitude, err := getCurrentLocation(ctx)
+	if err != nil {
+		fmt.Fprint(ctx.Writer, "🌍⚠️ ", ctx.Cache.Content)
+		return 0, nil
+	}
+
+	if err := writeLatestWeather(ctx, latitude, longitude); err != nil {
+		fmt.Fprint(ctx.Writer, "🌐⚠️ ", ctx.Cache.Content)
+		return 0, nil
+	}
+	return 30 * time.Minute, nil
+}
+
+func getCurrentLocation(ctx status.Context) (latitude, longitude float64, _ error) {
 	_, statErr := hackpadfs.Stat(ctx.CacheFS, maxMindDBFileName)
 	if errors.Is(statErr, hackpadfs.ErrNotExist) {
 		err := downloadGeoIPs(ctx.Context, ctx.CacheFS)
 		if err != nil {
-			return 0, errors.WithMessage(err, "failed to set up geo IP database for weather lookup")
+			return 0, 0, errors.WithMessage(err, "failed to set up geo IP database for weather lookup")
 		}
 	} else if statErr != nil {
-		return 0, errors.WithMessage(statErr, "failed to read geo IP database for weather lookup")
+		return 0, 0, errors.WithMessage(statErr, "failed to read geo IP database for weather lookup")
 	}
 
 	currentIP, err := currentIP(ctx.Context)
 	if err != nil {
-		return 0, errors.WithMessage(err, "failed to get current IP address for geo IP weather lookup")
+		return 0, 0, errors.WithMessage(err, "failed to get current IP address for geo IP weather lookup")
 	}
 
 	maxMindDBFile, err := ctx.CacheFS.Open(maxMindDBFileName)
 	if err != nil {
-		return 0, err
+		return 0, 0, err
 	}
 	defer maxMindDBFile.Close()
 	maxMindDBBytes, err := io.ReadAll(maxMindDBFile)
 	if err != nil {
-		return 0, err
+		return 0, 0, err
 	}
 	reader, err := maxminddb.FromBytes(maxMindDBBytes)
 	if err != nil {
-		return 0, errors.WithMessage(err, "failed to read geo IP database for weather lookup")
+		return 0, 0, errors.WithMessage(err, "failed to read geo IP database for weather lookup")
 	}
 	var coordinates struct {
 		Location struct {
@@ -63,18 +77,21 @@ func weatherStatus(ctx status.Context) (time.Duration, error) {
 	}
 	err = reader.Lookup(currentIP, &coordinates)
 	if err != nil {
-		return 0, err
+		return 0, 0, err
 	}
+	return coordinates.Location.Latitude, coordinates.Location.Longitude, nil
+}
 
+func writeLatestWeather(ctx status.Context, latitude, longitude float64) error {
 	var weather weatherPoint
-	err = doHTTPGet(ctx.Context, fmt.Sprintf("https://api.weather.gov/points/%f,%f", coordinates.Location.Latitude, coordinates.Location.Longitude), &weather)
+	err := doHTTPGet(ctx.Context, fmt.Sprintf("https://api.weather.gov/points/%f,%f", latitude, longitude), &weather)
 	if err != nil {
-		return 0, err
+		return err
 	}
 	var forecast weatherForecast
 	err = doHTTPGet(ctx.Context, weather.Properties.ForecastGridData, &forecast)
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	now := time.Now()
@@ -82,7 +99,7 @@ func weatherStatus(ctx status.Context) (time.Duration, error) {
 	temp, unit = toFahrenheit(temp, unit)
 
 	fmt.Fprintf(ctx.Writer, "🌪  %.f°%s ", temp, unit)
-	return 30 * time.Minute, nil
+	return nil
 }
 
 func toFahrenheit(temperature float64, unit string) (float64, string) {
