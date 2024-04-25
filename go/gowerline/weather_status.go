@@ -29,13 +29,13 @@ func weatherStatus(ctx status.Context) (time.Duration, error) {
 
 	latitude, longitude, err := getCurrentLocation(ctx)
 	if err != nil {
-		fmt.Fprint(ctx.Writer, "🌍⚠ ", ctx.Cache.Content)
-		return 0, nil
+		fmt.Fprint(ctx.Writer, "🌍", iconWarning, ctx.Cache.Content)
+		return 0, err
 	}
 
 	if err := writeLatestWeather(ctx, latitude, longitude); err != nil {
-		fmt.Fprint(ctx.Writer, "🌐⚠ ", ctx.Cache.Content)
-		return 0, nil
+		fmt.Fprint(ctx.Writer, "🌐", iconWarning, ctx.Cache.Content)
+		return 0, err
 	}
 	return 30 * time.Minute, nil
 }

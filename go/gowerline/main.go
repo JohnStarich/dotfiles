@@ -80,5 +80,5 @@ func run(ctx context.Context) error {
 			},
 		},
 	}
-	return statusLine.Status(ctx, goos.Stdout, cacheFS)
+	return statusLine.Status(ctx, goos.Stdout, goos.Stderr, cacheFS)
 }

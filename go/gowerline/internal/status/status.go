@@ -65,7 +65,7 @@ type Line struct {
 	Segments []Segment
 }
 
-func (l Line) Status(ctx context.Context, w io.Writer, cacheFS fs.FS) error {
+func (l Line) Status(ctx context.Context, writer, errWriter io.Writer, cacheFS fs.FS) error {
 	lineCacheData, _ := readLineCache(cacheFS)
 	// failed to read cache, proceed with a blank cache
 	now := time.Now()
@@ -73,15 +73,9 @@ func (l Line) Status(ctx context.Context, w io.Writer, cacheFS fs.FS) error {
 	segmentCacheUpdates := make(map[string]SegmentCache)
 	for _, segment := range l.Segments {
 		segmentCache := lineCacheData.Segments[segment.Name]
-		newSegmentCache, err := l.segmentStatus(ctx, segment, w, cacheFS, segmentCache, now)
+		newSegmentCache, err := l.segmentStatus(ctx, segment, writer, cacheFS, segmentCache, now)
 		if err != nil {
-			fmt.Fprint(w, segmentCache.Content)
-			errMessage := err.Error()
-			const maxErrorLength = 30
-			if len(errMessage) > maxErrorLength {
-				errMessage = errMessage[:maxErrorLength]
-			}
-			fmt.Fprint(w, " <", errMessage, "> ")
+			fmt.Fprintln(errWriter, err.Error())
 		} else if newSegmentCache.ExpiresAt != now {
 			segmentCacheUpdates[segment.Name] = newSegmentCache
 		}
@@ -92,7 +86,7 @@ func (l Line) Status(ctx context.Context, w io.Writer, cacheFS fs.FS) error {
 		}
 		return writeLineCache(cacheFS, lineCacheData)
 	}
-	fmt.Fprintln(w)
+	fmt.Fprintln(writer)
 	return nil
 }
 

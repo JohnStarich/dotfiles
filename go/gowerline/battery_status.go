@@ -19,13 +19,21 @@ func batteryStatus(ctx status.Context) (time.Duration, error) {
 		fmt.Fprint(ctx.Writer, ctx.Cache.Content)
 		return 0, nil
 	}
+	err := writeBatteryStatus(ctx)
+	if err != nil {
+		fmt.Fprint(ctx.Writer, iconWarning, ctx.Cache.Content)
+		return 0, nil
+	}
+	return 5 * time.Minute, nil
+}
 
+func writeBatteryStatus(ctx status.Context) error {
 	batteryDirectories, err := findBatteryDirectories(ctx.Context)
 	if err != nil {
-		return 0, err
+		return err
 	}
 	if len(batteryDirectories) == 0 {
-		return 0, errors.New("no battery detected")
+		return errors.New("no battery detected")
 	}
 
 	for index, batteryDir := range batteryDirectories {
@@ -34,23 +42,23 @@ func batteryStatus(ctx status.Context) (time.Duration, error) {
 		}
 		chargeNowBytes, err := os.ReadFile(batteryDir + "/charge_now")
 		if err != nil {
-			return 0, err
+			return err
 		}
 		totalChargeBytes, err := os.ReadFile(batteryDir + "/charge_full_design")
 		if err != nil {
-			return 0, err
+			return err
 		}
 		chargeNow, err := strconv.ParseFloat(strings.TrimSpace(string(chargeNowBytes)), 64)
 		if err != nil {
-			return 0, err
+			return err
 		}
 		totalCharge, err := strconv.ParseFloat(strings.TrimSpace(string(totalChargeBytes)), 64)
 		if err != nil {
-			return 0, err
+			return err
 		}
 		statusBytes, err := os.ReadFile(batteryDir + "/status")
 		if err != nil {
-			return 0, err
+			return err
 		}
 		chargePercent := chargeNow / totalCharge * 100
 		if chargePercent > 100 {
@@ -58,7 +66,7 @@ func batteryStatus(ctx status.Context) (time.Duration, error) {
 		}
 		fmt.Fprintf(ctx.Writer, "%s %.0f%%", batterySummaryForStatus(string(statusBytes)), chargePercent)
 	}
-	return 5 * time.Minute, nil
+	return nil
 }
 
 func batterySummaryForStatus(rawLinuxBatteryStatus string) string {
