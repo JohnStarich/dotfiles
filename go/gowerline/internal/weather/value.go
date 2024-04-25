@@ -6,100 +6,100 @@ import (
 	"github.com/johnstarich/go/gowerline/internal/icon"
 )
 
-type weatherEnum int
+type State int
 
 const (
-	weatherUnknown weatherEnum = iota
-	weatherBlowingDust
-	weatherBlowingSand
-	weatherBlowingSnow
-	weatherDrizzle
-	weatherFog
-	weatherFreezingFog
-	weatherFreezingDrizzle
-	weatherFreezingRain
-	weatherFreezingSpray
-	weatherFrost
-	weatherHail
-	weatherHaze
-	weatherIceCrystals
-	weatherIceFog
-	weatherRain
-	weatherRainShowers
-	weatherSleet
-	weatherSmoke
-	weatherSnow
-	weatherSnowShowers
-	weatherThunderstorms
-	weatherVolcanicAsh
-	weatherWaterSpouts
+	stateUnknown State = iota
+	stateBlowingDust
+	stateBlowingSand
+	stateBlowingSnow
+	stateDrizzle
+	stateFog
+	stateFreezingFog
+	stateFreezingDrizzle
+	stateFreezingRain
+	stateFreezingSpray
+	stateFrost
+	stateHail
+	stateHaze
+	stateIceCrystals
+	stateIceFog
+	stateRain
+	stateRainShowers
+	stateSleet
+	stateSmoke
+	stateSnow
+	stateSnowShowers
+	stateThunderstorms
+	stateVolcanicAsh
+	stateWaterSpouts
 
-	maxWeatherValue
+	maxStateValue
 )
 
-func weatherValueFromEnum(enum string) weatherEnum {
-	for w := weatherUnknown; w < maxWeatherValue; w++ {
+func stateFromEnum(enum string) State {
+	for w := stateUnknown; w < maxStateValue; w++ {
 		if w.String() == enum {
 			return w
 		}
 	}
-	return weatherUnknown
+	return stateUnknown
 }
 
-func (w weatherEnum) String() string {
+func (w State) String() string {
 	switch w {
-	case weatherBlowingDust:
+	case stateBlowingDust:
 		return "blowing_dust"
-	case weatherBlowingSand:
+	case stateBlowingSand:
 		return "blowing_sand"
-	case weatherBlowingSnow:
+	case stateBlowingSnow:
 		return "blowing_snow"
-	case weatherDrizzle:
+	case stateDrizzle:
 		return "drizzle"
-	case weatherFog:
+	case stateFog:
 		return "fog"
-	case weatherFreezingFog:
+	case stateFreezingFog:
 		return "freezing_fog"
-	case weatherFreezingDrizzle:
+	case stateFreezingDrizzle:
 		return "freezing_drizzle"
-	case weatherFreezingRain:
+	case stateFreezingRain:
 		return "freezing_rain"
-	case weatherFreezingSpray:
+	case stateFreezingSpray:
 		return "freezing_spray"
-	case weatherFrost:
+	case stateFrost:
 		return "frost"
-	case weatherHail:
+	case stateHail:
 		return "hail"
-	case weatherHaze:
+	case stateHaze:
 		return "haze"
-	case weatherIceCrystals:
+	case stateIceCrystals:
 		return "ice_crystals"
-	case weatherIceFog:
+	case stateIceFog:
 		return "ice_fog"
-	case weatherRain:
+	case stateRain:
 		return "rain"
-	case weatherRainShowers:
+	case stateRainShowers:
 		return "rain_showers"
-	case weatherSleet:
+	case stateSleet:
 		return "sleet"
-	case weatherSmoke:
+	case stateSmoke:
 		return "smoke"
-	case weatherSnow:
+	case stateSnow:
 		return "snow"
-	case weatherSnowShowers:
+	case stateSnowShowers:
 		return "snow_showers"
-	case weatherThunderstorms:
+	case stateThunderstorms:
 		return "thunderstorms"
-	case weatherVolcanicAsh:
+	case stateVolcanicAsh:
 		return "volcanic_ash"
-	case weatherWaterSpouts:
+	case stateWaterSpouts:
 		return "water_spouts"
-	case weatherUnknown:
+	case stateUnknown:
 		return ""
 	}
-	panic(fmt.Sprintf("unexpected weatherValue: %d", w))
+	panic(fmt.Sprintf("unexpected state: %d", w))
 }
 
-func (w weatherEnum) Icon() string {
+func (w State) Icon() string {
 	return icon.StormCloud
 }
