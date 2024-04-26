@@ -107,11 +107,5 @@ func (l Line) segmentStatus(ctx context.Context, segment Segment, w io.Writer, c
 		return SegmentCache{}, err
 	}
 
-	return segment.Status(Context{
-		Cache:   segmentCache,
-		CacheFS: subCacheFS,
-		Context: ctx,
-		Writer:  w,
-		now:     now,
-	})
+	return segment.Status(NewContext(ctx, segmentCache, subCacheFS, w, now))
 }

@@ -2,31 +2,39 @@ package weather
 
 import (
 	"fmt"
+	"net/url"
+	"path"
 	"strings"
 	"time"
 
 	"github.com/johnstarich/go/gowerline/internal/status"
 )
 
-func getLatestWeather(ctx status.Context, latitude, longitude float64) error {
-	var weather Point
-	err := doJSONGet(ctx.Context, fmt.Sprintf("https://api.weather.gov/points/%f,%f", latitude, longitude), &weather)
+func getLatestWeather(ctx status.Context, weatherGovURL url.URL, latitude, longitude float64) (string, error) {
+	pointURL := weatherGovURL
+	pointURL.Path = path.Join(pointURL.Path, "points", fmt.Sprintf("%f,%f", latitude, longitude))
+	var point Point
+	err := doJSONGet(ctx.Context, ctx.HTTPClient, pointURL.String(), &point)
 	if err != nil {
-		return err
+		return "", err
 	}
 	var forecast Forecast
-	err = doJSONGet(ctx.Context, weather.Properties.ForecastGridData, &forecast)
+	err = doJSONGet(ctx.Context, ctx.HTTPClient, point.Properties.ForecastGridData, &forecast)
 	if err != nil {
-		return err
+		return "", err
 	}
 
+	var weather strings.Builder
 	now := time.Now()
-	_, temp, unit := forecast.Properties.Temperature.Recent(now)
-	temp, unit = toFahrenheit(temp, unit)
-	_, w := forecast.Properties.Weather.Recent(now)
+	_, state := forecast.Properties.Weather.Recent(now)
+	weather.WriteString(state.Icon())
 
-	fmt.Fprintf(ctx.Writer, "%s  %.f°%s ", w.Icon(), temp, unit)
-	return nil
+	_, temp, unit, tempOK := forecast.Properties.Temperature.Recent(now)
+	temp, unit = toFahrenheit(temp, unit)
+	if tempOK {
+		weather.WriteString(fmt.Sprintf(" %.f°%s", temp, unit))
+	}
+	return weather.String(), nil
 }
 
 func toFahrenheit(temperature float64, unit string) (float64, string) {
@@ -37,21 +45,25 @@ func toFahrenheit(temperature float64, unit string) (float64, string) {
 }
 
 type Point struct {
-	Properties struct {
-		ForecastGridData string
-	}
+	Properties PointProperties
+}
+
+type PointProperties struct {
+	ForecastGridData string
 }
 
 type Forecast struct {
-	Properties struct {
-		RelativeHumidity    Measurements
-		ApparentTemperature Measurements
-		Temperature         Measurements
-		Weather             StateMeasurements
-		WindChill           Measurements
-		WindDirection       Measurements
-		WindSpeed           Measurements
-	}
+	Properties ForecastProperties
+}
+
+type ForecastProperties struct {
+	RelativeHumidity    Measurements
+	ApparentTemperature Measurements
+	Temperature         Measurements
+	Weather             StateMeasurements
+	WindChill           Measurements
+	WindDirection       Measurements
+	WindSpeed           Measurements
 }
 
 type Measurements struct {
@@ -59,9 +71,9 @@ type Measurements struct {
 	Values        []Measurement
 }
 
-func (m Measurements) Recent(now time.Time) (t time.Time, value float64, unit string) {
+func (m Measurements) Recent(now time.Time) (t time.Time, value float64, unit string, ok bool) {
 	if len(m.Values) == 0 {
-		return time.Time{}, 0, ""
+		return time.Time{}, 0, "", false
 	}
 	mostRecent := m.Values[0]
 	for _, measurement := range m.Values[1:] {
@@ -77,7 +89,7 @@ func (m Measurements) Recent(now time.Time) (t time.Time, value float64, unit st
 	default:
 		unit = m.UnitOfMeasure
 	}
-	return mostRecent.ValidTime.Time, mostRecent.Value, unit
+	return mostRecent.ValidTime.Time, mostRecent.Value, unit, true
 }
 
 type Measurement struct {
@@ -99,7 +111,11 @@ func (m StateMeasurements) Recent(now time.Time) (time.Time, State) {
 		return time.Time{}, stateUnknown
 	}
 	mostRecent := m.Values[0]
-	var mostRecentState State
+	mostRecentState := stateUnknown
+	if len(mostRecent.Value) > 0 && mostRecent.Value[0].Weather != nil {
+		mostRecentState = *mostRecent.Value[0].Weather
+	}
+
 	for _, measurement := range m.Values[1:] {
 		if measurement.ValidTime.Time.Before(now) && measurement.ValidTime.Time.After(mostRecent.ValidTime.Time) {
 			for _, value := range measurement.Value {
@@ -121,6 +137,14 @@ type StateValue struct {
 type TimeAndDuration struct {
 	Time time.Time
 	// Original value contained a duration. Could unmarshal this in the future if needed.
+}
+
+func (t *TimeAndDuration) MarshalText() ([]byte, error) {
+	b, err := t.Time.MarshalText()
+	if err != nil {
+		return nil, err
+	}
+	return append(b, []byte("/PT2H")...), nil
 }
 
 func (t *TimeAndDuration) UnmarshalText(bytes []byte) error {

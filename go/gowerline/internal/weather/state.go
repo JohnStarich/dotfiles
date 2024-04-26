@@ -37,6 +37,10 @@ const (
 	maxStateValue
 )
 
+func (w *State) MarshalText() ([]byte, error) {
+	return []byte(w.String()), nil
+}
+
 func (w *State) UnmarshalText(b []byte) error {
 	*w = stateFromEnum(string(b))
 	return nil
@@ -103,6 +107,10 @@ func (w State) String() string {
 		return ""
 	}
 	panic(fmt.Sprintf("unexpected state: %d", w))
+}
+
+func (w State) toPointer() *State {
+	return &w
 }
 
 func (w State) Icon() string {

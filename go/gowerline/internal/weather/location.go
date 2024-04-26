@@ -7,12 +7,14 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"net"
 	"net/http"
+	"net/url"
 	"os"
+	"path"
 	"time"
 
 	"github.com/hack-pad/hackpadfs"
+	"github.com/johnstarich/go/gowerline/internal/httpclient"
 	"github.com/johnstarich/go/gowerline/internal/status"
 	"github.com/oschwald/maxminddb-golang"
 	"github.com/pkg/errors"
@@ -35,35 +37,53 @@ type locationCache struct {
 	ExpiresAt time.Time
 }
 
-func getCachedCurrentLocation(ctx status.Context, now time.Time) (latitude, longitude float64, _ error) {
-	var cachedCoordinates locationCache
-	const locationCacheFileName = "location.json"
-	contents, err := hackpadfs.ReadFile(ctx.CacheFS, locationCacheFileName)
-	if err == nil {
-		err = json.Unmarshal(contents, &cachedCoordinates)
+func getCachedCurrentLocation(ctx status.Context, maxMindDBURL url.URL, now time.Time) (latitude, longitude float64, _ error) {
+	coordinatesCache, coordinatesErr := readCachedLocation(ctx.CacheFS)
+	if coordinatesErr == nil && coordinatesCache.ExpiresAt.After(now) {
+		return coordinatesCache.Latitude, coordinatesCache.Longitude, nil
 	}
-	if err == nil && cachedCoordinates.ExpiresAt.After(now) {
-		return cachedCoordinates.Latitude, cachedCoordinates.Longitude, nil
-	}
-	latitude, longitude, err = getCurrentLocation(ctx)
+	latitude, longitude, err := getCurrentLocation(ctx, maxMindDBURL)
 	if err != nil {
+		if coordinatesErr == nil {
+			return coordinatesCache.Latitude, coordinatesCache.Longitude, nil
+		}
 		return 0, 0, err
 	}
-	newContents, err := json.MarshalIndent(locationCache{
-		Latitude:  latitude,
-		Longitude: longitude,
+	err = writeCachedLocation(ctx.CacheFS, locationCache{
 		ExpiresAt: now.Add(1 * time.Hour),
-	}, "", "    ")
-	if err == nil {
-		err = hackpadfs.WriteFullFile(ctx.CacheFS, locationCacheFileName, newContents, 0o700)
-	}
+		Latitude:  longitude,
+		Longitude: longitude,
+	})
 	return latitude, longitude, err
 }
 
-func getCurrentLocation(ctx status.Context) (latitude, longitude float64, _ error) {
+const locationCacheFileName = "location.json"
+
+func readCachedLocation(fs fs.FS) (locationCache, error) {
+	var cachedCoordinates locationCache
+	contents, err := hackpadfs.ReadFile(fs, locationCacheFileName)
+	if err != nil {
+		return locationCache{}, err
+	}
+	err = json.Unmarshal(contents, &cachedCoordinates)
+	if err != nil {
+		return locationCache{}, err
+	}
+	return cachedCoordinates, nil
+}
+
+func writeCachedLocation(fs fs.FS, newLocation locationCache) error {
+	newContents, err := json.MarshalIndent(newLocation, "", "    ")
+	if err != nil {
+		return err
+	}
+	return hackpadfs.WriteFullFile(fs, locationCacheFileName, newContents, 0o700)
+}
+
+func getCurrentLocation(ctx status.Context, maxMindDBURL url.URL) (latitude, longitude float64, _ error) {
 	_, statErr := hackpadfs.Stat(ctx.CacheFS, maxMindDBFileName)
 	if errors.Is(statErr, hackpadfs.ErrNotExist) {
-		err := downloadGeoIPs(ctx.Context, ctx.CacheFS)
+		err := downloadGeoIPs(ctx.Context, maxMindDBURL, ctx.HTTPClient, ctx.CacheFS, ctx.Now())
 		if err != nil {
 			return 0, 0, errors.WithMessage(err, "failed to set up geo IP database for weather lookup")
 		}
@@ -71,7 +91,7 @@ func getCurrentLocation(ctx status.Context) (latitude, longitude float64, _ erro
 		return 0, 0, errors.WithMessage(statErr, "failed to read geo IP database for weather lookup")
 	}
 
-	currentIP, err := currentIP(ctx.Context)
+	currentIP, err := ctx.Resolver.LookupIPWithResolverHost(ctx.Context, "resolver1.opendns.com:53", "myip.opendns.com")
 	if err != nil {
 		return 0, 0, errors.WithMessage(err, "failed to get current IP address for geo IP weather lookup")
 	}
@@ -100,14 +120,15 @@ func getCurrentLocation(ctx status.Context) (latitude, longitude float64, _ erro
 	return coordinates.Location.Latitude, coordinates.Location.Longitude, nil
 }
 
-func downloadGeoIPs(ctx context.Context, cacheFS fs.FS) error {
-	thisMonth := time.Now().Format("2006-01")
-	downloadURL := fmt.Sprintf("https://download.db-ip.com/free/dbip-city-lite-%s.mmdb.gz", thisMonth)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, downloadURL, nil)
+func downloadGeoIPs(ctx context.Context, maxMindDBURL url.URL, httpClient httpclient.Client, cacheFS fs.FS, now time.Time) error {
+	thisMonth := now.Format("2006-01")
+	downloadURL := maxMindDBURL
+	downloadURL.Path = path.Join(downloadURL.Path, "free", fmt.Sprintf("dbip-city-lite-%s.mmdb.gz", thisMonth))
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, downloadURL.String(), nil)
 	if err != nil {
 		return err
 	}
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return err
 	}
@@ -131,22 +152,4 @@ func downloadGeoIPs(ctx context.Context, cacheFS fs.FS) error {
 	defer dbFile.Close()
 	_, err = io.Copy(dbFile.(io.Writer), gzipReader)
 	return errors.Wrap(err, "failed to download latest geo IP database")
-}
-
-func currentIP(ctx context.Context) (net.IP, error) {
-	// Equivalent of running: nslookup myip.opendns.com resolver1.opendns.com
-	resolver := &net.Resolver{
-		PreferGo: true,
-		Dial: func(ctx context.Context, network, address string) (net.Conn, error) {
-			return (&net.Dialer{}).DialContext(ctx, "tcp", "resolver1.opendns.com:53")
-		},
-	}
-	ipAddresses, err := resolver.LookupIPAddr(ctx, "myip.opendns.com")
-	if err != nil {
-		return nil, err
-	}
-	if len(ipAddresses) == 0 {
-		return nil, errors.New("could not resolve current IP address")
-	}
-	return ipAddresses[0].IP, nil
 }

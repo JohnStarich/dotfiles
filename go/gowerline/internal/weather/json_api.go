@@ -6,15 +6,16 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/johnstarich/go/gowerline/internal/httpclient"
 	"github.com/pkg/errors"
 )
 
-func doJSONGet(ctx context.Context, url string, result any) error {
+func doJSONGet(ctx context.Context, httpClient httpclient.Client, url string, result any) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return err
 	}
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return err
 	}
