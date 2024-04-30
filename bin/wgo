@@ -5,9 +5,17 @@ export GORACE="halt_on_error=1"  # Make it easy to run with race detector on wit
 module_name=$(awk '/^module /{print $2}' go.mod)
 hide_pointers_re='s%(\(.*0x[[:digit:]]\{1,12\}.*\))%(...args...)%'
 
+flags=(
+    -e "s%$PWD%\$PWD%g"
+    -e "s%$(go env GOROOT)%\$GOROOT%g"
+    -e "s%$module_name%\$MODULE%"
+)
+if [[ "$(uname)" == Darwin ]]; then
+    flags+=(-l)  # Line buffered output
+else
+    flags+=(-u)  # Unbuffered output
+fi
+
 watch-dir . go,mod,sum,yaml,graphql go "$@" 2>&1 \
     | highlight-ext go \
-    | sed \
-        -e "s%$PWD%\$PWD%g" \
-        -e "s%$(go env GOROOT)%\$GOROOT%g" \
-        -e "s%$module_name%\$MODULE%"
+    | sed "${flags[@]}"
