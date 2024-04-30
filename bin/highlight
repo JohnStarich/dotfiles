@@ -35,5 +35,13 @@ pattern_args=()
 for pattern in "${patterns[@]}"; do
     pattern_args+=(-e 's`('"$pattern"$')`\033[31;1m\\1\033[m`g')
 done
-sed -l -E "${pattern_args[@]}" "${files[@]}"
 
+flags=(
+    -E "${pattern_args[@]}"
+)
+if [[ "$(uname)" == Darwin ]]; then
+    flags+=(-l)  # Line buffered output
+else
+    flags+=(-u)  # Unbuffered output
+fi
+sed "${flags[@]}" "${files[@]}"
