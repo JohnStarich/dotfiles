@@ -58,7 +58,7 @@ func writeTMUXConfig(w io.Writer) error {
 		},
 	)
 	windowStatus := fmt.Sprintf(
-		`#I#F #W %s`,
+		`#{window_index}#{?window_flags,#{window_flags}, } #{window_name} %s`,
 		status.Separator{
 			PointRight: true,
 		},
