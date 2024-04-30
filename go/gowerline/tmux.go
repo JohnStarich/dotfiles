@@ -48,21 +48,43 @@ func setUpTmux(ctx context.Context, debug bool) error {
 }
 
 func writeTMUXConfig(w io.Writer) error {
-	defaultFont := status.Font{Foreground: "colour231", Background: "colour233"}
+	const (
+		primaryColor   = "colour231"
+		secondaryColor = "colour233"
+		accentColor    = "#3388cc"
+	)
+	defaultFont := status.Font{
+		Foreground: primaryColor,
+		Background: secondaryColor,
+	}
+
 	statusLeft := fmt.Sprintf(`%s #{session_name} %s `,
-		status.Font{Background: "colour31", Bold: true},
+		status.Font{Background: accentColor, Bold: true},
 		status.Separator{
-			Font:       status.Font{Foreground: "colour31"},
+			Font:       status.Font{Foreground: accentColor},
 			FullArrow:  true,
 			PointRight: true,
 		},
 	)
-	windowStatus := fmt.Sprintf(
-		`#{window_index}#{?window_flags,#{window_flags}, } #{window_name} %s`,
+
+	windowFormat := `#{window_index}#{?window_flags,#{window_flags}, } #{window_name} `
+	windowStatus := windowFormat + status.Separator{PointRight: true}.String()
+	currentWindowStatus := fmt.Sprintf("%s%s%s%s%s",
 		status.Separator{
+			Font:       status.Font{Foreground: secondaryColor, Background: accentColor, Bold: true},
+			FullArrow:  true,
+			PointRight: true,
+		},
+		" ",
+		status.Font{Background: accentColor, Bold: true},
+		windowFormat,
+		status.Separator{
+			Font:       status.Font{Foreground: accentColor, Bold: true},
+			FullArrow:  true,
 			PointRight: true,
 		},
 	)
+
 	statusRight := `#(PATH="$HOME/go/bin:$PATH" "$HOME/.dotfiles/bin/gowerline" status-right)`
 	return template.Must(template.New("").Parse(tmuxConfTemplate)).Execute(w, tmuxData{
 		Options: map[string]any{
@@ -73,7 +95,7 @@ func writeTMUXConfig(w io.Writer) error {
 			"status-right":                 statusRight,         //  Generate right status.
 			"status-right-length":          "200",               //  Set maximum width of right status.
 			"status-style":                 defaultFont.Style(), // Set default style like foreground and background color.
-			"window-status-current-format": windowStatus,        //  Generate status for windows on the left side.
+			"window-status-current-format": currentWindowStatus, //  Generate status for windows on the left side.
 			"window-status-format":         windowStatus,        //  Generate status for windows on the left side.
 		},
 	})
