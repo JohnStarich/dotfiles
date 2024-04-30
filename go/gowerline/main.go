@@ -12,6 +12,7 @@ import (
 	"github.com/hack-pad/hackpadfs/os"
 	"github.com/johnstarich/go/gowerline/internal/status"
 	"github.com/johnstarich/go/gowerline/internal/weather"
+	"github.com/pkg/errors"
 )
 
 const appName = "gowerline"
@@ -19,13 +20,27 @@ const appName = "gowerline"
 func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), goos.Interrupt)
 	defer cancel()
-	err := run(ctx)
+	err := run(ctx, goos.Args[1:])
 	if err != nil {
 		panic(err)
 	}
 }
 
-func run(ctx context.Context) error {
+func run(ctx context.Context, args []string) error {
+	if len(args) == 0 {
+		return errors.New("an action is required: gowerline (status|tmux-setup)")
+	}
+	switch args[0] {
+	case "status-right":
+		return generateStatus(ctx)
+	case "tmux-setup":
+		return setUpTmux(ctx, true)
+	default:
+		return errors.Errorf("unrecognized action: %q; gowerline (status|tmux-setup)", args[0])
+	}
+}
+
+func generateStatus(ctx context.Context) error {
 	fs := os.NewFS()
 	cacheDir, err := goos.UserCacheDir()
 	if err != nil {

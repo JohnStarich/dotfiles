@@ -14,13 +14,38 @@ import (
 )
 
 const (
-	powerlineArrowPointLeftFull  = ""
-	powerlineArrowPointLeftEmpty = ""
+	powerlineArrowPointLeftFull   = ""
+	powerlineArrowPointLeftEmpty  = ""
+	powerlineArrowPointRightFull  = ""
+	powerlineArrowPointRightEmpty = ""
 )
 
 type Separator struct {
-	Font      Font
-	FullArrow bool
+	Font       Font
+	FullArrow  bool
+	PointRight bool
+}
+
+func (s Separator) dividerString() string {
+	switch {
+	case !s.FullArrow && !s.PointRight:
+		return powerlineArrowPointLeftEmpty
+	case !s.FullArrow && s.PointRight:
+		return powerlineArrowPointRightEmpty
+	case s.FullArrow && !s.PointRight:
+		return powerlineArrowPointLeftFull
+	case s.FullArrow && s.PointRight:
+		return powerlineArrowPointRightFull
+	default:
+		return powerlineArrowPointLeftEmpty
+	}
+}
+
+func (s Separator) String() string {
+	var builder strings.Builder
+	builder.WriteString(s.Font.String())
+	builder.WriteString(s.dividerString())
+	return builder.String()
 }
 
 type Segment struct {
@@ -31,13 +56,8 @@ type Segment struct {
 }
 
 func (s Segment) Status(ctx Context) (SegmentCache, error) {
-	fmt.Fprint(ctx.Writer, s.Separator.Font)
 	fmt.Fprint(ctx.Writer, " ")
-	separator := powerlineArrowPointLeftEmpty
-	if s.Separator.FullArrow {
-		separator = powerlineArrowPointLeftFull
-	}
-	fmt.Fprint(ctx.Writer, separator)
+	fmt.Fprint(ctx.Writer, s.Separator.String())
 	fmt.Fprint(ctx.Writer, s.Font)
 	fmt.Fprint(ctx.Writer, " ")
 

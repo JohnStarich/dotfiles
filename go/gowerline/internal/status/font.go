@@ -12,14 +12,18 @@ type Font struct {
 	Underscore bool
 }
 
-func (f Font) String() string {
+func (f Font) Style() string {
 	if f.Foreground == "" {
 		f.Foreground = "default"
 	}
 	if f.Background == "" {
 		f.Background = "default"
 	}
-	return fmt.Sprintf(`#[fg=%s,bg=%s,%sbold,%sitalics,%sunderscore]`, f.Foreground, f.Background, boolToYesNo(f.Bold), boolToYesNo(f.Italics), boolToYesNo(f.Underscore))
+	return fmt.Sprintf(`fg=%s,bg=%s,%sbold,%sitalics,%sunderscore`, f.Foreground, f.Background, boolToYesNo(f.Bold), boolToYesNo(f.Italics), boolToYesNo(f.Underscore))
+}
+
+func (f Font) String() string {
+	return fmt.Sprintf("#[%s]", f.Style())
 }
 
 func boolToYesNo(b bool) string {

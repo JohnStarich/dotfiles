@@ -1,0 +1,3 @@
+{{range $key, $value := .Options -}}
+set -g {{$key}} {{printf "%q" $value}}
+{{end}}
