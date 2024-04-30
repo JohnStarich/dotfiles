@@ -2,7 +2,7 @@
 
 function query_term_color() {
     local query="\e]11;?\a"
-    if [[ -n "$TMUX" ]]; then
+    if [[ -n "$TMUX" ]] && ! [[ $(tmux -V) =~ 3\.[4-9] ]]; then
         printf "\ePtmux;\e${query}\e\\"
     else
         printf "$query"
