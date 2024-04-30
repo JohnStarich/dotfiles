@@ -48,11 +48,11 @@ func setUpTmux(ctx context.Context, debug bool) error {
 }
 
 func writeTMUXConfig(w io.Writer) error {
-	defaultFont := status.Font{Foreground: "#ffffff", Background: "#000000"}
+	defaultFont := status.Font{Foreground: "colour231", Background: "colour233"}
 	statusLeft := fmt.Sprintf(`%s #{session_name} %s `,
-		status.Font{Background: "#0088ff", Bold: true},
+		status.Font{Background: "colour31", Bold: true},
 		status.Separator{
-			Font:       status.Font{Foreground: "#0088ff"},
+			Font:       status.Font{Foreground: "colour31"},
 			FullArrow:  true,
 			PointRight: true,
 		},
