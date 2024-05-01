@@ -40,6 +40,12 @@ func run(ctx context.Context, args []string) error {
 	}
 }
 
+const (
+	defaultPrimaryColor   = "#dddddd"
+	defaultSecondaryColor = "#111111"
+	activeColor           = "#3388cc"
+)
+
 func generateStatus(ctx context.Context) error {
 	fs := os.NewFS()
 	cacheDir, err := goos.UserCacheDir()
@@ -63,16 +69,16 @@ func generateStatus(ctx context.Context) error {
 	statusLine := status.Line{
 		Segments: []status.Segment{
 			{
-				Font:            status.Font{Foreground: "#797aac", Background: "#121212"},
+				Font:            status.Font{Foreground: "#797aac", Background: defaultSecondaryColor},
 				GenerateContent: weather.Status,
 				Name:            "weather",
-				Separator:       status.Separator{Font: status.Font{Foreground: "#121212"}},
+				Separator:       status.Separator{Font: status.Font{Foreground: defaultSecondaryColor}},
 			},
 			{
-				Font:            status.Font{Foreground: "#f3e6d8", Background: "#121212"},
+				Font:            status.Font{Foreground: "#f3e6d8", Background: defaultSecondaryColor},
 				GenerateContent: batteryStatus,
 				Name:            "battery",
-				Separator:       status.Separator{Font: status.Font{Foreground: "#f3e6d8", Background: "#121212"}},
+				Separator:       status.Separator{Font: status.Font{Foreground: "#f3e6d8", Background: defaultSecondaryColor}},
 			},
 			{
 				Font: status.Font{Foreground: "#9e9e9e", Background: "#303030"},
@@ -82,7 +88,7 @@ func generateStatus(ctx context.Context) error {
 					return 0, nil
 				},
 				Name:      "date",
-				Separator: status.Separator{Font: status.Font{Foreground: "#303030", Background: "#121212"}, FullArrow: true},
+				Separator: status.Separator{Font: status.Font{Foreground: "#303030", Background: defaultSecondaryColor}, FullArrow: true},
 			},
 			{
 				Font: status.Font{Foreground: "#d0d0d0", Background: "#303030", Bold: true},

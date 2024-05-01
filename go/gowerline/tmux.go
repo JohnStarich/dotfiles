@@ -48,11 +48,6 @@ func setUpTmux(ctx context.Context, debug bool) error {
 }
 
 func writeTMUXConfig(w io.Writer) error {
-	const (
-		defaultPrimaryColor   = "#dddddd"
-		defaultSecondaryColor = "#222222"
-		activeColor           = "#3388cc"
-	)
 	defaultFont := status.Font{
 		Foreground: defaultPrimaryColor,
 		Background: defaultSecondaryColor,
