@@ -91,7 +91,7 @@ func generateStatus(ctx context.Context) error {
 				Separator: status.Separator{Font: status.Font{Foreground: "#303030", Background: defaultSecondaryColor}, FullArrow: true},
 			},
 			{
-				Font: status.Font{Foreground: "#d0d0d0", Background: "#303030", Bold: true},
+				Font: status.Font{Foreground: defaultPrimaryColor, Background: "#303030", Bold: true},
 				GenerateContent: func(ctx status.Context) (time.Duration, error) {
 					const timeFormat = "3:04 PM"
 					fmt.Fprint(ctx.Writer, time.Now().Format(timeFormat))
