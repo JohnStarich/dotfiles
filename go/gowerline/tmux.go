@@ -49,19 +49,23 @@ func setUpTmux(ctx context.Context, debug bool) error {
 
 func writeTMUXConfig(w io.Writer) error {
 	const (
-		primaryColor   = "colour231"
-		secondaryColor = "colour233"
-		accentColor    = "#3388cc"
+		defaultPrimaryColor   = "#dddddd"
+		defaultSecondaryColor = "#222222"
+		activeColor           = "#3388cc"
 	)
 	defaultFont := status.Font{
-		Foreground: primaryColor,
-		Background: secondaryColor,
+		Foreground: defaultPrimaryColor,
+		Background: defaultSecondaryColor,
+	}
+	activeFont := status.Font{
+		Foreground: activeColor,
+		Bold:       true,
 	}
 
 	statusLeft := fmt.Sprintf(`%s #{session_name} %s `,
-		status.Font{Background: accentColor, Bold: true},
+		activeFont.InvertForeground(),
 		status.Separator{
-			Font:       status.Font{Foreground: accentColor},
+			Font:       activeFont,
 			FullArrow:  true,
 			PointRight: true,
 		},
@@ -71,15 +75,15 @@ func writeTMUXConfig(w io.Writer) error {
 	windowStatus := windowFormat + status.Separator{PointRight: true}.String()
 	currentWindowStatus := fmt.Sprintf("%s%s%s%s%s",
 		status.Separator{
-			Font:       status.Font{Foreground: secondaryColor, Background: accentColor, Bold: true},
+			Font:       status.Font{Foreground: defaultSecondaryColor, Background: activeColor, Bold: true},
 			FullArrow:  true,
 			PointRight: true,
 		},
 		" ",
-		status.Font{Background: accentColor, Bold: true},
+		activeFont.InvertForeground(),
 		windowFormat,
 		status.Separator{
-			Font:       status.Font{Foreground: accentColor, Bold: true},
+			Font:       activeFont,
 			FullArrow:  true,
 			PointRight: true,
 		},

@@ -12,6 +12,13 @@ type Font struct {
 	Underscore bool
 }
 
+func (f Font) InvertForeground() Font {
+	originalForeground := f.Foreground
+	f.Foreground = f.Background
+	f.Background = originalForeground
+	return f
+}
+
 func (f Font) Style() string {
 	if f.Foreground == "" {
 		f.Foreground = "default"
