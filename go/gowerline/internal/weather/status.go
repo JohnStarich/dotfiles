@@ -37,13 +37,13 @@ func statusWithEndpoints(ctx status.Context, endpoints endpoints) (time.Duration
 
 	latitude, longitude, err := getCachedCurrentLocation(ctx, endpoints.MaxMindDBURL, time.Now())
 	if err != nil {
-		fmt.Fprint(ctx.Writer, icon.Globe, icon.Warning, ctx.Cache.Content)
+		fmt.Fprint(ctx.Writer, icon.Globe, ctx.Cache.Content)
 		return 0, err
 	}
 
 	weather, err := getLatestWeather(ctx, endpoints.WeatherGovAPIURL, latitude, longitude)
 	if err != nil {
-		fmt.Fprint(ctx.Writer, icon.Internet, icon.Warning, ctx.Cache.Content)
+		fmt.Fprint(ctx.Writer, icon.Internet, ctx.Cache.Content)
 		return 0, err
 	}
 	fmt.Fprint(ctx.Writer, weather)

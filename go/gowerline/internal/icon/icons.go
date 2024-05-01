@@ -5,7 +5,7 @@ const (
 	DustCloud     = "💨"
 	Fire          = "🔥"
 	Globe         = "🌍"
-	Internet      = "🌐"
+	Internet      = "✈ "
 	LightningBolt = "⚡"
 	RainCloud     = "🌧️"
 	SnowCloud     = "☃️ "
