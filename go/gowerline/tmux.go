@@ -16,7 +16,7 @@ import (
 var tmuxConfTemplate string
 
 type tmuxData struct {
-	Options map[string]any
+	Options map[string]string
 }
 
 func setUpTmux(ctx context.Context, debug bool) error {
@@ -86,7 +86,7 @@ func writeTMUXConfig(w io.Writer) error {
 
 	statusRight := `#(PATH="$HOME/go/bin:$PATH" "$HOME/.dotfiles/bin/gowerline" status-right)`
 	return template.Must(template.New("").Parse(tmuxConfTemplate)).Execute(w, tmuxData{
-		Options: map[string]any{
+		Options: map[string]string{
 			"status":                       "on",                //  Enable status line.
 			"status-interval":              "2",                 //  Set update interval between generating status lines.
 			"status-left":                  statusLeft,          // Generate left status.
