@@ -87,15 +87,15 @@ func writeTMUXConfig(w io.Writer) error {
 	statusRight := `#(PATH="$HOME/go/bin:$PATH" "$HOME/.dotfiles/bin/gowerline" status-right)`
 	return template.Must(template.New("").Parse(tmuxConfTemplate)).Execute(w, tmuxData{
 		Options: map[string]string{
-			"status":                       "on",                //  Enable status line.
-			"status-interval":              "2",                 //  Set update interval between generating status lines.
+			"status":                       "on",                // Enable status line.
+			"status-interval":              "2",                 // Set update interval between generating status lines.
 			"status-left":                  statusLeft,          // Generate left status.
-			"status-left-length":           "200",               //  Set maximum width of left status.
-			"status-right":                 statusRight,         //  Generate right status.
-			"status-right-length":          "200",               //  Set maximum width of right status.
+			"status-left-length":           "200",               // Set maximum width of left status.
+			"status-right":                 statusRight,         // Generate right status.
+			"status-right-length":          "200",               // Set maximum width of right status.
 			"status-style":                 defaultFont.Style(), // Set default style like foreground and background color.
-			"window-status-current-format": currentWindowStatus, //  Generate status for windows on the left side.
-			"window-status-format":         windowStatus,        //  Generate status for windows on the left side.
+			"window-status-current-format": currentWindowStatus, // Generate status for windows on the left side.
+			"window-status-format":         windowStatus,        // Generate status for windows on the left side.
 		},
 	})
 }
