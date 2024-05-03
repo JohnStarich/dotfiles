@@ -66,17 +66,16 @@ func writeTMUXConfig(w io.Writer) error {
 		},
 	)
 
-	windowFormat := `#{window_index}#{?window_flags,#{window_flags}, } #{window_name} `
-	windowStatus := windowFormat + status.Separator{PointRight: true}.String()
-	currentWindowStatus := fmt.Sprintf("%s%s%s%s%s",
+	windowFormat := `#{window_index}#{?window_flags,#{window_flags}, } %s #{window_name}`
+	windowStatus := "   " + fmt.Sprintf(windowFormat, status.Separator{PointRight: true}) + " "
+	currentWindowStatus := fmt.Sprintf(" %s %s%s%s",
 		status.Separator{
 			Font:       status.Font{Foreground: defaultSecondaryColor, Background: activeColor, Bold: true},
 			FullArrow:  true,
 			PointRight: true,
 		},
-		" ",
 		activeFont.InvertForeground(),
-		windowFormat,
+		fmt.Sprintf(windowFormat, status.Separator{Font: activeFont.InvertForeground(), PointRight: true}),
 		status.Separator{
 			Font:       activeFont,
 			FullArrow:  true,
