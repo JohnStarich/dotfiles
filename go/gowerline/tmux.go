@@ -57,27 +57,27 @@ func writeTMUXConfig(w io.Writer) error {
 		Bold:       true,
 	}
 
-	statusLeft := fmt.Sprintf(`%s #{session_name} %s `,
+	statusLeft := fmt.Sprintf(`%s #{session_name} %s%s `,
 		activeFont.InvertForeground(),
+		activeFont,
 		status.Separator{
-			Font:       activeFont,
 			FullArrow:  true,
 			PointRight: true,
 		},
 	)
 
-	windowFormat := `#{window_index}#{?window_flags,#{window_flags}, } %s #{window_name}`
-	windowStatus := "   " + fmt.Sprintf(windowFormat, status.Separator{PointRight: true}) + " "
-	currentWindowStatus := fmt.Sprintf(" %s %s%s%s",
+	windowFormat := fmt.Sprintf(`#{window_index}#{?window_flags,#{window_flags}, } %s #{window_name}`, status.Separator{PointRight: true})
+	windowStatus := fmt.Sprintf("   %s ", windowFormat)
+	currentWindowStatus := fmt.Sprintf(" %s%s %s%s%s%s",
+		status.Font{Foreground: defaultSecondaryColor, Background: activeColor, Bold: true},
 		status.Separator{
-			Font:       status.Font{Foreground: defaultSecondaryColor, Background: activeColor, Bold: true},
 			FullArrow:  true,
 			PointRight: true,
 		},
 		activeFont.InvertForeground(),
-		fmt.Sprintf(windowFormat, status.Separator{Font: activeFont.InvertForeground(), PointRight: true}),
+		windowFormat,
+		activeFont,
 		status.Separator{
-			Font:       activeFont,
 			FullArrow:  true,
 			PointRight: true,
 		},

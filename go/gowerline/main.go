@@ -72,13 +72,13 @@ func generateStatus(ctx context.Context) error {
 				Font:            status.Font{Foreground: "#797aac", Background: defaultSecondaryColor},
 				GenerateContent: weather.Status,
 				Name:            "weather",
-				Separator:       status.Separator{Font: status.Font{Foreground: defaultSecondaryColor}},
+				SeparatorFont:   status.Font{Foreground: defaultSecondaryColor},
 			},
 			{
 				Font:            status.Font{Foreground: "#f3e6d8", Background: defaultSecondaryColor},
 				GenerateContent: batteryStatus,
 				Name:            "battery",
-				Separator:       status.Separator{Font: status.Font{Foreground: "#f3e6d8", Background: defaultSecondaryColor}},
+				SeparatorFont:   status.Font{Foreground: "#f3e6d8", Background: defaultSecondaryColor},
 			},
 			{
 				Font: status.Font{Foreground: "#9e9e9e", Background: "#303030"},
@@ -87,8 +87,9 @@ func generateStatus(ctx context.Context) error {
 					fmt.Fprint(ctx.Writer, time.Now().Format(dateFormat))
 					return 0, nil
 				},
-				Name:      "date",
-				Separator: status.Separator{Font: status.Font{Foreground: "#303030", Background: defaultSecondaryColor}, FullArrow: true},
+				Name:          "date",
+				SeparatorFont: status.Font{Foreground: "#303030", Background: defaultSecondaryColor},
+				Separator:     status.Separator{FullArrow: true},
 			},
 			{
 				Font: status.Font{Foreground: defaultPrimaryColor, Background: "#303030", Bold: true},
@@ -97,8 +98,8 @@ func generateStatus(ctx context.Context) error {
 					fmt.Fprint(ctx.Writer, time.Now().Format(timeFormat))
 					return 0, nil
 				},
-				Name:      "time",
-				Separator: status.Separator{Font: status.Font{Foreground: "#626262", Background: "#303030"}},
+				Name:          "time",
+				SeparatorFont: status.Font{Foreground: "#626262", Background: "#303030"},
 			},
 		},
 	}

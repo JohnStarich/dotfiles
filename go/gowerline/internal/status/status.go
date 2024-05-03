@@ -21,12 +21,11 @@ const (
 )
 
 type Separator struct {
-	Font       Font
 	FullArrow  bool
 	PointRight bool
 }
 
-func (s Separator) dividerString() string {
+func (s Separator) String() string {
 	switch {
 	case !s.FullArrow && !s.PointRight:
 		return powerlineArrowPointLeftEmpty
@@ -41,22 +40,17 @@ func (s Separator) dividerString() string {
 	}
 }
 
-func (s Separator) String() string {
-	var builder strings.Builder
-	builder.WriteString(s.Font.String())
-	builder.WriteString(s.dividerString())
-	return builder.String()
-}
-
 type Segment struct {
 	Font            Font
 	GenerateContent func(Context) (time.Duration, error)
 	Name            string // required
+	SeparatorFont   Font
 	Separator       Separator
 }
 
 func (s Segment) Status(ctx Context) (SegmentCache, error) {
 	fmt.Fprint(ctx.Writer, " ")
+	fmt.Fprint(ctx.Writer, s.SeparatorFont.String())
 	fmt.Fprint(ctx.Writer, s.Separator.String())
 	fmt.Fprint(ctx.Writer, s.Font)
 	fmt.Fprint(ctx.Writer, " ")
