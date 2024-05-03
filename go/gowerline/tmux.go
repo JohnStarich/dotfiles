@@ -66,7 +66,7 @@ func writeTMUXConfig(w io.Writer) error {
 		},
 	)
 
-	windowFormat := fmt.Sprintf(`#{window_index}#{?window_flags,#{window_flags}, } %s #{window_name}`, status.Separator{PointRight: true})
+	windowFormat := fmt.Sprintf(`#{window_index}#{?window_flags,#{window_flags}, } %s #{window_name} `, status.Separator{PointRight: true})
 	windowStatus := fmt.Sprintf("   %s ", windowFormat)
 	currentWindowStatus := fmt.Sprintf(" %s%s %s%s%s%s",
 		status.Font{Foreground: defaultSecondaryColor, Background: activeColor, Bold: true},
