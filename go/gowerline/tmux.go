@@ -57,9 +57,11 @@ func writeTMUXConfig(w io.Writer) error {
 		Bold:       true,
 	}
 
-	statusLeft := fmt.Sprintf(`%s #{session_name} %s%s `,
-		activeFont.InvertForeground(),
-		activeFont,
+	statusLeft := fmt.Sprintf(`#{?client_prefix,%s,%s} #{session_name} #{?client_prefix,%s,%s}%s `,
+		defaultFont.InvertForeground().VariableSafeString(),
+		activeFont.InvertForeground().VariableSafeString(),
+		defaultFont.VariableSafeString(),
+		activeFont.VariableSafeString(),
 		status.Separator{
 			FullArrow:  true,
 			PointRight: true,

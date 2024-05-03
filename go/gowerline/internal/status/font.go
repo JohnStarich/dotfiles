@@ -1,6 +1,9 @@
 package status
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // Reference: https://tao-of-tmux.readthedocs.io/en/latest/manuscript/09-status-bar.html
 
@@ -19,14 +22,28 @@ func (f Font) InvertForeground() Font {
 	return f
 }
 
-func (f Font) Style() string {
+func (f Font) style() []string {
 	if f.Foreground == "" {
 		f.Foreground = "default"
 	}
 	if f.Background == "" {
 		f.Background = "default"
 	}
-	return fmt.Sprintf(`fg=%s,bg=%s,%sbold,%sitalics,%sunderscore`, f.Foreground, f.Background, boolToYesNo(f.Bold), boolToYesNo(f.Italics), boolToYesNo(f.Underscore))
+	return []string{
+		`fg=` + f.Foreground,
+		`bg=` + f.Background,
+		boolToYesNo(f.Bold) + `bold`,
+		boolToYesNo(f.Italics) + `italics`,
+		boolToYesNo(f.Underscore) + `underscore`,
+	}
+}
+
+func (f Font) Style() string {
+	return strings.Join(f.style(), ",")
+}
+
+func (f Font) VariableSafeString() string {
+	return "#[" + strings.Join(f.style(), "]#[") + "]"
 }
 
 func (f Font) String() string {
