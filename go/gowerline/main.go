@@ -34,7 +34,7 @@ func run(ctx context.Context, args []string) error {
 	case "status-right":
 		return generateStatus(ctx)
 	case "tmux-setup":
-		return setUpTmux(ctx, true)
+		return setUpTmux(ctx, false)
 	default:
 		return errors.Errorf("unrecognized action: %q; gowerline (status|tmux-setup)", args[0])
 	}
