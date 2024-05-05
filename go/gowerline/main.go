@@ -40,12 +40,6 @@ func run(ctx context.Context, args []string) error {
 	}
 }
 
-const (
-	defaultPrimaryColor   = "#dddddd"
-	defaultSecondaryColor = "#111111"
-	activeColor           = "#3388cc"
-)
-
 func generateStatus(ctx context.Context) error {
 	fs := os.NewFS()
 	cacheDir, err := goos.UserCacheDir()

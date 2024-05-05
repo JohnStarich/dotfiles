@@ -47,21 +47,45 @@ func setUpTmux(ctx context.Context, debug bool) error {
 	return cmd.Wait()
 }
 
+const (
+	defaultPrimaryColor      = "#ffffff"
+	defaultSecondaryColor    = "#111111"
+	inactivePrimaryColor     = "#bbbbbb"
+	inactiveLeftPrimaryColor = "#eeeeee"
+	activeColor              = "#3388cc"
+)
+
 func writeTMUXConfig(w io.Writer) error {
-	defaultFont := status.Font{
-		Foreground: defaultPrimaryColor,
+	inactiveLeftFont := status.Font{
+		Foreground: inactiveLeftPrimaryColor,
+		Background: defaultSecondaryColor,
+		Bold:       true,
+	}
+	inactiveLeftSeparatorFont := status.Font{
+		Foreground: inactiveLeftPrimaryColor,
+		Background: defaultSecondaryColor,
+		Bold:       true,
+	}
+	inactiveWindowFont := status.Font{
+		Foreground: inactivePrimaryColor,
 		Background: defaultSecondaryColor,
 	}
-	activeFont := status.Font{
-		Foreground: activeColor,
+	activeWindowFont := status.Font{
+		Foreground: defaultPrimaryColor,
+		Background: activeColor,
+		Bold:       true,
+	}
+	activeWindowSeparatorFont := status.Font{
+		Foreground: defaultSecondaryColor,
+		Background: activeColor,
 		Bold:       true,
 	}
 
-	statusLeft := fmt.Sprintf(`#{?client_prefix,%s,%s} #{session_name} #{?client_prefix,%s,%s}%s `,
-		defaultFont.InvertForeground().VariableSafeString(),
-		activeFont.InvertForeground().VariableSafeString(),
-		defaultFont.VariableSafeString(),
-		activeFont.VariableSafeString(),
+	statusLeft := fmt.Sprintf(`#{?client_prefix,%s,%s} #{session_name} #{?client_prefix,%s,%s}%s`,
+		activeWindowFont.VariableSafeString(),
+		inactiveLeftFont.InvertForeground().VariableSafeString(),
+		activeWindowSeparatorFont.InvertForeground().VariableSafeString(),
+		inactiveLeftSeparatorFont.VariableSafeString(),
 		status.Separator{
 			FullArrow:  true,
 			PointRight: true,
@@ -71,14 +95,14 @@ func writeTMUXConfig(w io.Writer) error {
 	windowFormat := fmt.Sprintf(`#{window_index}#{?window_flags,#{window_flags}, } %s #{window_name} `, status.Separator{PointRight: true})
 	windowStatus := fmt.Sprintf("   %s ", windowFormat)
 	currentWindowStatus := fmt.Sprintf(" %s%s %s%s%s%s",
-		status.Font{Foreground: defaultSecondaryColor, Background: activeColor, Bold: true},
+		activeWindowSeparatorFont,
 		status.Separator{
 			FullArrow:  true,
 			PointRight: true,
 		},
-		activeFont.InvertForeground(),
+		activeWindowFont,
 		windowFormat,
-		activeFont,
+		activeWindowSeparatorFont.InvertForeground(),
 		status.Separator{
 			FullArrow:  true,
 			PointRight: true,
@@ -88,15 +112,15 @@ func writeTMUXConfig(w io.Writer) error {
 	statusRight := `#(PATH="$HOME/go/bin:$PATH" "$HOME/.dotfiles/bin/gowerline" status-right)`
 	return template.Must(template.New("").Parse(tmuxConfTemplate)).Execute(w, tmuxData{
 		Options: map[string]string{
-			"status":                       "on",                // Enable status line.
-			"status-interval":              "2",                 // Set update interval between generating status lines.
-			"status-left":                  statusLeft,          // Generate left status.
-			"status-left-length":           "200",               // Set maximum width of left status.
-			"status-right":                 statusRight,         // Generate right status.
-			"status-right-length":          "200",               // Set maximum width of right status.
-			"status-style":                 defaultFont.Style(), // Set default style like foreground and background color.
-			"window-status-current-format": currentWindowStatus, // Generate status for windows on the left side.
-			"window-status-format":         windowStatus,        // Generate status for windows on the left side.
+			"status":                       "on",                       // Enable status line.
+			"status-interval":              "2",                        // Set update interval between generating status lines.
+			"status-left":                  statusLeft,                 // Generate left status.
+			"status-left-length":           "200",                      // Set maximum width of left status.
+			"status-right":                 statusRight,                // Generate right status.
+			"status-right-length":          "200",                      // Set maximum width of right status.
+			"status-style":                 inactiveWindowFont.Style(), // Set default style like foreground and background color.
+			"window-status-current-format": currentWindowStatus,        // Generate status for windows on the left side.
+			"window-status-format":         windowStatus,               // Generate status for windows on the left side.
 		},
 	})
 }
