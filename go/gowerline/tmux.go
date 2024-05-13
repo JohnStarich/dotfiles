@@ -53,7 +53,7 @@ const (
 	defaultSecondaryColor    = "#111111"
 	inactivePrimaryColor     = "#bbbbbb"
 	inactiveLeftPrimaryColor = "#eeeeee"
-	activeColor              = "#3388cc"
+	activeColor              = "#6699cc"
 )
 
 func writeTMUXConfig(w io.Writer) error {
