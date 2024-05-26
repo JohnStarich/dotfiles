@@ -53,6 +53,7 @@ const (
 	inactivePrimaryColor     = "#bbbbbb"
 	inactiveLeftPrimaryColor = "#eeeeee"
 	activeColor              = "#6699cc"
+	bellColor                = "#bb0000"
 )
 
 func writeTMUXConfig(w io.Writer, debug bool) error {
@@ -113,6 +114,12 @@ func writeTMUXConfig(w io.Writer, debug bool) error {
 		status.String(" "),
 	)
 	windowStatus := fmt.Sprintf(" %s ", windowFormat)
+
+	bellWindowStyle := status.Font{
+		Foreground: bellColor,
+		Bold:       true,
+	}.Style()
+
 	currentWindowStatus := status.Join(
 		activeWindowSeparatorFont,
 		status.Separator{FullArrow: true, PointRight: true},
@@ -146,7 +153,8 @@ func writeTMUXConfig(w io.Writer, debug bool) error {
 			"status-right":                 statusRight.String(),       // Generate right status.
 			"status-right-length":          "200",                      // Set maximum width of right status.
 			"status-style":                 inactiveWindowFont.Style(), // Set default style like foreground and background color.
-			"window-status-current-format": currentWindowStatus,        // Generate status for windows on the left side.
+			"window-status-bell-style":     bellWindowStyle,            // Generate status for a window that has triggered a bell (BEL).
+			"window-status-current-format": currentWindowStatus,        // Generate status for the current window on the left side.
 			"window-status-format":         windowStatus,               // Generate status for windows on the left side.
 		},
 	})
