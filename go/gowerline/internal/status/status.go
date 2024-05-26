@@ -14,10 +14,10 @@ import (
 )
 
 const (
-	powerlineArrowPointLeftFull   = ""
-	powerlineArrowPointLeftEmpty  = ""
-	powerlineArrowPointRightFull  = ""
-	powerlineArrowPointRightEmpty = ""
+	powerlineArrowPointLeftFull   = "🭮"
+	powerlineArrowPointLeftEmpty  = "🮤"
+	powerlineArrowPointRightFull  = "🭬"
+	powerlineArrowPointRightEmpty = "🮥"
 )
 
 type Separator struct {
