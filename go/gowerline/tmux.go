@@ -36,7 +36,7 @@ func setUpTmux(ctx context.Context, debug bool) error {
 	if err != nil {
 		return err
 	}
-	err = writeTMUXConfig(w)
+	err = writeTMUXConfig(w, debug)
 	if err != nil {
 		return err
 	}
@@ -55,7 +55,7 @@ const (
 	activeColor              = "#6699cc"
 )
 
-func writeTMUXConfig(w io.Writer) error {
+func writeTMUXConfig(w io.Writer, debug bool) error {
 	inactiveLeftFont := status.Font{
 		Foreground: inactiveLeftPrimaryColor,
 		Background: defaultSecondaryColor,
@@ -128,14 +128,22 @@ func writeTMUXConfig(w io.Writer) error {
 		Environment: map[string]string{
 			"PATH": "$HOME/go/bin:$PATH",
 		},
-	}.String()
+	}
+	if debug {
+		statusRight.Args = append(statusRight.Args, "--debug")
+	}
+
+	statusInterval := "2"
+	if debug {
+		statusInterval = "10" // reduce polling rate when caching is disabled
+	}
 	return template.Must(template.New("").Parse(tmuxConfTemplate)).Execute(w, tmuxData{
 		Options: map[string]string{
 			"status":                       "on",                       // Enable status line.
-			"status-interval":              "2",                        // Set update interval between generating status lines.
+			"status-interval":              statusInterval,             // Set update interval between generating status lines.
 			"status-left":                  statusLeft,                 // Generate left status.
 			"status-left-length":           "200",                      // Set maximum width of left status.
-			"status-right":                 statusRight,                // Generate right status.
+			"status-right":                 statusRight.String(),       // Generate right status.
 			"status-right-length":          "200",                      // Set maximum width of right status.
 			"status-style":                 inactiveWindowFont.Style(), // Set default style like foreground and background color.
 			"window-status-current-format": currentWindowStatus,        // Generate status for windows on the left side.

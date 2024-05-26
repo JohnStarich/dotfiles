@@ -76,12 +76,16 @@ func generateContentSafely(ctx Context, segment Segment) (_ time.Duration, err e
 }
 
 type Line struct {
-	Segments []Segment
+	SkipCache bool
+	Segments  []Segment
 }
 
 func (l Line) Status(ctx context.Context, writer, errWriter io.Writer, cacheFS fs.FS) error {
-	lineCacheData, _ := readLineCache(cacheFS)
-	// failed to read cache, proceed with a blank cache
+	var lineCacheData lineCache
+	if !l.SkipCache {
+		lineCacheData, _ = readLineCache(cacheFS)
+		// if reading the cache failed, proceed with a blank cache
+	}
 	now := time.Now()
 
 	segmentCacheUpdates := make(map[string]SegmentCache)

@@ -30,17 +30,22 @@ func run(ctx context.Context, args []string) error {
 	if len(args) == 0 {
 		return errors.New("an action is required: gowerline (status|tmux-setup)")
 	}
-	switch args[0] {
+	action := args[0]
+	var debug bool
+	if len(args) > 1 {
+		debug = args[1] == "--debug"
+	}
+	switch action {
 	case "status-right":
-		return generateStatus(ctx)
+		return generateStatus(ctx, debug)
 	case "tmux-setup":
-		return setUpTmux(ctx, false)
+		return setUpTmux(ctx, debug)
 	default:
 		return errors.Errorf("unrecognized action: %q; gowerline (status|tmux-setup)", args[0])
 	}
 }
 
-func generateStatus(ctx context.Context) error {
+func generateStatus(ctx context.Context, debug bool) error {
 	fs := os.NewFS()
 	cacheDir, err := goos.UserCacheDir()
 	if err != nil {
@@ -61,6 +66,7 @@ func generateStatus(ctx context.Context) error {
 	}
 
 	statusLine := status.Line{
+		SkipCache: debug,
 		Segments: []status.Segment{
 			{
 				Font:            status.Font{Foreground: "#797aac", Background: defaultSecondaryColor},
