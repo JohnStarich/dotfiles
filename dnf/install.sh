@@ -49,6 +49,7 @@ packages=(
     the_silver_searcher
     tmux
     zeal
+    zsh
 )
 
 ensure_installed "${packages[@]}"
