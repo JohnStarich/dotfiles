@@ -117,7 +117,7 @@ func (m StateMeasurements) Recent(now time.Time) (time.Time, State) {
 	}
 
 	for _, measurement := range m.Values[1:] {
-		if measurement.ValidTime.Time.Before(now) && measurement.ValidTime.Time.After(mostRecent.ValidTime.Time) {
+		if mostRecentState == stateUnknown || measurement.ValidTime.Time.Sub(now).Abs() < mostRecent.ValidTime.Time.Sub(now).Abs() {
 			for _, value := range measurement.Value {
 				if value.Weather != nil {
 					mostRecent = measurement
