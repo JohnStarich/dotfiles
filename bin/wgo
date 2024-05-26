@@ -16,6 +16,6 @@ else
     flags+=(-u)  # Unbuffered output
 fi
 
-watch-dir . go,mod,sum,yaml,graphql go "$@" 2>&1 \
+watch-dir . go,mod,sum,yaml,graphql,tmpl go "$@" 2>&1 \
     | highlight-ext go \
     | sed "${flags[@]}"
