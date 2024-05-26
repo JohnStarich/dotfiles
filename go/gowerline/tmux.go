@@ -99,6 +99,7 @@ func writeTMUXConfig(w io.Writer) error {
 	)
 
 	windowFormat := status.Join(
+		status.String(" "),
 		status.Variable("window_index"),
 		status.Ternary{
 			Variable: "window_flags",
@@ -109,13 +110,12 @@ func writeTMUXConfig(w io.Writer) error {
 		status.Separator{PointRight: true},
 		status.String(" "),
 		status.Variable("window_name"),
-	)
-	windowStatus := fmt.Sprintf("   %s ", windowFormat)
-	currentWindowStatus := status.Join(
 		status.String(" "),
+	)
+	windowStatus := fmt.Sprintf(" %s ", windowFormat)
+	currentWindowStatus := status.Join(
 		activeWindowSeparatorFont,
 		status.Separator{FullArrow: true, PointRight: true},
-		status.String(" "),
 		activeWindowFont,
 		status.String(windowFormat),
 		activeWindowSeparatorFont.InvertForeground(),
