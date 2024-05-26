@@ -86,6 +86,9 @@ func (l Line) Status(ctx context.Context, writer, errWriter io.Writer, cacheFS f
 		lineCacheData, _ = readLineCache(cacheFS)
 		// if reading the cache failed, proceed with a blank cache
 	}
+	if lineCacheData.Segments == nil {
+		lineCacheData.Segments = make(map[string]SegmentCache) // prevent panic on assignment to nil map
+	}
 	now := time.Now()
 
 	segmentCacheUpdates := make(map[string]SegmentCache)
