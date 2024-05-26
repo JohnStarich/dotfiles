@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Open Downloads
+Exec=bash -c 'xdg-open ~/Downloads'
+Comment=Open Downloads
+Terminal=false
+Type=Application
+Icon=folder-download
