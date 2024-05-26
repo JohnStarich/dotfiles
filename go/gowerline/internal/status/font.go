@@ -1,7 +1,6 @@
 package status
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -42,12 +41,8 @@ func (f Font) Style() string {
 	return strings.Join(f.style(), ",")
 }
 
-func (f Font) VariableSafeString() string {
-	return "#[" + strings.Join(f.style(), "]#[") + "]"
-}
-
 func (f Font) String() string {
-	return fmt.Sprintf("#[%s]", f.Style())
+	return "#[" + strings.Join(f.style(), "]#[") + "]"
 }
 
 func boolToYesNo(b bool) string {

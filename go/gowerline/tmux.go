@@ -7,7 +7,6 @@ import (
 	"io"
 	"os"
 	"os/exec"
-	"strings"
 	"text/template"
 
 	"github.com/johnstarich/go/gowerline/internal/status"
@@ -82,32 +81,54 @@ func writeTMUXConfig(w io.Writer) error {
 		Bold:       true,
 	}
 
-	statusLeft := join(
-		`#{?client_prefix,`, activeWindowFont.VariableSafeString(), `,`, inactiveLeftFont.InvertForeground().VariableSafeString(), `}`,
-		` #{session_name} `,
-		`#{?client_prefix,`, activeWindowSeparatorFont.InvertForeground().VariableSafeString(), `,`, inactiveLeftSeparatorFont.VariableSafeString(), `}`,
-		status.Separator{FullArrow: true, PointRight: true}.String(),
+	statusLeft := status.Join(
+		status.Ternary{
+			Variable: "client_prefix",
+			True:     status.String(activeWindowFont.String()),
+			False:    status.String(inactiveLeftFont.InvertForeground().String()),
+		},
+		status.String(" "),
+		status.Variable("session_name"),
+		status.String(" "),
+		status.Ternary{
+			Variable: "client_prefix",
+			True:     status.String(activeWindowSeparatorFont.InvertForeground().String()),
+			False:    status.String(inactiveLeftSeparatorFont.String()),
+		},
+		status.Separator{FullArrow: true, PointRight: true},
 	)
 
-	windowFormat := join(
-		`#{window_index}`,
-		`#{?window_flags,#{window_flags}, } `,
-		status.Separator{PointRight: true}.String(),
-		` #{window_name} `,
+	windowFormat := status.Join(
+		status.Variable("window_index"),
+		status.Ternary{
+			Variable: "window_flags",
+			True:     status.Variable("window_flags"),
+			False:    status.String(" "),
+		},
+		status.String(" "),
+		status.Separator{PointRight: true},
+		status.String(" "),
+		status.Variable("window_name"),
 	)
 	windowStatus := fmt.Sprintf("   %s ", windowFormat)
-	currentWindowStatus := join(
-		` `,
-		activeWindowSeparatorFont.String(),
-		status.Separator{FullArrow: true, PointRight: true}.String(),
-		` `,
-		activeWindowFont.String(),
-		windowFormat,
-		activeWindowSeparatorFont.InvertForeground().String(),
-		status.Separator{FullArrow: true, PointRight: true}.String(),
+	currentWindowStatus := status.Join(
+		status.String(" "),
+		activeWindowSeparatorFont,
+		status.Separator{FullArrow: true, PointRight: true},
+		status.String(" "),
+		activeWindowFont,
+		status.String(windowFormat),
+		activeWindowSeparatorFont.InvertForeground(),
+		status.Separator{FullArrow: true, PointRight: true},
 	)
 
-	statusRight := `#(PATH="$HOME/go/bin:$PATH" "$HOME/.dotfiles/bin/gowerline" status-right)`
+	statusRight := status.Command{
+		Name: "$HOME/.dotfiles/bin/gowerline",
+		Args: []string{"status-right"},
+		Environment: map[string]string{
+			"PATH": "$HOME/go/bin:$PATH",
+		},
+	}.String()
 	return template.Must(template.New("").Parse(tmuxConfTemplate)).Execute(w, tmuxData{
 		Options: map[string]string{
 			"status":                       "on",                       // Enable status line.
@@ -121,8 +142,4 @@ func writeTMUXConfig(w io.Writer) error {
 			"window-status-format":         windowStatus,               // Generate status for windows on the left side.
 		},
 	})
-}
-
-func join(s ...string) string {
-	return strings.Join(s, "")
 }
