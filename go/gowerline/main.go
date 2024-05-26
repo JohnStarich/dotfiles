@@ -28,7 +28,7 @@ func main() {
 
 func run(ctx context.Context, args []string) error {
 	if len(args) == 0 {
-		return errors.New("an action is required: gowerline (status|tmux-setup)")
+		return errors.New("an action is required: gowerline (status-right|tmux-setup)")
 	}
 	action := args[0]
 	var debug bool
@@ -41,7 +41,7 @@ func run(ctx context.Context, args []string) error {
 	case "tmux-setup":
 		return setUpTmux(ctx, debug)
 	default:
-		return errors.Errorf("unrecognized action: %q; gowerline (status|tmux-setup)", args[0])
+		return errors.Errorf("unrecognized action: %q; gowerline (status-right|tmux-setup)", args[0])
 	}
 }
 
