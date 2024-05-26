@@ -51,7 +51,7 @@ func getCachedCurrentLocation(ctx status.Context, maxMindDBURL url.URL, now time
 	}
 	err = writeCachedLocation(ctx.CacheFS, locationCache{
 		ExpiresAt: now.Add(1 * time.Hour),
-		Latitude:  longitude,
+		Latitude:  latitude,
 		Longitude: longitude,
 	})
 	return latitude, longitude, err
