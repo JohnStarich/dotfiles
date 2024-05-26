@@ -13,13 +13,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-const (
-	powerlineArrowPointLeftFull   = "🭮"
-	powerlineArrowPointLeftEmpty  = "🮤"
-	powerlineArrowPointRightFull  = "🭬"
-	powerlineArrowPointRightEmpty = "🮥"
-)
-
 type Separator struct {
 	FullArrow  bool
 	PointRight bool
@@ -28,15 +21,15 @@ type Separator struct {
 func (s Separator) String() string {
 	switch {
 	case !s.FullArrow && !s.PointRight:
-		return powerlineArrowPointLeftEmpty
+		return arrowPointLeftEmpty
 	case !s.FullArrow && s.PointRight:
-		return powerlineArrowPointRightEmpty
+		return arrowPointRightEmpty
 	case s.FullArrow && !s.PointRight:
-		return powerlineArrowPointLeftFull
+		return arrowPointLeftFull
 	case s.FullArrow && s.PointRight:
-		return powerlineArrowPointRightFull
+		return arrowPointRightFull
 	default:
-		return powerlineArrowPointLeftEmpty
+		return arrowPointLeftEmpty
 	}
 }
 
