@@ -1,0 +1,15 @@
+[Desktop Entry]
+Version=1.0
+Name=Pandora
+GenericName=Pandora
+Comment=Stream music
+Exec=flatpak run --file-forwarding org.mozilla.firefox --no-remote -P Pandora --class=Pandora @@u %u @@
+Icon=Pandora
+Terminal=false
+Type=Application
+MimeType=
+StartupNotify=true
+Categories=
+Keywords=web;browser;internet;
+Actions=
+StartupWMClass=Pandora

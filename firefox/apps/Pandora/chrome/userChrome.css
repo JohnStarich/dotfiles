@@ -1,0 +1,20 @@
+/*
+ * Do not remove the @namespace line -- it's required for correct functioning
+ */
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"); /* set default namespace to XUL */
+
+/*
+Items here: https://kb.mozillazine.org/Chrome_element_names_and_IDs
+
+Also enable browser chrome and add-on debugging + remote debugging, then Ctrl+Alt+Shift+I to inspect the chrome.
+*/
+
+/* Disables tabs. */
+.toolbar-items {
+    visibility: collapse;
+}
+
+/* Disables search and navigation. */
+#nav-bar {
+    visibility: collapse;
+}
