@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/hack-pad/hackpadfs/os"
+	"github.com/johnstarich/go/gowerline/internal/power"
 	"github.com/johnstarich/go/gowerline/internal/status"
 	"github.com/johnstarich/go/gowerline/internal/weather"
 	"github.com/pkg/errors"
@@ -76,7 +77,7 @@ func generateStatus(ctx context.Context, debug bool) error {
 			},
 			{
 				Font:            status.Font{Foreground: "#f3e6d8", Background: defaultSecondaryColor},
-				GenerateContent: batteryStatus,
+				GenerateContent: power.Status,
 				Name:            "battery",
 				SeparatorFont:   status.Font{Foreground: "#f3e6d8", Background: defaultSecondaryColor},
 			},

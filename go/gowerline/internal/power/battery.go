@@ -1,4 +1,4 @@
-package main
+package power
 
 import (
 	"context"
@@ -7,26 +7,12 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/johnstarich/go/gowerline/internal/icon"
 	"github.com/johnstarich/go/gowerline/internal/status"
 )
 
 const powerSupplyFSPrefix = "/sys/class/power_supply/"
-
-func batteryStatus(ctx status.Context) (time.Duration, error) {
-	if !ctx.CacheExpired() {
-		fmt.Fprint(ctx.Writer, ctx.Cache.Content)
-		return 0, nil
-	}
-	err := writeBatteryStatus(ctx)
-	if err != nil {
-		fmt.Fprint(ctx.Writer, icon.Warning, ctx.Cache.Content)
-		return 0, nil
-	}
-	return 5 * time.Minute, nil
-}
 
 func writeBatteryStatus(ctx status.Context) error {
 	batteryDirectories, err := findBatteryDirectories(ctx.Context)
