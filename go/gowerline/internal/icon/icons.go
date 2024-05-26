@@ -7,6 +7,7 @@ const (
 	Globe         = "🌍"
 	Internet      = "✈ "
 	LightningBolt = "⚡"
+	Plug          = "🔌"
 	RainCloud     = "🌧️"
 	SnowCloud     = "☃️ "
 	StormCloud    = "⛈️ "

@@ -81,6 +81,8 @@ func batterySummaryForStatus(rawLinuxBatteryStatus string) string {
 		return icon.LightningBolt
 	case "critical":
 		return icon.Warning
+	case "not charging":
+		return icon.Plug
 	default:
 		return icon.Warning + " " + linuxBatteryStatus
 	}
