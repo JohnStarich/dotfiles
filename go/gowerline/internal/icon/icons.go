@@ -4,6 +4,7 @@ const (
 	Critical      = "☢"
 	DustCloud     = "💨"
 	Fire          = "🔥"
+	FullBattery   = "🔋"
 	Globe         = "🌍"
 	Internet      = "✈"
 	LightningBolt = "⚡"
