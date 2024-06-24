@@ -53,6 +53,7 @@ if v:version >= 700
             Plug 'nvim-lua/plenary.nvim'                                      " plenary: full; complete; entire; absolute; unqualified. All the lua functions I don't want to write twice. (used by telescope)
             Plug 'nvim-telescope/telescope.nvim', { 'branch': '0.1.x' }       " Find, Filter, Preview, Pick. All lua, all the time.
             Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' } " FZF sorter for telescope written in c (performance boost for telescope)
+            Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}       " Installing treesitter is required to fix rpm packaging issues with neovim 0.10.0
         end
 
         call plug#end()
