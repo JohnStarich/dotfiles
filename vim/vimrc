@@ -78,20 +78,15 @@ colorscheme vim
 command! NonASCII syntax match nonascii "[^\x00-\x7F]"
 highlight nonascii ctermfg=015 ctermbg=001 cterm=none
 
-
 " Background light/dark settings
 function! SetBackground(mode)
     if a:mode == 'light'
         set background=light
-        "highlight Pmenu ctermfg=014 ctermbg=016
-        highlight SpecialKey ctermfg=White ctermbg=NONE
         highlight CursorLine term=none cterm=none guibg=none
         highlight CursorLineNR term=none cterm=none ctermbg=White ctermfg=Black
         highlight SpellBad ctermfg=240 ctermbg=255 cterm=none
     else
         set background=dark
-        highlight Pmenu ctermfg=014 ctermbg=016
-        highlight SpecialKey ctermfg=Black ctermbg=NONE
         highlight CursorLine term=none cterm=none guibg=none
         highlight CursorLineNR term=none cterm=none ctermbg=Black ctermfg=White
         highlight SpellBad ctermfg=015 ctermbg=000 cterm=none
@@ -187,13 +182,8 @@ autocmd FileType sh call SetShellOptions()
 set spellcapcheck=""
 set spellfile=~/.vim/spell/en.utf-8.add
 
-" Show whitespace characters
-set list
-set listchars=tab:⫦┈,trail:◦,precedes:⇦,extends:⇨
-highlight SpecialKey ctermfg=Black ctermbg=NONE
-
+set nohlsearch
 if has("nvim")
-    set nolist nohlsearch
     tnoremap <Esc> <C-\><C-n>
 else
     set history=5000
