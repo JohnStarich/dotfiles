@@ -1,4 +1,11 @@
 #!/usr/bin/env zsh
+
+if which toolbox &>/dev/null && [[ ! -f /run/.containerenv ]]; then
+    # If running outside a toolbox where one is available, re-run this autoload shell function in the toolbox.
+    toolbox run zsh -ilc main
+    return $?
+fi
+
 if which brew >/dev/null; then
     if ! which reattach-to-user-namespace > /dev/null; then
         if [[ -t 0 ]]; then
