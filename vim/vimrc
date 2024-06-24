@@ -73,6 +73,7 @@ syntax on
 " Prevent issues with non UNIX-conforming shells
 "set shell=/bin/bash
 
+colorscheme vim
 
 command! NonASCII syntax match nonascii "[^\x00-\x7F]"
 highlight nonascii ctermfg=015 ctermbg=001 cterm=none
@@ -84,14 +85,14 @@ function! SetBackground(mode)
         set background=light
         "highlight Pmenu ctermfg=014 ctermbg=016
         highlight SpecialKey ctermfg=White ctermbg=NONE
-        highlight clear CursorLine
+        highlight CursorLine term=none cterm=none guibg=none
         highlight CursorLineNR term=none cterm=none ctermbg=White ctermfg=Black
         highlight SpellBad ctermfg=240 ctermbg=255 cterm=none
     else
         set background=dark
         highlight Pmenu ctermfg=014 ctermbg=016
         highlight SpecialKey ctermfg=Black ctermbg=NONE
-        highlight clear CursorLine
+        highlight CursorLine term=none cterm=none guibg=none
         highlight CursorLineNR term=none cterm=none ctermbg=Black ctermfg=White
         highlight SpellBad ctermfg=015 ctermbg=000 cterm=none
     endif
@@ -135,7 +136,6 @@ set statusline=%f
 " Highlight current line's line number
 " Original idea: https://stackoverflow.com/a/13275419/1530494
 set cursorline
-autocmd BufEnter * highlight clear CursorLine
 
 " Switch tabs with Ctrl-Tab
 "nnoremap <C-Left> :tabprevious<CR>
@@ -313,10 +313,6 @@ cmap trim s/\s\+$//
 " Copy to clipboard
 command! ClipFile :%w !pbcopy
 set clipboard+=unnamedplus
-
-" Highlight current line
-"set cul
-highlight CursorLine term=none cterm=none ctermbg=0
 
 " Set tmux name
 set titlestring=%t
