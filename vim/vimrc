@@ -113,7 +113,7 @@ function! AutoDetectBackground()
 endfunction
 call AutoDetectBackground()
 
-highlight Normal guibg=NONE  " Disable default background color in neovim
+highlight Normal guifg=0 guibg=NONE  " Disable default background color in neovim, use default "black" color provided by terminal.
 
 function! BackgroundToggle()
     if(&background == 'dark')
