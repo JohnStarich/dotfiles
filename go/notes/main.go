@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 	"unicode"
 
 	"github.com/markusmobius/go-dateparser"
@@ -140,6 +141,7 @@ func parseSelectorAsDate(selector string) (date.Date, error) {
 	}
 	date, err := dateparser.Parse(&dateparser.Configuration{
 		PreferredDateSource: preferDateSource,
+		CurrentTime:         time.Now(),
 	}, selector)
 	return date, errors.WithMessage(err, "invalid date")
 }
