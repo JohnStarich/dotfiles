@@ -58,10 +58,16 @@ if [[ -n "$DEBUG" ]]; then
 fi
 
 pr_url=$(gh pr create "$@" --title "$title" --body-file - <<<"$body" | tee /dev/stderr)
-if which open >/dev/null 2>/dev/null; then
+open_tool=(open)
+if [[ -f /run/.containerenv ]]; then
+    open_tool=(flatpak-spawn --host xdg-open)
+elif [[ "$(uname)" == Linux ]]; then
+    open_tool=(xdg-open)
+fi
+if which "${open_tool[0]}" >/dev/null 2>/dev/null; then
     printf 'Open in the browser? [y/N] '
     if read -r line && [[ "$line" =~ [yY](es)? ]]; then
-        open "$pr_url"
+        "${open_tool[@]}" "$pr_url"
     fi
 else
     echo "PR opened at: $pr_url"
