@@ -73,7 +73,7 @@ syntax on
 " Prevent issues with non UNIX-conforming shells
 "set shell=/bin/bash
 
-colorscheme vim
+highlight Normal guibg=NONE  " Disable default background color in neovim
 
 command! NonASCII syntax match nonascii "[^\x00-\x7F]"
 highlight nonascii ctermfg=015 ctermbg=001 cterm=none
