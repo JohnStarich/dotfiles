@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+
+function git_default_branch() {
+    if git rev-parse --quiet --verify master >/dev/null; then
+        echo master
+    else
+        echo main
+    fi
+}
+
+color_bold=$'\033[1m'
+color_reset=$'\033[m'
+
+search_term="$*"
+
+git diff \
+    -S "$search_term" \
+    --diff-filter=d \
+    --no-prefix \
+    origin/"$(git_default_branch)" \
+        | grep "+++\|"$search_term"" \
+        | sed "s@+++ \\(.*\\)@\\n${color_bold}\\1:${color_reset}@" \
+        | highlight "$search_term"
