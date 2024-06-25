@@ -7,7 +7,7 @@ git push
 
 tmp=$(mktemp -d)
 pr_body=$tmp/pr-contents.md
-trap 'if [[ $? != 0 ]]; then cat "$pr_body"; fi; rm -rf "$tmp"' EXIT
+trap 'if [[ $? != 0 ]]; then printf "\n"; cat "$pr_body"; fi; rm -rf "$tmp"' EXIT
 
 # Add 'h1' header, indicating the title box
 printf '# ' >> "$pr_body"
