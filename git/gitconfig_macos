@@ -10,7 +10,6 @@
     navigate = true    # use n and N to move between diff sections
     line-numbers = true
     paging = always
-    true-color = always
 
 [merge]
     conflictstyle = diff3
