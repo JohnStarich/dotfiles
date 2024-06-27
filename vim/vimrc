@@ -117,6 +117,7 @@ if has("nvim")
     " Disable and reset colors in neovim's default color scheme. Use default colors provided by terminal.
     highlight Normal guifg=0 guibg=NONE      " Remove default gui background colors, use terminal default instead.
     highlight Visual ctermbg=lightgray       " Lighten highlight color a bit.
+    highlight NormalFloat ctermbg=white      " Darken floating window a bit.
     highlight StatusLineNC ctermbg=lightgray " Possibly fixed in the next release of neovim: https://github.com/neovim/neovim/commit/9b9f54e2c1cd3a1aae7de33a5d0e70be8d57b1fd
 endif
 
