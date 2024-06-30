@@ -1,0 +1,6 @@
+[Service]
+ExecStart=%h/.dotfiles/bin/power-profiles-monitor
+# See Specifiers for how this is formatted: https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html#Specifiers
+
+[Install]
+WantedBy=default.target

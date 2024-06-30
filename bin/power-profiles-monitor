@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+batteries=(/sys/class/power_supply/BAT*)
+low_battery_threshold=30
+monitor_interval_seconds=30
+
+function battery_has_state() {
+    local target_state=$1
+    for battery in "${batteries[@]}"; do
+        if [[ "$(< "$battery"/status)" == "$target_state" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+function smallest_battery_percentage() {
+    declare -i smallest=100
+    for battery in "${batteries[@]}"; do
+        declare -i capacity="$(< "$battery"/capacity)"
+        if (( capacity < smallest )); then
+            smallest=$capacity
+        fi
+    done
+    echo "$smallest"
+}
+
+while true; do
+    if battery_has_state Discharging; then
+        if (( $(smallest_battery_percentage) < low_battery_threshold )); then
+            powerprofilesctl set power-saver
+        else
+            powerprofilesctl set balanced
+        fi
+    else
+        powerprofilesctl set performance
+    fi
+    sleep "$monitor_interval_seconds"
+done
