@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 export GORACE="halt_on_error=1"  # Make it easy to run with race detector on with a very high -count=N.
+export LC_ALL=C  # Works around sed's habit of exiting when it encounters weird ("illegal") byte sequences.
 
 module_name=$(awk '/^module /{print $2}' go.mod)
 hide_pointers_re='s%(\(.*0x[[:digit:]]\{1,12\}.*\))%(...args...)%'
