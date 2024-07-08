@@ -9,7 +9,7 @@ hide_pointers_re='s%(\(.*0x[[:digit:]]\{1,12\}.*\))%(...args...)%'
 flags=(
     -e "s%$PWD%\$PWD%g"
     -e "s%$(go env GOROOT)%\$GOROOT%g"
-    -e "s%$module_name%\$MODULE%"
+    -e "s%$module_name%\$MODULE%g"
 )
 if [[ "$(uname)" == Darwin ]]; then
     flags+=(-l)  # Line buffered output
