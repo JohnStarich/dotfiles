@@ -1,0 +1,14 @@
+[Unit]
+PartOf=graphical-session.target
+After=graphical-session.target
+BindsTo=graphical-session.target
+Requisite=graphical-session.target
+
+[Service]
+ExecStart=flatpak run com.dropbox.Client
+ExecStop=flatpak kill com.dropbox.Client
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=graphical-session.target
