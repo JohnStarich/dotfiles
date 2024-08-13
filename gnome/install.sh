@@ -5,7 +5,7 @@ if ! linux; then
 fi
 
 dotlink applications ~/.local/share/applications/dotfiles
-gsettings set org.gnome.desktop.input-sources xkb-options "['caps:escape']"
+gsettings set org.gnome.desktop.input-sources xkb-options "['caps:escape']"  # Set Caps Lock to press Escape instead
 
 mkdir -p ~/.config/systemd/user
 for service in systemd/*; do
