@@ -18,16 +18,23 @@ function ensure_installed() {
     for pkg in "${packages[@]}"; do
         if ! is_installed "$pkg"; then
             echo "Package $pkg not installed. Running bulk install..."
-            rpm-ostree install -y "${packages[@]}"
+            rpm-ostree install --idempotent -y "${packages[@]}"
             return
         fi
     done
 }
 
+if ! is_installed rpmfusion-free-release; then
+    rpm-ostree install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+    echo A reboot is required to finish installing rpmfusion. >&2
+fi
+if ! is_installed rpmfusion-nonfree-release; then
+    rpm-ostree install -y https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+    echo A reboot is required to finish installing rpmfusion. >&2
+fi
+
 packages=(
     libva-utils
-    rpmfusion-free-release
-    rpmfusion-nonfree-release
     simple-scan
     zsh
 )
