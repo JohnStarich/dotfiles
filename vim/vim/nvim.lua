@@ -155,13 +155,33 @@ vim.api.nvim_create_autocmd('LspAttach', {
         -- Format & goimports:
         pattern = { "*.go" },
         callback = function()
+            -- Format the file
             vim.lsp.buf.format()
-            vim.lsp.buf.code_action({
-                context = {
-                    only = {"source.organizeImports"},
-                },
-                apply = true,
-            })
+
+            -- Organize imports
+            --TODO: Restore the following call to code_action once it can silence the "No code actions available" message
+            --vim.lsp.buf.code_action({
+            --    context = {
+            --        only = {"source.organizeImports"},
+            --    },
+            --    apply = true,
+            --})
+            local params = vim.lsp.util.make_range_params()
+            params.context = {only = {"source.organizeImports"}}
+            vim.lsp.buf_request_all(0, "textDocument/codeAction", params, function(responses)
+                for client_id, response in pairs(responses) do
+                    if response.result then
+                        for _, result in pairs(response.result) do
+                            if result.edit then
+                                vim.lsp.util.apply_workspace_edit(result.edit, vim.lsp.get_client_by_id(client_id).offset_encoding)
+                            else
+                                vim.lsp.buf.execute_command(result.command)
+                            end
+                        end
+                        vim.cmd.write()
+                    end
+                end
+            end)
         end,
     })
   end,
