@@ -86,6 +86,14 @@ vim.keymap.set('n', '<leader>fv', function()
         search_dirs = { "~/.vim/bundle" },
     }
 end, {})
+vim.keymap.set('n', '<leader>fc', function()
+    return telescopeBuiltin.live_grep {
+        prompt_title = "Search non-test files",
+        file_ignore_patterns = {
+            "%_test.[^.]*"
+        },
+    }
+end, {})
 
 -- nvim-lspconfig:
 -- Global mappings.
