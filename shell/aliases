@@ -9,7 +9,7 @@ alias gcb='git checkout -b'
 alias gcd='git checkout develop'
 alias gcm='{ git rev-parse --quiet --verify master && git checkout master || git checkout main; }'
 alias gd='git diff'
-alias gdm='git diff $(git_default_branch)'
+alias gdm='git diff origin/$(git_default_branch)'
 alias git-word-diff='git diff --word-diff --color-words="[^[:space:],()<>]+|[[:space:],()<>]+/s"'
 if macos || linux; then
     alias git='git -c delta.light="$(background-color-dark && echo false || echo true)"'
