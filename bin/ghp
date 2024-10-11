@@ -26,7 +26,7 @@ echo "$log" >> "$pr_body"
 repo_root=$(git rev-parse --show-toplevel)
 if [[ -f "$repo_root"/.github/pull_request_template.md ]]; then
     echo >> "$pr_body"
-    cat ./.github/pull_request_template.md >> "$pr_body"
+    cat "$repo_root"/.github/pull_request_template.md >> "$pr_body"
 elif [[ -f "$repo_root"/.github/PULL_REQUEST_TEMPLATE/pull_request_template.md ]]; then
     echo >> "$pr_body"
     cat "$repo_root"/.github/PULL_REQUEST_TEMPLATE/pull_request_template.md >> "$pr_body"
