@@ -170,6 +170,9 @@ else
     set showbreak=>\ "
 endif
 
+" Increase max memory when initializing syntax highlighting (kibibytes)
+set maxmempattern=10000
+
 " Set Markdown options
 function! SetMarkdownOptions()
     "setlocal breakindentopt=shift:-4 " TODO: attempt to set hanging indent
