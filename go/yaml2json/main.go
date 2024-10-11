@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"io"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -19,13 +20,18 @@ func main() {
 	}
 	decoder := yaml.NewDecoder(in)
 	encoder := json.NewEncoder(os.Stdout)
-	var value any
-	err := decoder.Decode(&value)
-	if err != nil {
-		panic(err)
-	}
-	err = encoder.Encode(value)
-	if err != nil {
-		panic(err)
+	for {
+		var value any
+		err := decoder.Decode(&value)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			panic(err)
+		}
+		err = encoder.Encode(value)
+		if err != nil {
+			panic(err)
+		}
 	}
 }
