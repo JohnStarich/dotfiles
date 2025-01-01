@@ -2,7 +2,7 @@
 
 if which toolbox &>/dev/null && [[ ! -f /run/.containerenv ]]; then
     # If running outside a toolbox where one is available, re-run this autoload shell function in the toolbox.
-    toolbox run zsh -ilc main
+    toolbox run -c "$USER" zsh -ilc main
     return $?
 fi
 
