@@ -9,7 +9,7 @@ function load_bundles_with_fpath() {
 }
 
 # Add brew completion dirs
-fpath=(/usr/local/share/zsh/site-functions /usr/local/share/zsh-completions "${fpath[@]}")
+fpath=(/opt/homebrew/share/zsh/site-functions /opt/homebrew/share/zsh-completions "${fpath[@]}")
 
 #local current_fpath=("${fpath[@]}")
 antigen use oh-my-zsh
