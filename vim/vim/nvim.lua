@@ -63,6 +63,10 @@ telescope.setup {
 }
 
 local telescopeBuiltin = require('telescope.builtin')
+local telescopePickers = require('telescope.pickers')
+local telescopeFinders = require('telescope.finders')
+local telescopeSorters = require('telescope.sorters')
+local telescopeConfig = require("telescope.config").values
 vim.keymap.set('n', '<leader>fb', telescopeBuiltin.buffers, {})
 vim.keymap.set('n', '<leader>fd', telescopeBuiltin.diagnostics, {})
 vim.keymap.set('n', '<leader>fe', function()
@@ -100,6 +104,36 @@ vim.keymap.set('n', '<leader>fc', function()
         },
     }
 end, {})
+vim.keymap.set('n', '<leader>ft', function()
+    return telescopePickers.new({}, {
+        prompt_title = 'Tmux Other Visible Pane Line Numbers',
+        finder = telescopeFinders.new_oneshot_job(
+            { "tmux", "capture-pane", "-p", "-J", "-t", "1" }, -- TODO capture all panes
+            {
+                entry_maker = function(result)
+                    file_name, line_number_str = string.match(result, "(%S+%.[^:]+):(%d+)")
+                    if not file_name then
+                        return {valid = false}
+                    end
+                    line_number = tonumber(line_number_str)
+                    return {
+                        value = result,
+                        valid = true,
+                        ordinal = file_name .. ":" .. line_number,
+                        display = string.gsub(result, "^%s+", "", 1),
+                        filename = file_name,
+                        bufnr = nil,
+                        lnum = line_number,
+                        col = nil,
+                    }
+                end,
+            }),
+        sorter = telescopeSorters.get_generic_fuzzy_sorter(),
+        previewer = telescopeConfig.grep_previewer({}),
+    }):find()
+end, {})
+-- Ideas:
+-- * Search all TODOs in diff with main/master
 
 -- nvim-lspconfig:
 -- Global mappings.
