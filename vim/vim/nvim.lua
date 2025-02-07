@@ -170,7 +170,7 @@ vim.keymap.set('n', '<leader>ft', function()
                     return {valid = false}
                 end
                 local display = result
-                local display = string.gsub(display, raw_match, "1" .. raw_match .. "2", 1)
+                local display = string.gsub(display, raw_match, raw_match, 1)
                 local trimmed = string.gsub(display, "^%s+", "", 1)
                 return {
                     value = result,
