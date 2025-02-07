@@ -63,10 +63,11 @@ telescope.setup {
 }
 
 local telescopeBuiltin = require('telescope.builtin')
-local telescopePickers = require('telescope.pickers')
-local telescopeFinders = require('telescope.finders')
-local telescopeSorters = require('telescope.sorters')
 local telescopeConfig = require("telescope.config").values
+local telescopeFinders = require('telescope.finders')
+local telescopePickers = require('telescope.pickers')
+local telescopeSorters = require('telescope.sorters')
+local telescopeThemes = require('telescope.themes')
 vim.keymap.set('n', '<leader>fb', telescopeBuiltin.buffers, {})
 vim.keymap.set('n', '<leader>fd', telescopeBuiltin.diagnostics, {})
 vim.keymap.set('n', '<leader>fe', function()
@@ -104,30 +105,85 @@ vim.keymap.set('n', '<leader>fc', function()
         },
     }
 end, {})
+function split_lines(s)
+    local splits = {}
+    for match in string.gmatch(s, "[^\r\n]+") do
+        table.insert(splits, match)
+    end
+    return splits
+end
+function trim_up_through_prefix(s, pattern)
+    while true do
+        prefix = string.match(s, "^.*" .. pattern)
+        if not prefix then
+            return s
+        end
+        s = string.sub(s, string.len(prefix)+1)
+    end
+end
+function match_file(s)
+    local name_pattern = "(%g+%.%w+)"
+    local untrimmed_raw_match, file_name, line_number
+    for _, pattern in pairs({
+        name_pattern .. ":(%d+)",
+        name_pattern,
+    }) do
+        untrimmed_raw_match, file_name, line_number = string.match(s, "(" .. pattern .. ")")
+        if untrimmed_raw_match then
+            break
+        end
+    end
+    if not untrimmed_raw_match then
+        return nil, nil, nil
+    end
+
+    local raw_match = untrimmed_raw_match
+    -- Ignore prefixes with quotes and escaped new line characters, i.e. JSON logs.
+    raw_match = trim_up_through_prefix(raw_match, "[\"']+")
+    raw_match = trim_up_through_prefix(raw_match, "\\n")
+    raw_match = trim_up_through_prefix(raw_match, "\\r")
+    local trim_length = string.len(untrimmed_raw_match)-string.len(raw_match)
+    file_name = string.sub(file_name, trim_length+1)
+    if vim.uv.fs_stat(file_name) then
+        return raw_match, file_name, tonumber(line_number)
+    end
+    return nil, nil, nil
+end
 vim.keymap.set('n', '<leader>ft', function()
-    return telescopePickers.new({}, {
+    local panes = vim.system({"tmux", "list-panes", "-F", "#{pane_id}"}):wait()
+    if panes.code ~= 0 then
+        error("failed to list tmux panes: (" .. tostring(panes.code) .. ")" .. tostring(panes.stdout) .. tostring(panes.stderr))
+    end
+    local all_pane_contents = vim.system({"xargs", "-n1", "tmux", "capture-pane", "-p", "-J", "-t"}, {stdin = panes.stdout}):wait()
+    if all_pane_contents.code ~= 0 then
+        error("failed to capture tmux all pane contents: (" .. tostring(all_pane_contents.code) .. ")" .. tostring(all_pane_contents.stdout) .. tostring(all_pane_contents.stderr))
+    end
+    local opts = telescopeThemes.get_dropdown{}
+    return telescopePickers.new(opts, {
         prompt_title = 'Tmux Other Visible Pane Line Numbers',
-        finder = telescopeFinders.new_oneshot_job(
-            { "tmux", "capture-pane", "-p", "-J", "-t", "1" }, -- TODO capture all panes
-            {
-                entry_maker = function(result)
-                    file_name, line_number_str = string.match(result, "(%S+%.[^:]+):(%d+)")
-                    if not file_name then
-                        return {valid = false}
-                    end
-                    line_number = tonumber(line_number_str)
-                    return {
-                        value = result,
-                        valid = true,
-                        ordinal = file_name .. ":" .. line_number,
-                        display = string.gsub(result, "^%s+", "", 1),
-                        filename = file_name,
-                        bufnr = nil,
-                        lnum = line_number,
-                        col = nil,
-                    }
-                end,
-            }),
+        push_tagstack_on_edit = true,
+        finder = telescopeFinders.new_table({
+            results = split_lines(all_pane_contents.stdout),
+            entry_maker = function(result)
+                local raw_match, file_name, line_number = match_file(result)
+                if not raw_match then
+                    return {valid = false}
+                end
+                local display = result
+                local display = string.gsub(display, raw_match, "1" .. raw_match .. "2", 1)
+                local trimmed = string.gsub(display, "^%s+", "", 1)
+                return {
+                    value = result,
+                    valid = true,
+                    ordinal = raw_match,
+                    display = display,
+                    filename = file_name,
+                    bufnr = nil,
+                    lnum = line_number,
+                    col = nil,
+                }
+            end,
+        }),
         sorter = telescopeSorters.get_generic_fuzzy_sorter(),
         previewer = telescopeConfig.grep_previewer({}),
     }):find()
