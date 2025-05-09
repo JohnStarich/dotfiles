@@ -112,6 +112,11 @@ function split_lines(s)
     end
     return splits
 end
+function trim_space(s)
+    s = string.gsub(s, "^%s+", "", 1)
+    s = string.gsub(s, "%s+$", "", 1)
+    return s
+end
 function trim_up_through_prefix(s, pattern)
     while true do
         prefix = string.match(s, "^.*" .. pattern)
@@ -171,12 +176,12 @@ vim.keymap.set('n', '<leader>ft', function()
                 end
                 local display = result
                 local display = string.gsub(display, raw_match, raw_match, 1)
-                local trimmed = string.gsub(display, "^%s+", "", 1)
+                local trimmed = trim_space(display)
                 return {
                     value = result,
                     valid = true,
                     ordinal = raw_match,
-                    display = display,
+                    display = trimmed,
                     filename = file_name,
                     bufnr = nil,
                     lnum = line_number,
