@@ -51,6 +51,7 @@ telescope.setup {
         },
         live_grep = {
             push_tagstack_on_edit = true,
+            additional_args = { "--hidden", "--glob", "!**/.git/*" },
         },
         lsp_dynamic_workspace_symbols = {
             theme = "dropdown",
