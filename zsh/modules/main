@@ -6,7 +6,7 @@ if which toolbox &>/dev/null && [[ ! -f /run/.containerenv ]]; then
     return $?
 fi
 
-if which brew >/dev/null; then
+if [[ "$(uname)" == Darwin ]] && which brew >/dev/null; then
     if ! which reattach-to-user-namespace > /dev/null; then
         if [[ -t 0 ]]; then
             echo -n 'Press enter to install tmux.conf dependency `reattach-to-user-namespace`' >&2
