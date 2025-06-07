@@ -24,11 +24,13 @@ func run(ctx context.Context, args []string, in io.Reader, out, errOut io.Writer
 	errs := make(chan error, jobs)
 	parserOutput, err := startJQ(ctx, []string{
 		"--raw-input",
+		"--unbuffered",
 		`. as $line | select(. != "") | try fromjson catch {"_json_parse_error":$line}`,
 	}, in, errOut, errs)
 	if err != nil {
 		return err
 	}
+	args = append([]string{"--unbuffered"}, args...) // in this situation, only --unbuffered produces useful results in interactive sessions
 	output, err := startJQ(ctx, args, parserOutput, errOut, errs)
 	if err != nil {
 		return err
