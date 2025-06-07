@@ -20,42 +20,31 @@ func main() {
 }
 
 func run(ctx context.Context, args []string, in io.Reader, out, errOut io.Writer) error {
-	const jobs = 3 // parser + jq with user args + stdout copier
+	userInput, parserOutput, err := os.Pipe()
+	if err != nil {
+		return err
+	}
+	defer parserOutput.Close()
+	defer userInput.Close()
+
+	const jobs = 2 // parser + jq with user args
 	errs := make(chan error, jobs)
-	parserOutput, err := startJQ(ctx, []string{
+	startJQ(ctx, []string{
 		"--raw-input",
 		"--unbuffered",
 		`. as $line | select(. != "") | try fromjson catch {"_json_parse_error":$line}`,
-	}, in, errOut, errs)
-	if err != nil {
-		return err
-	}
+	}, in, parserOutput, errOut, errs)
 	args = append([]string{"--unbuffered"}, args...) // in this situation, only --unbuffered produces useful results in interactive sessions
-	output, err := startJQ(ctx, args, parserOutput, errOut, errs)
-	if err != nil {
-		return err
-	}
-	go func() {
-		defer parserOutput.Close()
-		defer output.Close()
-		_, err := io.Copy(out, output)
-		if err != nil {
-			errs <- err
-		}
-	}()
+	startJQ(ctx, args, userInput, out, errOut, errs)
 	return <-errs
 }
 
-func startJQ(ctx context.Context, args []string, in io.Reader, errOut io.Writer, errs chan<- error) (io.ReadCloser, error) {
+func startJQ(ctx context.Context, args []string, in io.Reader, out io.Writer, errOut io.Writer, errs chan<- error) {
 	cmd := exec.CommandContext(ctx, "jq", args...)
 	cmd.Stdin = in
-	out, err := cmd.StdoutPipe()
-	if err != nil {
-		return nil, err
-	}
+	cmd.Stdout = out
 	cmd.Stderr = errOut
 	go func() {
 		errs <- cmd.Run()
 	}()
-	return out, nil
 }
