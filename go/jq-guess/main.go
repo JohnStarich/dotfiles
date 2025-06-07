@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	ctx, cancel := signal.NotifyContext(context.Background())
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 	err := run(ctx, os.Args[1:], os.Stdin, os.Stdout, os.Stderr)
 	if err != nil {
