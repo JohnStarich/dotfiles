@@ -7,7 +7,7 @@ alias gb="git branch --format='%(authordate:short) %(color:red)%(objectname:shor
 alias gc='git checkout'
 alias gcb='git checkout -b'
 alias gcd='git checkout develop'
-alias gcm='{ git rev-parse --quiet --verify master && git checkout master || git checkout main; }'
+alias gcm='git checkout "$(git_default_branch)"'
 alias gd='git diff'
 alias gdm='git diff origin/$(git_default_branch)'
 alias git-word-diff='git diff --word-diff --color-words="[^[:space:],()<>]+|[[:space:],()<>]+/s"'

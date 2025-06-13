@@ -146,9 +146,8 @@ function python_lib() {
 }
 
 function git_default_branch() {
-    if git rev-parse --quiet --verify main &>/dev/null; then
-        echo main
-    else
-        echo master
-    fi
+    local remote=origin
+    local ref
+    ref=$(git symbolic-ref refs/remotes/"$remote"/HEAD --short)
+    echo "${ref/"$remote"\/}"
 }
