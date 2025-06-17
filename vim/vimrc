@@ -39,8 +39,6 @@ if v:version >= 700
         Plug '~/.vim/johnstarich/vim-slack'                                       " Adds commands for interacting with Slack
 
         if has("nvim")
-            Plug 'neovim/nvim-lspconfig'                                      " Quickstart configs for Nvim LSP
-            Plug 'hrsh7th/nvim-cmp'                                           " A completion plugin for neovim coded in Lua.
             Plug 'hrsh7th/cmp-buffer'                                         " nvim-cmp source for buffer words
             Plug 'hrsh7th/cmp-cmdline'                                        " nvim-cmp source for vim's cmdline
             Plug 'hrsh7th/cmp-nvim-lsp'                                       " nvim-cmp source for neovim builtin LSP client
@@ -48,13 +46,15 @@ if v:version >= 700
             Plug 'hrsh7th/cmp-nvim-lua'                                       " nvim-cmp source for nvim lua
             Plug 'hrsh7th/cmp-path'                                           " nvim-cmp source for path
             Plug 'hrsh7th/cmp-vsnip'                                          " nvim-cmp source for vim-vsnip
+            Plug 'hrsh7th/nvim-cmp'                                           " A completion plugin for neovim coded in Lua.
             Plug 'hrsh7th/vim-vsnip'                                          " Snippet plugin for vim/nvim that supports LSP/VSCode's snippet format.
-            Plug 'ray-x/go.nvim'                                              " Modern Go plugin for Neovim, based on gopls, treesitter AST, Dap and a variety of go tools. (only used for :GoCoverage capability)
+            Plug 'neovim/nvim-lspconfig'                                      " Quickstart configs for Nvim LSP
             Plug 'nvim-lua/plenary.nvim'                                      " plenary: full; complete; entire; absolute; unqualified. All the lua functions I don't want to write twice. (used by telescope)
-            Plug 'nvim-telescope/telescope.nvim', { 'branch': '0.1.x' }       " Find, Filter, Preview, Pick. All lua, all the time.
             Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' } " FZF sorter for telescope written in c (performance boost for telescope)
+            Plug 'nvim-telescope/telescope.nvim', { 'branch': '0.1.x' }       " Find, Filter, Preview, Pick. All lua, all the time.
             Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}       " Installing treesitter is required to fix rpm packaging issues with neovim 0.10.0
             Plug 'nvim-treesitter/nvim-treesitter-context'                    " Show current function at top of split
+            Plug 'ray-x/go.nvim'                                              " Modern Go plugin for Neovim, based on gopls, treesitter AST, Dap and a variety of go tools. (only used for :GoCoverage capability)
         end
 
         call plug#end()
