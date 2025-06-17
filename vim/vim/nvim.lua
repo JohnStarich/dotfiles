@@ -419,3 +419,6 @@ for lsp, config in pairs(servers) do
     end
     lspconfig[lsp].setup(opts)
 end
+
+require('treesitter-context').setup {
+}
