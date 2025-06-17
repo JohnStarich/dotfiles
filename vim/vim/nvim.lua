@@ -1,3 +1,6 @@
+-- Simple plugin setup:
+require('treesitter-context').setup({})
+
 require('nvim-treesitter.configs').setup {
     auto_install = true,
     highlight = {
@@ -419,6 +422,3 @@ for lsp, config in pairs(servers) do
     end
     lspconfig[lsp].setup(opts)
 end
-
-require('treesitter-context').setup {
-}

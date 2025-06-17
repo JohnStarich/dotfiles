@@ -39,7 +39,6 @@ if v:version >= 700
         Plug '~/.vim/johnstarich/vim-slack'                                       " Adds commands for interacting with Slack
 
         if has("nvim")
-            Plug 'nvim-treesitter/nvim-treesitter-context'                    " Show current function at top of split
             Plug 'neovim/nvim-lspconfig'                                      " Quickstart configs for Nvim LSP
             Plug 'hrsh7th/nvim-cmp'                                           " A completion plugin for neovim coded in Lua.
             Plug 'hrsh7th/cmp-buffer'                                         " nvim-cmp source for buffer words
@@ -55,6 +54,7 @@ if v:version >= 700
             Plug 'nvim-telescope/telescope.nvim', { 'branch': '0.1.x' }       " Find, Filter, Preview, Pick. All lua, all the time.
             Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' } " FZF sorter for telescope written in c (performance boost for telescope)
             Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}       " Installing treesitter is required to fix rpm packaging issues with neovim 0.10.0
+            Plug 'nvim-treesitter/nvim-treesitter-context'                    " Show current function at top of split
         end
 
         call plug#end()
