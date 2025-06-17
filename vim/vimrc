@@ -9,7 +9,6 @@ if v:version >= 700
         endif
         call plug#begin('~/.vim/bundle')
 
-        Plug 'ConradIrwin/vim-bracketed-paste'                                    " Paste directly into Vim document in normal mode, even through Tmux or Screen.
         Plug 'ap/vim-css-color'                                                   " Preview colours in source code while editing
         Plug 'dkarter/bullets.vim'                                                " automated bullet lists
         Plug 'ekalinin/Dockerfile.vim'                                            " Vim syntax file & snippets for Docker's Dockerfile
