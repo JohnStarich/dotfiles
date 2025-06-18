@@ -10,24 +10,18 @@ if v:version >= 700
         call plug#begin('~/.vim/bundle')
 
         Plug 'bullets-vim/bullets.vim'                                            " automated bullet lists
-        Plug 'godlygeek/tabular'                                                  " Vim script for text filtering and alignment
         Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } } " markdown preview plugin for (neo)vim
-        Plug 'jistr/vim-nerdtree-tabs'                                            " NERDTree and tabs together in Vim, painlessly (unifies the NERDTree panel across tabs)
         Plug 'junegunn/goyo.vim'                                                  " Distraction-free writing in Vim
         Plug 'junegunn/vim-plug'                                                  " Include help for vim-plug
         Plug 'mbbill/undotree'                                                    " The undo history visualizer for VIM
-        Plug 'pangloss/vim-javascript'                                            " Vastly improved Javascript indentation and syntax support in Vim
         Plug 'plasticboy/vim-markdown'                                            " Markdown Vim Mode (does table formatting)
         Plug 'raimondi/delimitmate'                                               " Vim plugin, provides insert mode auto-completion for quotes, parens, brackets, etc.
         Plug 'reedes/vim-wordy'                                                   " Uncover usage problems in your writing
-        Plug 'scrooloose/nerdcommenter'                                           " Vim plugin for intensely nerdy commenting powers
-        Plug 'scrooloose/nerdtree'                                                " A tree explorer plugin for vim.
         Plug 'tpope/vim-dotenv'                                                   " Basic support for .env and Procfile
         Plug 'tpope/vim-eunuch'                                                   " Helpers for UNIX (:Remove, :Move, :Mkdir, etc)
         Plug 'tpope/vim-fugitive'                                                 " A Git wrapper
         Plug 'tpope/vim-sleuth'                                                   " Heuristically set buffer options (tab stops, tab expansion, etc.)
         Plug 'tpope/vim-surround'                                                 " Delete/change/add parentheses/quotes/XML-tags/much more with ease
-        Plug 'xolox/vim-misc'                                                     " Miscellaneous auto-load Vim scripts (library used by easytags.vim)
         Plug '~/.vim/johnstarich/vim-notes'                                       " Adds commands for using my 'notes' CLI
         Plug '~/.vim/johnstarich/vim-slack'                                       " Adds commands for interacting with Slack
 
