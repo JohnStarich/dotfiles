@@ -10,7 +10,7 @@ if v:version >= 700
         call plug#begin('~/.vim/bundle')
 
         Plug 'ap/vim-css-color'                                                   " Preview colours in source code while editing
-        Plug 'dkarter/bullets.vim'                                                " automated bullet lists
+        Plug 'bullets-vim/bullets.vim'                                            " automated bullet lists
         Plug 'ekalinin/Dockerfile.vim'                                            " Vim syntax file & snippets for Docker's Dockerfile
         Plug 'godlygeek/tabular'                                                  " Vim script for text filtering and alignment
         Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } } " markdown preview plugin for (neo)vim
@@ -366,3 +366,9 @@ if $DEMO == "true"
         source ~/.vim/demo.vim
     endif
 endif
+
+let g:bullets_outline_levels = ['ROM', 'ABC', 'num', 'abc', 'rom', 'std*', 'std-', 'std+'] " move '-' after '*'
+" Automatically indent and dedent on tab and shift+tab
+" Seems to play well with completion for now. Perhaps nvim-cmp's setup takes precedence.
+inoremap <Tab> <C-t>
+inoremap <S-Tab> <C-d>
