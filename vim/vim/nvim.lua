@@ -1,4 +1,8 @@
 -- Simple plugin setup:
+require('nvim-highlight-colors').setup({
+    render = 'virtual',
+    virtual_symbol_position = 'eol',
+})
 require('treesitter-context').setup({})
 
 require('nvim-treesitter.configs').setup {

@@ -9,7 +9,6 @@ if v:version >= 700
         endif
         call plug#begin('~/.vim/bundle')
 
-        Plug 'ap/vim-css-color'                                                   " Preview colours in source code while editing
         Plug 'bullets-vim/bullets.vim'                                            " automated bullet lists
         Plug 'ekalinin/Dockerfile.vim'                                            " Vim syntax file & snippets for Docker's Dockerfile
         Plug 'godlygeek/tabular'                                                  " Vim script for text filtering and alignment
@@ -38,6 +37,7 @@ if v:version >= 700
         Plug '~/.vim/johnstarich/vim-slack'                                       " Adds commands for interacting with Slack
 
         if has("nvim")
+            Plug 'brenoprata10/nvim-highlight-colors'                         " Highlight colors for neovim - hex codes, color names, etc.
             Plug 'hrsh7th/cmp-buffer'                                         " nvim-cmp source for buffer words
             Plug 'hrsh7th/cmp-cmdline'                                        " nvim-cmp source for vim's cmdline
             Plug 'hrsh7th/cmp-nvim-lsp'                                       " nvim-cmp source for neovim builtin LSP client
