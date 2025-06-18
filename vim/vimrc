@@ -10,17 +10,12 @@ if v:version >= 700
         call plug#begin('~/.vim/bundle')
 
         Plug 'bullets-vim/bullets.vim'                                            " automated bullet lists
-        Plug 'ekalinin/Dockerfile.vim'                                            " Vim syntax file & snippets for Docker's Dockerfile
         Plug 'godlygeek/tabular'                                                  " Vim script for text filtering and alignment
         Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } } " markdown preview plugin for (neo)vim
         Plug 'jistr/vim-nerdtree-tabs'                                            " NERDTree and tabs together in Vim, painlessly (unifies the NERDTree panel across tabs)
-        Plug 'joukevandermaas/vim-ember-hbs'                                      " Ember Handlebars/HTMLBars plugin for Vim with indentation support
-        Plug 'jparise/vim-graphql'                                                " A Vim plugin that provides GraphQL file detection, syntax highlighting, and indentation.
         Plug 'junegunn/goyo.vim'                                                  " Distraction-free writing in Vim
         Plug 'junegunn/vim-plug'                                                  " Include help for vim-plug
-        Plug 'linkinpark342/xonsh-vim'                                            " xonsh syntax file from vim
         Plug 'mbbill/undotree'                                                    " The undo history visualizer for VIM
-        Plug 'mxw/vim-jsx'                                                        " React JSX syntax highlighting and indenting for vim.
         Plug 'pangloss/vim-javascript'                                            " Vastly improved Javascript indentation and syntax support in Vim
         Plug 'plasticboy/vim-markdown'                                            " Markdown Vim Mode (does table formatting)
         Plug 'raimondi/delimitmate'                                               " Vim plugin, provides insert mode auto-completion for quotes, parens, brackets, etc.
