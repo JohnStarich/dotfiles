@@ -117,6 +117,13 @@ function split_lines(s)
     end
     return splits
 end
+function reverse(original)
+    local reversed = {}
+    for i = #original, 1, -1 do
+        table.insert(reversed, original[i])
+    end
+    return reversed
+end
 function trim_space(s)
     s = string.gsub(s, "^%s+", "", 1)
     s = string.gsub(s, "%s+$", "", 1)
@@ -164,7 +171,8 @@ vim.keymap.set('n', '<leader>ft', function()
     if panes.code ~= 0 then
         error("failed to list tmux panes: (" .. tostring(panes.code) .. ")" .. tostring(panes.stdout) .. tostring(panes.stderr))
     end
-    local all_pane_contents = vim.system({"xargs", "-n1", "tmux", "capture-pane", "-p", "-J", "-t"}, {stdin = panes.stdout}):wait()
+    local history_to_include = 100
+    local all_pane_contents = vim.system({"xargs", "-n1", "tmux", "capture-pane", "-p", "-J", "-S", tostring(-history_to_include), "-t"}, {stdin = panes.stdout}):wait()
     if all_pane_contents.code ~= 0 then
         error("failed to capture tmux all pane contents: (" .. tostring(all_pane_contents.code) .. ")" .. tostring(all_pane_contents.stdout) .. tostring(all_pane_contents.stderr))
     end
@@ -173,7 +181,7 @@ vim.keymap.set('n', '<leader>ft', function()
         prompt_title = 'Tmux Other Visible Pane Line Numbers',
         push_tagstack_on_edit = true,
         finder = telescopeFinders.new_table({
-            results = split_lines(all_pane_contents.stdout),
+            results = reverse(split_lines(all_pane_contents.stdout)),
             entry_maker = function(result)
                 local raw_match, file_name, line_number = match_file(result)
                 if not raw_match then
