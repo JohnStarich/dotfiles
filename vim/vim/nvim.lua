@@ -22,7 +22,10 @@ require('nvim-treesitter.configs').setup {
         enable = true,
     },
 }
-require('treesitter-context').setup({})
+require('treesitter-context').setup({
+    multiline_threshold = 1,
+    mode = 'topline',
+})
 
 if vim.env.TMUX then
     -- If running in tmux, detect background color. Remove after this is fixed: https://github.com/neovim/neovim/issues/17070#issuecomment-1767916121
