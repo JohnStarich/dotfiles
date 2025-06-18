@@ -3,9 +3,9 @@ local coverage = require('coverage')
 coverage.setup({
     auto_reload = true,
     signs = {
-		covered = { text = "█" },
-		uncovered = { text = "█" },
-	},
+        covered = { text = "█" },
+        uncovered = { text = "█" },
+    },
 })
 local showCoverage = false
 vim.keymap.set('n', '<leader>ct', function()
