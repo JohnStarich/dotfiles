@@ -1,39 +1,33 @@
 -- Simple plugin setup:
+local coverage = require('coverage')
+coverage.setup({
+    auto_reload = true,
+    signs = {
+		covered = { text = "█" },
+		uncovered = { text = "█" },
+	},
+})
+local showCoverage = false
+vim.keymap.set('n', '<leader>ct', function()
+    showCoverage = not showCoverage
+    coverage.load(showCoverage)
+end, {})
 require('nvim-highlight-colors').setup({
     render = 'virtual',
     virtual_symbol_position = 'eol',
 })
-require('treesitter-context').setup({})
-
 require('nvim-treesitter.configs').setup {
     auto_install = true,
     highlight = {
         enable = true,
     },
 }
+require('treesitter-context').setup({})
 
 if vim.env.TMUX then
     -- If running in tmux, detect background color. Remove after this is fixed: https://github.com/neovim/neovim/issues/17070#issuecomment-1767916121
     vim.loop.fs_write(2, "\27Ptmux;\27\27]11;?\7\27\\", -1, nil)
 end
-
--- ray-x/go.nvim
-require('go').setup {
-    -- https://github.com/ray-x/go.nvim#configuration
-    textobjects = false, -- Disables 'treesitter' error
-    -- gocoverage_sign = "█",
-    gocoverage_sign = " ",
-}
-vim.cmd([[
-augroup my-go-nvim-coverage
-    au Syntax go hi goCoverageCovered guibg=DarkGreen ctermbg=DarkGreen
-    au Syntax go hi goCoverageUncover guibg=DarkRed   ctermbg=DarkRed
-augroup end
-]])
-
-local goCoverage = require('go.coverage')
-vim.keymap.set('n', '<leader>cr', goCoverage.run, {})
-vim.keymap.set('n', '<leader>ct', goCoverage.toggle, {})
 
 -- telescope.nvim
 -- See here for ideas: https://github.com/nvim-telescope/telescope.nvim/wiki/Configuration-Recipes

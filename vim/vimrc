@@ -26,6 +26,7 @@ if v:version >= 700
         Plug '~/.vim/johnstarich/vim-slack'                                       " Adds commands for interacting with Slack
 
         if has("nvim")
+            Plug 'andythigpen/nvim-coverage'                                  " Indicate covered and uncovered lines
             Plug 'brenoprata10/nvim-highlight-colors'                         " Highlight colors for neovim - hex codes, color names, etc.
             Plug 'hrsh7th/cmp-buffer'                                         " nvim-cmp source for buffer words
             Plug 'hrsh7th/cmp-cmdline'                                        " nvim-cmp source for vim's cmdline
@@ -37,7 +38,7 @@ if v:version >= 700
             Plug 'hrsh7th/nvim-cmp'                                           " A completion plugin for neovim coded in Lua.
             Plug 'hrsh7th/vim-vsnip'                                          " Snippet plugin for vim/nvim that supports LSP/VSCode's snippet format.
             Plug 'neovim/nvim-lspconfig'                                      " Quickstart configs for Nvim LSP
-            Plug 'nvim-lua/plenary.nvim'                                      " plenary: full; complete; entire; absolute; unqualified. All the lua functions I don't want to write twice. (used by telescope)
+            Plug 'nvim-lua/plenary.nvim'                                      " plenary: full; complete; entire; absolute; unqualified. All the lua functions I don't want to write twice. (used by telescope and nvim-coverage)
             Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' } " FZF sorter for telescope written in c (performance boost for telescope)
             Plug 'nvim-telescope/telescope.nvim', { 'branch': '0.1.x' }       " Find, Filter, Preview, Pick. All lua, all the time.
             Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}       " Installing treesitter is required to fix rpm packaging issues with neovim 0.10.0
