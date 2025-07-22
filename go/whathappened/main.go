@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"context"
-	"encoding/csv"
 	"flag"
 	"fmt"
 	"maps"
@@ -17,18 +16,7 @@ import (
 
 	"github.com/go-git/go-git/v5"
 	"github.com/markusmobius/go-dateparser"
-	"github.com/pkg/errors"
 )
-
-/*
-
-Useful queries:
-
-sqlite3 ~/Library/Calendars/Calendar.sqlitedb "select summary, start_date from CalendarItem where start_date>($(gdate +%s -d 'yesterday 8am')-978307200) AND end_date<($(gdate +%s -d today)-978307200) limit 100;"
-sqlite3 ~/Library/Calendars/Calendar.sqlitedb '.schema'
-sqlite3 ~/Library/Calendars/Calendar.sqlitedb "select calendar.title, item.summary, item.start_date from CalendarItem as item left join Calendar as calendar on (calendar.rowid = item.calendar_id) where item.start_date>($(gdate +%s -d 'yesterday 8am')-978307200) AND item.end_date<($(gdate +%s -d today)-978307200) limit 100;"
-
-*/
 
 func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
@@ -65,51 +53,10 @@ func run(ctx context.Context, args []string) error {
 	for _, commit := range commits {
 		fmt.Println("-", commit)
 	}
-	/* Non-functional on macOS Sonoma.
-	events, err := recentEvents(ctx, yesterday, now, map[string][]string{
-		workEmail: {"Calendar"},
-	})
-	if err != nil {
-		return err
-	}
-	for _, event := range events {
-		fmt.Println("-", event)
-	}
-	*/
 	return nil
 }
 
-func recentEvents(ctx context.Context, start, end time.Time, calendars map[string][]string) ([]string, error) {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return nil, err
-	}
-	cmd := exec.CommandContext(ctx, "sqlite3", filepath.Join(home, "Library/Calendars/Calendar.sqlitedb"), fmt.Sprintf("select calendar.owner_identity_email, calendar.title, item.summary, item.start_date from CalendarItem as item left join Calendar as calendar on (calendar.rowid = item.calendar_id) where item.start_date>%d AND item.end_date<%d limit 100;", timeToMacOSCocoaCoreData(start), timeToMacOSCocoaCoreData(end)), "--csv")
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		return nil, errors.WithMessage(err, string(output))
-	}
-	reader := csv.NewReader(bytes.NewReader(output))
-	columns, err := reader.ReadAll()
-	if err != nil {
-		return nil, err
-	}
-	var messages []string
-	for _, columns := range columns {
-		ownerEmail, calendarTitle, itemSummary := columns[0], columns[1], columns[2]
-		if slices.Contains(calendars[ownerEmail], calendarTitle) {
-			messages = append(messages, "meeting: "+itemSummary)
-		}
-	}
-	return messages, nil
-}
-
-func timeToMacOSCocoaCoreData(t time.Time) int64 {
-	const appleCocoaCoreDataTimestampOffsetSecondsToUnixEpoch = 978307200 // https://www.epochconverter.com/coredata
-	return t.Unix() - appleCocoaCoreDataTimestampOffsetSecondsToUnixEpoch
-}
-
-func recentCommits(ctx context.Context, start, end time.Time, authors []string) ([]string, error) {
+func recentCommits(_ context.Context, start, end time.Time, authors []string) ([]string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return nil, err
