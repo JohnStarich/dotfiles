@@ -16,6 +16,8 @@
 	autocrlf = input
 	excludesfile = ~/.gitignore
 	hooksPath = ~/.githooks
+[diff]
+	colormovedws = allow-indentation-change
 # Always try ssh instead
 [url "git@github.com:"]
 	insteadOf = https://github.com/
