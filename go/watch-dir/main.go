@@ -91,6 +91,14 @@ func (a Args) Run(ctx context.Context) error {
 		if err == nil && shouldIgnore {
 			return nil
 		}
+		fmt.Fprint(os.Stdout, "### Files changed: ")
+		for _, filePath := range filePaths {
+			if relPath, err := filepath.Rel(a.RootDir, filePath); err == nil {
+				filePath = relPath
+			}
+			fmt.Fprint(os.Stdout, filePath, ", ")
+		}
+		fmt.Fprintln(os.Stdout)
 
 		ranOnce = true
 		clearScreen()
@@ -160,21 +168,27 @@ func (a Args) runWatch(ctx context.Context, callback callbackFunc) error {
 		case <-ctx.Done():
 			return nil
 		case event := <-watcher.Events:
-			if event.Op&(fsnotify.Remove|fsnotify.Create) != 0 {
-				info, err := os.Stat(event.Name)
-				isDir := err == nil && info.IsDir()
-				switch {
-				case isDir && event.Op&fsnotify.Remove != 0:
-					_ = watcher.Remove(event.Name)
-				case isDir && event.Op&fsnotify.Create != 0:
-					_ = watcher.Add(event.Name)
-				case !isDir && event.Op&fsnotify.Create != 0:
-					_ = watcher.Add(filepath.Dir(event.Name))
+			shouldIgnore, err := a.ShouldIgnore(event.Name)
+			if err == nil && !shouldIgnore {
+				if err != nil {
+					fmt.Fprintln(a.Stderr, err)
 				}
-			}
-			if event.Op&(fsnotify.Write|fsnotify.Remove|fsnotify.Create|fsnotify.Rename) != 0 {
-				lastEvents = append(lastEvents, event)
-				timer.Reset(debounce)
+				if event.Op&(fsnotify.Remove|fsnotify.Create) != 0 {
+					info, err := os.Stat(event.Name)
+					isDir := err == nil && info.IsDir()
+					switch {
+					case isDir && event.Op&fsnotify.Remove != 0:
+						_ = watcher.Remove(event.Name)
+					case !shouldIgnore && isDir && event.Op&fsnotify.Create != 0:
+						_ = watcher.Add(event.Name)
+					case !shouldIgnore && !isDir && event.Op&fsnotify.Create != 0:
+						_ = watcher.Add(filepath.Dir(event.Name))
+					}
+				}
+				if event.Op&(fsnotify.Write|fsnotify.Remove|fsnotify.Create|fsnotify.Rename) != 0 {
+					lastEvents = append(lastEvents, event)
+					timer.Reset(debounce)
+				}
 			}
 		case err := <-watcher.Errors:
 			var pathErr *os.PathError
