@@ -16,6 +16,7 @@ require('nvim-highlight-colors').setup({
     render = 'virtual',
     virtual_symbol_position = 'eol',
 })
+vim.opt.runtimepath:prepend("~/.config/nvim") -- Prepend standard Neovim config directory to pick up Treesitter injections.
 require('nvim-treesitter.configs').setup {
     auto_install = true,
     highlight = {
@@ -433,3 +434,21 @@ for lsp, config in pairs(servers) do
     end
     lspconfig[lsp].setup(opts)
 end
+
+-- Set up directive for Treesitter injections to dynamically set languages.
+-- Place a comment containing "filetype:" on the start line of a YAML block string.
+-- The rest of the line must be the desired vim filetype.
+--
+-- foo: | # filetype:yaml
+--   bar: baz
+vim.treesitter.query.add_directive("set-lang-from-hint!", function(match, _, bufnr, pred, metadata)
+  local capture_id = pred[2]
+  local node = match[capture_id]
+  if not node then
+    return
+  end
+  local injection_alias = vim.treesitter.get_node_text(node, bufnr)
+  injection_alias = string.gsub(injection_alias, ".*filetype:(.*)", "%1")
+  injection_alias = injection_alias:lower()
+  metadata["injection.language"] = injection_alias
+end, opts)
