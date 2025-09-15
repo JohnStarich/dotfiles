@@ -1,10 +1,16 @@
 -- Simple plugin setup:
+local good = "█"
+local bad = "█"
+if vim.loop.os_uname().sysname == 'Darwin' then -- macOS doesn't have Terminal true color support yet
+    good = "✔"
+    bad = "✘"
+end
 local coverage = require('coverage')
 coverage.setup({
     auto_reload = true,
     signs = {
-        covered = { text = "█" },
-        uncovered = { text = "█" },
+        covered = { text = good },
+        uncovered = { text = bad },
     },
 })
 local showCoverage = false
