@@ -441,6 +441,14 @@ for lsp, config in pairs(servers) do
     lspconfig[lsp].setup(opts)
 end
 
+-- Set up auto-detection for Helm charts
+vim.api.nvim_create_autocmd({'BufNewFile', 'BufRead'}, {
+    pattern = '*/templates/*.yaml,*/templates/*.yml',
+    callback = function(ev)
+        vim.opt_local.filetype = 'helm'
+    end
+})
+
 -- Set up directive for Treesitter injections to dynamically set languages.
 -- Place a comment containing "filetype:" on the start line of a YAML block string.
 -- The rest of the line must be the desired vim filetype.
