@@ -455,14 +455,23 @@ vim.api.nvim_create_autocmd({'BufNewFile', 'BufRead'}, {
 --
 -- foo: | # filetype:yaml
 --   bar: baz
-vim.treesitter.query.add_directive("set-lang-from-hint!", function(match, _, bufnr, pred, metadata)
-  local capture_id = pred[2]
-  local node = match[capture_id]
-  if not node then
-    return
-  end
-  local injection_alias = vim.treesitter.get_node_text(node, bufnr)
-  injection_alias = string.gsub(injection_alias, ".*filetype:(.*)", "%1")
-  injection_alias = injection_alias:lower()
-  metadata["injection.language"] = injection_alias
-end, opts)
+has_filetype_directive = false
+for _, name in pairs(vim.treesitter.query.list_directives()) do
+    if name == "set-lang-from-hint!" then
+        has_filetype_directive = true
+        break
+    end
+end
+if not has_filetype_directive then
+    vim.treesitter.query.add_directive("set-lang-from-hint!", function(match, _, bufnr, pred, metadata)
+        local capture_id = pred[2]
+        local node = match[capture_id]
+        if not node then
+          return
+        end
+        local injection_alias = vim.treesitter.get_node_text(node, bufnr)
+        injection_alias = string.gsub(injection_alias, ".*filetype:(.*)", "%1")
+        injection_alias = injection_alias:lower()
+        metadata["injection.language"] = injection_alias
+    end, opts)
+end
