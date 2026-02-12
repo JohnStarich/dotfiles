@@ -1,0 +1,17 @@
+#!/usr/bin/env zsh
+
+setopt LOCAL_OPTIONS NO_MONITOR
+
+local timeout_seconds=$1; shift
+local command_args=("$@")
+
+"${command_args[@]}" &
+local command_pid=$!
+{ sleep "$timeout_seconds" && kill "$command_pid" && return 1 } &
+local sleep_command_pid=$!
+
+wait "$command_pid"
+rc=$?
+kill "$sleep_command_pid" &>/dev/null
+wait "$sleep_command_pid"
+return "$rc"

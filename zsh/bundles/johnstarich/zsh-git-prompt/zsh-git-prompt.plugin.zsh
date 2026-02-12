@@ -2,6 +2,10 @@
 
 autoload -Uz colors && colors
 
+function js_git_gen_prompt_timeout() {
+    js_timeout 0.250 js_git_gen_prompt "$@"
+}
+
 js_git_prompt=''
 function js_git_gen_prompt() {
     local ref
@@ -22,7 +26,7 @@ function js_git_gen_prompt() {
 }
 
 autoload -Uz add-zsh-hook 
-add-zsh-hook precmd js_git_gen_prompt
+add-zsh-hook precmd js_git_gen_prompt_timeout
 
 function js_git_has_modifications() {
     if ! \git diff --no-ext-diff --quiet --exit-code >&- 2>&-; then
