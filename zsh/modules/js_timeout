@@ -5,7 +5,13 @@ setopt LOCAL_OPTIONS NO_MONITOR
 local timeout_seconds=$1; shift
 local command_args=("$@")
 
-{ sleep "$timeout_seconds" && kill "$command_pid" && return 1 } &
+# Delay sleep command slightly so foreground PID is ready. This is effectively the smallest timeout allowed.
+{ sleep 0.050 && \
+    local command_pid=$(pgrep -P $$ -n) && \
+    sleep "$timeout_seconds" && \
+    kill "$command_pid" && \
+    return 1 \
+} &
 local sleep_command_pid=$!
 
 "${command_args[@]}"
