@@ -23,7 +23,7 @@ function ensure_repo() {
     local name=$1
     local url=$2
     if [[ ! -f "/etc/yum.repos.d/$name" ]]; then
-        sudo dnf config-manager --add-repo "$repo"
+        sudo dnf config-manager addrepo --from-repofile="$url"
     fi
 }
 
