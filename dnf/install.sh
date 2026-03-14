@@ -53,3 +53,38 @@ packages=(
 )
 
 ensure_installed "${packages[@]}"
+
+# Build and install Bitwarden polkit fix for Fedora Silverblue
+command_prefix=()
+if [[ -f /run/.containerenv ]]; then
+    command_prefix=(flatpak-spawn --host)
+fi
+if ! "${command_prefix[@]}" which podman rpm-ostree >/dev/null 2>/dev/null; then
+    exit 0
+fi
+
+cd "$(dirname "$0")/bitwarden-ostree-policy-rpm"
+
+chcon system_u:object_r:usr_t:s0 ./buildroot/usr/share/polkit-1/actions/com.bitwarden.Bitwarden.policy  # This can't be run inside a (rootless) container build.
+image_tag=localhost/bitwarden-ostree-policy-rpm:latest
+podman build -t "$image_tag" .
+
+rpm_dir=$PWD/out
+rm -rf "$rpm_dir"
+mkdir -p "$rpm_dir"
+podman run \
+    --rm \
+    --name "bitwarden-ostree-policy-rpm-$RANDOM" \
+    -v "./buildroot:/buildroot:ro" \
+    -v "$rpm_dir:/data:Z" \
+    "$image_tag"
+rpm_file=./out/bitwarden-polkit-policy.noarch.rpm
+ls "$rpm_file"
+
+"${command_prefix[@]}" sudo rpm-ostree install \
+    --assumeyes \
+    --idempotent \
+    --apply-live \
+    --uninstall bitwarden-polkit-policy \
+    "$rpm_file"
+"${command_prefix[@]}" sudo systemctl restart polkit

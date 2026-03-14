@@ -1,0 +1,40 @@
+FROM registry.fedoraproject.org/fedora-toolbox:43
+
+RUN dnf install -y rpm-build
+WORKDIR /build
+RUN <<EOF
+cat >./bitwarden-policy.spec <<EOT
+Name: bitwarden-polkit-policy
+Version: 1.0
+Release:        %autorelease
+Summary: bitwarden-polkit-policy
+
+License: MIT
+
+%description
+bitwarden-polkit-policy
+
+%files
+/usr/share/polkit-1/actions/com.bitwarden.Bitwarden.policy
+EOT
+
+cat >/run.sh <<EOT
+#!/usr/bin/env bash
+
+set -ex -o pipefail
+
+# Verify SELinux context is correct
+ls -Z /buildroot/usr/share/polkit-1/actions/com.bitwarden.Bitwarden.policy | tee /dev/stderr | grep '^system_u:object_r:usr_t:s0 '
+
+rpmbuild \
+    --buildroot /buildroot \
+    --define "_rpmdir $PWD/out" \
+    --target noarch \
+    -bb bitwarden-policy.spec
+
+mv ./out/noarch/bitwarden-polkit-policy-*.noarch.rpm /data/bitwarden-polkit-policy.noarch.rpm
+EOT
+chmod +x /run.sh
+EOF
+
+ENTRYPOINT ["/run.sh"]
