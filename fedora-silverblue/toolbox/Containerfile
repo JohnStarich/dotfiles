@@ -1,0 +1,54 @@
+FROM registry.fedoraproject.org/fedora-toolbox:43
+
+RUN dnf install -y \
+        bash-completion \
+        gh \
+        git \
+        git-delta \
+        golang \
+        gpg-agent \
+        graphviz \
+        helm \
+        htop \
+        iperf \
+        ipmitool \
+        iproute \
+        iputils \
+        jq \
+        kde-connect \
+        kubectl \
+        man-db \
+        man-pages \
+        ncdu \
+        neovim \
+        nfs-utils \
+        nmap-ncat \
+        nmon \
+        nslookup \
+        openssh-server \
+        openssl \
+        parted \
+        postgresql \
+        pv \
+        qrencode \
+        ripgrep \
+        rsync \
+        samba \
+        stress \
+        tcpdump \
+        telnet \
+        the_silver_searcher \
+        tmux \
+        traceroute \
+        tree \
+        tuned-adm \
+        vim-minimal \
+        wl-clipboard \
+        xxd \
+        yq \
+        zsh
+
+# CloudNativePG kubectl plugin: https://cloudnative-pg.io/docs/1.28/kubectl-plugin/#via-the-installation-script
+RUN curl -sSfL \
+  https://github.com/cloudnative-pg/cloudnative-pg/raw/main/hack/install-cnpg-plugin.sh | \
+  sudo sh -s -- -b /usr/local/bin
