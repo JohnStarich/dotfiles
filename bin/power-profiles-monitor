@@ -25,15 +25,23 @@ function smallest_battery_percentage() {
     echo "$smallest"
 }
 
+function set_profile() {
+    gdbus call --system \
+        --dest net.hadess.PowerProfiles \
+        --object-path /net/hadess/PowerProfiles \
+        --method org.freedesktop.DBus.Properties.Set \
+        'net.hadess.PowerProfiles' 'ActiveProfile' "<'$1'>"
+}
+
 while true; do
     if battery_has_state Discharging; then
         if (( $(smallest_battery_percentage) < low_battery_threshold )); then
-            tuned-adm profile powersave
+            set_profile powersave
         else
-            tuned-adm profile balanced-battery
+            set_profile balanced
         fi
     else
-        tuned-adm profile throughput-performance
+        set_profile performance
     fi
     sleep "$monitor_interval_seconds"
 done
