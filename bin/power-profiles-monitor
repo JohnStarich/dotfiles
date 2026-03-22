@@ -28,12 +28,12 @@ function smallest_battery_percentage() {
 while true; do
     if battery_has_state Discharging; then
         if (( $(smallest_battery_percentage) < low_battery_threshold )); then
-            powerprofilesctl set power-saver
+            tuned-adm profile powersave
         else
-            powerprofilesctl set balanced
+            tuned-adm profile balanced-battery
         fi
     else
-        powerprofilesctl set performance
+        tuned-adm profile throughput-performance
     fi
     sleep "$monitor_interval_seconds"
 done
