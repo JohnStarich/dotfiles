@@ -1,5 +1,3 @@
-//go:build !darwin
-
 package status
 
 // Arrows from the Unicode Symbols for Legacy Computing.
