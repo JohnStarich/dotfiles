@@ -216,7 +216,7 @@ end, {})
 -- Ideas:
 -- * Search all TODOs in diff with main/master
 
--- nvim-lspconfig:
+-- vim.lsp.config:
 -- Global mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
@@ -411,7 +411,7 @@ cmp.setup.cmdline(':', {
     })
 })
 
--- Set up lspconfig.
+-- Set up vim.lsp.config.
 local servers = {
     gopls = {
         cmd = {'gopls', '-remote=auto' },
@@ -430,7 +430,6 @@ local servers = {
     },
 }
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
-local lspconfig = require('lspconfig')
 for lsp, config in pairs(servers) do
     local opts = {
         capabilities = capabilities,
@@ -438,7 +437,8 @@ for lsp, config in pairs(servers) do
     for key, value in pairs(config) do
         opts[key] = value
     end
-    lspconfig[lsp].setup(opts)
+    vim.lsp.config(lsp, opts)
+    vim.lsp.enable(lsp)
 end
 
 -- Set up auto-detection for Helm charts
