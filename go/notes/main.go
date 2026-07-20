@@ -16,8 +16,16 @@ import (
 )
 
 const (
-	appName        = "notes"
-	usage          = "Usage: notes edit <subject> [date ...]"
+	appName = "notes"
+	usage   = `View, edit, and search your notes.
+
+Usage:
+  notes edit <subject> [date ...]
+  notes search <search terms...>
+
+Notes are edited and saved in ~/notes. Subjects are represented as directories in ~/notes.
+The notes base directory may be overridden by setting the $NOTES_BASE environment variable.
+`
 	noteDateFormat = "2006-01-02"
 	noteExtension  = ".md"
 )
