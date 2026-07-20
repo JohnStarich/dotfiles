@@ -20,11 +20,20 @@ const (
 	usage   = `View, edit, and search your notes.
 
 Usage:
-  notes edit <subject> [date ...]
+  notes edit <subject> [file name, date, or relative date ...]
   notes search <search terms...>
 
 Notes are edited and saved in ~/notes. Subjects are represented as directories in ~/notes.
 The notes base directory may be overridden by setting the $NOTES_BASE environment variable.
+
+The edit name may be in many forms, including relative dates. For example:
+
+- mynote
+- 2000-01-02
+- yesterday
+- last fri
+- next tue
+- 3 weeks ago
 `
 	noteDateFormat = "2006-01-02"
 	noteExtension  = ".md"
