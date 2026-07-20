@@ -1,4 +1,4 @@
-module github.com/johnstarich/go/notes
+module github.com/johnstarich/dotfiles/go/notes
 
 go 1.19
 
