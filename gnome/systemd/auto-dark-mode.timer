@@ -1,0 +1,11 @@
+[Unit]
+Description=Automatic light/dark mode switcher
+
+[Timer]
+# TODO: hourly
+OnCalendar=hourly
+AccuracySec=1m
+Persistent=true
+
+[Install]
+WantedBy=timers.target
